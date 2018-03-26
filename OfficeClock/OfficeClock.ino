@@ -79,6 +79,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <assert.h>
 #include <m8r.h>
 #include <m8r/Blinker.h>
+#include <m8r/BrightnessManager.h>
 
 #include "ClockDisplay.h"
 
@@ -90,19 +91,10 @@ const uint32_t ConnectingRate = 400;
 const uint32_t ConfigRate = 100;
 const uint32_t ConnectedRate = 1900;
 
-const uint32_t DebugPrintRate = 1;
-
-const uint32_t LIGHT_SENSOR = A0;
-
+const uint32_t LightSensor = A0;
 const uint32_t MaxAmbientLightLevel = 800;
-const uint32_t NumberOfBrightnessLevels = 64;
-constexpr uint32_t MaxBrightness = 80;
-constexpr uint32_t MinBrightness = 3;
+const uint32_t NumberOfBrightnessLevels = 16;
 bool needBrightnessUpdate = false;
-
-constexpr uint8_t NumBrightnessSamples = 5;
-constexpr uint32_t BrightnessSampleRate = 100;
-
 
 int8_t curTemp, highTemp, lowTemp;
 uint32_t currentTime = 0;
@@ -125,60 +117,19 @@ const char startupMessage[] = "Office Clock v1.0";
 
 ClockDisplay clockDisplay;
 
-class BrightnessManager
+class MyBrightnessManager : public BrightnessManager
 {
 public:
-	BrightnessManager()
+	MyBrightnessManager() : BrightnessManager(LightSensor, MaxAmbientLightLevel, NumberOfBrightnessLevels) { }
+	
+	virtual void callback(uint8_t brightness) override
 	{
-		_ticker.attach_ms(BrightnessSampleRate, compute, this);
+		m8r::cout << "*** setting brightness to " << brightness << "\n";
+		clockDisplay.setBrightness(static_cast<float>(brightness) / (NumberOfBrightnessLevels - 1));
 	}
-	
-	uint8_t brightness() const { return _currentBrightness; }
-	
-private:
-	static void compute(BrightnessManager* self) { self->computeBrightness(); }
-
-	void computeBrightness()
-	{
-		uint32_t ambientLightLevel = analogRead(LIGHT_SENSOR);
-		
-		uint32_t brightnessLevel = ambientLightLevel;
-		if (brightnessLevel > MaxAmbientLightLevel) {
-			brightnessLevel = MaxAmbientLightLevel;
-		}
-	
-		// Make brightness level between 1 and NumberOfBrightnessLevels
-		brightnessLevel = (brightnessLevel * NumberOfBrightnessLevels + (MaxAmbientLightLevel / 2)) / MaxAmbientLightLevel;
-		if (brightnessLevel >= NumberOfBrightnessLevels) {
-			brightnessLevel = NumberOfBrightnessLevels - 1;
-		}
-		
-		_brightnessAccumulator += brightnessLevel;		
-
-		if (++_brightnessSampleCount >= NumBrightnessSamples) {
-			_brightnessSampleCount = 0;
-			uint32_t brightness = (_brightnessAccumulator + (NumBrightnessSamples / 2)) / NumBrightnessSamples;
-			_brightnessAccumulator = 0;
-
-			if (brightness != _currentBrightness) {
-				_currentBrightness = brightness;
-				m8r::cout << "Setting brightness:'" << _currentBrightness << "'\n";
-				
-				float v = _currentBrightness;
-				v /= NumberOfBrightnessLevels - 1;
-				clockDisplay.setBrightness(v);
-				m8r::cout << "    level:'" << v << "'\n";
-			}
-		}
-	}
-
-	uint8_t _currentBrightness = 255;
-	uint32_t _brightnessAccumulator = 0;
-	uint8_t _brightnessSampleCount = 0;
-	Ticker _ticker;
 };
 
-BrightnessManager brightnessManager;
+MyBrightnessManager brightnessManager;
 
 static void decimalByteToString(uint8_t v, char string[2], bool showLeadingZero)
 {
