@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
-This source file is a part of Etherclock3
+This source file is a part of Office Clock
 
 For the latest info, see http://www.marrin.org/
 
@@ -34,40 +34,22 @@ POSSIBILITY OF SUCH DAMAGE.
 -------------------------------------------------------------------------*/
 
 /*
- * Etherclock3 is an ESP8266 based digital clock. LEDs are driven by serial
+ * Office Clock is an ESP8266 based digital clock. LEDs are driven by serial
  * constant current drivers which take 2 pins to operate. It also has an
  * ambient light sensor on AO, and a single switch to change functions.
  * 
- * It uses NTP to get the current time and date. And it uses a Weather Underground
- * feed to get the current temps
+ * It uses a Weather Underground feed to get the current time and temps
+ * Data is obtained with a request to weather underground, which looks like this:
  * 
- * The NTP code is lifted from the NTPClient example in the ESP8266Wifi package.
- */
-
- /*********************
-  * 
-  * This code currently sets up the wifi and then accesses NTP. This has to be replaced with a request to weather underground, which looks like this:
-  * 
-  *     http://api.wunderground.com/api/5bc1eac6864b7e57/conditions/forecast/q/CA/Los_Altos.json
-  *     
-  * This will get a JSON stream with the current and forecast weather. Using JsonStreamingParser to pick out the local time, current temp and
-  * forecast high and low temps. Format for these items looks like:
-  * 
-  *     local time:   { "current_observation": { "local_epoch": "<number>" } }
-  *     current temp: { "current_observation": { "temp_f": "<number>" } }
-  *     low temp:     { "forecast": { "simpleforecast": { "forecastday": [ { "low": { "fahrenheit": "<number>" } } ] } } }
-  *     high temp:    { "forecast": { "simpleforecast": { "forecastday": [ { "high": { "fahrenheit": "<number>" } } ] } } }
-  */
-
-/***************
+ *     http://api.wunderground.com/api/5bc1eac6864b7e57/conditions/forecast/q/CA/Los_Altos.json
+ *     
+ * This will get a JSON stream with the current and forecast weather. Using JsonStreamingParser to pick out the local time, current temp and
+ * forecast high and low temps. Format for these items looks like:
  * 
- * Use the following code to set up a webserver to allow the ssid and password of the Wifi network to be entered.
- * Connect to the "ESP8266" network and go to http://1.1.1.1 and get a form to fill out. Right now the page
- * displayed just lets you turn the light on and off. Need to add the form.
- * 
- * This form can also let you set up the city and state. For instance a state of "CA" and city of "Los_Altos"
- * will get the information from weather underground for that location. It will get both the local time
- * and weather (current temp, forecast low and high temps)
+ *     local time:   { "current_observation": { "local_epoch": "<number>" } }
+ *     current temp: { "current_observation": { "temp_f": "<number>" } }
+ *     low temp:     { "forecast": { "simpleforecast": { "forecastday": [ { "low": { "fahrenheit": "<number>" } } ] } } }
+ *     high temp:    { "forecast": { "simpleforecast": { "forecastday": [ { "high": { "fahrenheit": "<number>" } } ] } } }
  */
 
 // Ports
@@ -86,32 +68,19 @@ POSSIBILITY OF SUCH DAMAGE.
 //
 
 #include <ESP8266WiFi.h>          //https://github.com/esp8266/Arduino
-
-#include <m8r.h>
-
-#include <SPI.h>
-#include <Adafruit_GFX.h>
-#include <Max72xxPanel.h>
-
-#include "OfficeClock_8x8_Font8pt.h"
-
-//needed for library
 #include <DNSServer.h>
 #include <ESP8266WebServer.h>
 #include <WiFiManager.h>          //https://github.com/tzapu/WiFiManager
-
 #include <JsonStreamingParser.h>
 #include <JsonListener.h>
-
 #include <ESP8266HTTPClient.h>
-
-#include <Wire.h>
 #include <Ticker.h>
-
 #include <time.h>
 #include <assert.h>
+#include <m8r.h>
+#include <m8r/Blinker.h>
 
-const uint32_t LoopRate = 10; // loop rate in ms
+#include "ClockDisplay.h"
 
 const uint32_t ScrollRate = 200; // scroll rate in ms
 
@@ -154,122 +123,7 @@ DisplayState displayState = DisplayState::Time;
 
 const char startupMessage[] = "Office Clock v1.0";
 
-Max72xxPanel matrix = Max72xxPanel(SS, 4, 1);
-
-class ClockDisplay
-{
-public:
-	ClockDisplay()
-	{
-		pinMode(SS, OUTPUT);
-		digitalWrite(SS, LOW);
-
-		matrix.setFont(&OfficeClock_8x8_Font8pt);
-		matrix.setTextWrap(false);
-    
-		matrix.setIntensity(0); // Use a value between 0 and 15 for brightness
-
-		matrix.setPosition(0, 0, 0); // The first display is at <0, 0>
-		matrix.setPosition(1, 1, 0); // The second display is at <1, 0>
-		matrix.setPosition(2, 2, 0); // The third display is at <2, 0>
-		matrix.setPosition(3, 3, 0); // And the last display is at <3, 0>
-
-		matrix.setRotation(0, 1);    // The first display is position upside down
-		matrix.setRotation(1, 1);    // The first display is position upside down
-		matrix.setRotation(2, 1);    // The first display is position upside down
-		matrix.setRotation(3, 1);    // The same hold for the last display
-
-		clear();
-	}
-
-	void clear()
-	{
-		matrix.fillScreen(LOW);
-		matrix.write(); // Send bitmap to display
-	}
-  
-	void setBrightness(float level)
-	{
-		level *= 15;
-		if (level > 15) {
-			level = 15;
-		} else if (level < 0) {
-			level = 0;
-		}
-		matrix.setIntensity(level);
-	}
-		
-	void setString(const String& string, bool colon = false, bool pm = false)
-	{
-		String s = string;
-		if (string.length() >= 2 && colon) {
-			s = s.substring(0, 2) + ":" + s.substring(2);
-		}
-		s.trim();  
-    
-		// center the string
-		int16_t x1, y1;
-		uint16_t w, h;
-		matrix.getTextBounds((char*) s.c_str(), 0, 0, &x1, &y1, &w, &h);
-    
-		matrix.setCursor((matrix.width() - w) / 2, matrix.height() - (h + y1));
-		matrix.fillScreen(LOW);
-		matrix.print(s);
-		matrix.write(); // Send bitmap to display
-	}
-
-	bool scrollString(const String& s, int32_t offset)
-	{
-		// Make scroll start offscreen
-		offset -= matrix.width();
-    
-		int16_t x1, y1;
-		uint16_t w, h;
-		matrix.getTextBounds((char*) s.c_str(), 0, 0, &x1, &y1, &w, &h);
-		if (offset >= matrix.width() + w) {
-			return false;
-		}
-
-		matrix.fillScreen(LOW);
-
-		matrix.setCursor(-offset, matrix.height() - (h + y1));
-		matrix.print(s);
-		matrix.write(); // Send bitmap to display
-		return true;
-	}
-	
-private:
-	int _characterSpace = 1;
-};
-
 ClockDisplay clockDisplay;
-
-class Blinker
-{
-public:
-	Blinker() { _ticker.attach_ms(BlinkSampleRate, blink, this); }
-	
-	void setRate(uint32_t rate) { _rate = (rate + (BlinkSampleRate / 2)) / BlinkSampleRate; }
-	
-private:
-	static void blink(Blinker* self)
-	{
-		if (self->_count == 0) {
-			digitalWrite(BUILTIN_LED, LOW);
-		} else if (self->_count == 1){
-			digitalWrite(BUILTIN_LED, HIGH);
-		}
-		if (++self->_count >= self->_rate) {
-			self->_count = 0;
-		}
-	}
-	
-	Ticker _ticker;
-	uint32_t _rate = 10; // In 10 ms units
-	uint32_t _count = 0;
-};
-
-Blinker blinker;
 
 class BrightnessManager
 {
@@ -453,6 +307,8 @@ void updateDisplay()
 	showChars(string, pm, colon);
 }
 
+m8r::Blinker blinker(BUILTIN_LED, BlinkSampleRate);
+
 //gets called when WiFiManager enters configuration mode
 void configModeCallback (WiFiManager *myWiFiManager)
 {
@@ -514,6 +370,8 @@ void setCheckWeather()
 
 void checkWeather()
 {
+	bool failed = false;
+	
 	HTTPClient http;
 	m8r::cout << "Getting weather and time feed...\n";
 
@@ -532,7 +390,7 @@ void checkWeather()
 	http.begin(wuURL);
 	int httpCode = http.GET();
 
-	if(httpCode > 0) {
+	if (httpCode > 0) {
 		m8r::cout << "    got response: " << httpCode << "\n";
 
 		if(httpCode == HTTP_CODE_OK) {
@@ -549,7 +407,9 @@ void checkWeather()
 			needsUpdateDisplay = true;
 		}
 	} else {
-		m8r::cout << "[HTTP] GET... failed, error: " << http.errorToString(httpCode) << "\n";
+		m8r::cout << "[HTTP] GET... failed, error: " << http.errorToString(httpCode) << "(" << httpCode << ")\n";
+		clockDisplay.setString("Failed");
+		failed = true;
 	}
 
 	http.end();
@@ -557,11 +417,15 @@ void checkWeather()
 	static Ticker ticker;
 	
 	// Check one minute past the hour. That way if daylight savings changes, we catch it sooner
-	int32_t timeToNextHour = (60 * 60) - (static_cast<int32_t>(currentTime % (60 * 60))) + 60;
-	ticker.once(timeToNextHour, setCheckWeather);
+	int32_t timeToNextCheck = failed ? 10 : ((60 * 60) - (static_cast<int32_t>(currentTime % (60 * 60))) + 60);
+	ticker.once(timeToNextCheck, setCheckWeather);
 	
-	m8r::cout << "Time set to:" << ctime(reinterpret_cast<time_t*>(&currentTime)) << ", next setting in " << timeToNextHour << " seconds\n";
+	m8r::cout << "Time set to:" << ctime(reinterpret_cast<time_t*>(&currentTime)) << ", next setting in " << timeToNextCheck << " seconds\n";
 }
+
+Ticker _secondTimer;
+
+void secondTick();
 
 void setup()
 {
@@ -570,10 +434,9 @@ void setup()
 	m8r::cout << "\n\nOffice Clock v1.0\n\n";
       
 	clockDisplay.setBrightness(0);
-	clockDisplay.setString(".......");
+	clockDisplay.setString("[\\]]^[_");
     
 	//set led pin as output
-	pinMode(BUILTIN_LED, OUTPUT);
 	blinker.setRate(ConnectingRate);
 
 	//WiFiManager
@@ -600,68 +463,44 @@ void setup()
 	//if you get here you have connected to the WiFi
 	m8r::cout << "Wifi connected, IP=" << WiFi.localIP() << "\n";
 	blinker.setRate(ConnectedRate);
+	
+	_secondTimer.attach_ms(1000, secondTick);
+}
+
+bool scrollingWelcomeMessage = false;
+
+void scrollDone()
+{
 	needWeatherLookup = true;
+	scrollingWelcomeMessage = false;
+}
+
+void secondTick()
+{
+	currentTime++;
+	needsUpdateDisplay = true;
 }
 
 void loop()
 {
-	// Only run the loop every LoopRate ms
-	static uint32_t lastMillis = 0;
-	uint32_t nextMillis = millis();
-	if (nextMillis < lastMillis + LoopRate) {
-		return;
-	}
-	lastMillis = nextMillis;
-	
-	// Tick the current time if needed
-	static uint32_t lastSecondTick = 0;
-	if (lastSecondTick == 0) {
-		lastSecondTick = nextMillis;
-	} else if (lastSecondTick <= nextMillis + 1000) {
-		lastSecondTick += 1000;
-		currentTime++;
-		needsUpdateDisplay = true;
-	}
-	
-	// Debug printing
-	static uint32_t nextDebugPrint = 0;
-	if(nextDebugPrint < currentTime) {
-		nextDebugPrint = currentTime + DebugPrintRate;
-		
-		// m8r::cout << "***** current brightness=" << brightnessManager.brightness() << "\n";
-		// m8r::cout << "***** Ambient Light Level = " << analogRead(LIGHT_SENSOR) << "\n";
-	}
-	
-	// Get the time and weather if needed
 	if (needWeatherLookup) {
 		checkWeather();
 		needWeatherLookup = false;
 	}
-	
-	if (needsUpdateDisplay && !showWelcomeMessage) {
-		updateDisplay();
-		needsUpdateDisplay = false;
-	}
 
 	if (showWelcomeMessage) {
-		// Scroll the welcome message
-		static int32_t welcomeScrollOffset = 0;
-		static uint32_t welcomeScrollCount = 1;
-		static uint32_t welcomeScrollDelay = 0;
-
-		if (++welcomeScrollDelay < 6) {
-			return;
-		}
-
-		welcomeScrollDelay = 0;
-
-		if (!clockDisplay.scrollString(startupMessage, welcomeScrollOffset++)) {
-			welcomeScrollOffset = 0;
-			if (--welcomeScrollCount == 0) {
-				showWelcomeMessage = false;
-				return;
-			}		
-		}
+		clockDisplay.scrollString(startupMessage, 50, scrollDone);
+		showWelcomeMessage = false;
+		scrollingWelcomeMessage = true;
+	}
+	
+	if (scrollingWelcomeMessage) {
+		return;
+	}
+	
+	if (needsUpdateDisplay) {
+		updateDisplay();
+		needsUpdateDisplay = false;
 	}
 }
 
