@@ -83,7 +83,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "ClockDisplay.h"
 
-const uint32_t ScrollRate = 200; // scroll rate in ms
+const uint32_t ScrollRate = 50; // scroll rate in ms
 
 // Number of ms LED stays off in each mode
 constexpr uint32_t BlinkSampleRate = 10;
@@ -94,14 +94,14 @@ const uint32_t ConnectedRate = 1900;
 const uint32_t LightSensor = A0;
 const uint32_t MaxAmbientLightLevel = 800;
 const uint32_t NumberOfBrightnessLevels = 16;
-bool needBrightnessUpdate = false;
 
 int8_t curTemp, highTemp, lowTemp;
 uint32_t currentTime = 0;
 
 uint16_t timeCounterSecondsRemaining;
 
-bool connecting = true;
+const char startupMessage[] = "Office Clock v1.0";
+
 bool needWeatherLookup = false;
 bool needsUpdateDisplay = false;
 bool showWelcomeMessage = true;
@@ -112,8 +112,6 @@ constexpr char* WUKey = "5bc1eac6864b7e57";
 
 enum class DisplayState { Time, Day, Date, CurrentTemp, HighTemp, LowTemp, CountdownTimerAsk, CountdownTimerCount, CountdownTimerDone };
 DisplayState displayState = DisplayState::Time;
-
-const char startupMessage[] = "Office Clock v1.0";
 
 ClockDisplay clockDisplay;
 
@@ -147,41 +145,6 @@ static void tempToString(char c, int8_t t, String& string)
     //     string[1] = ' ';
     //
     // decimalByteToString(t, &string[2], false);
-}
-
-static void showChars(const String& string, bool pm, bool colon)
-{
-	static String lastStringSent;
-	if (string == lastStringSent) {
-		return;
-	}
-	lastStringSent = string;
-	
-	assert(string.length() == 4);
-	clockDisplay.setString(string, colon, pm);
-		
-    // bool blank = false;
-    // bool endOfString = false;
-    //
-    // for (uint8_t stringIndex = 0, outputIndex = 0; outputIndex < 4; ++stringIndex, ++outputIndex, dps <<= 1) {
-    //     if (string.c_str()[stringIndex] == '\0')
-    //         endOfString = true;
-    //
-    //     if (endOfString)
-    //         blank = true;
-    //
-    //     uint8_t glyph1, glyph2 = 0;
-    //     bool hasSecondGlyph = m8r::SevenSegmentDisplay::glyphForChar(blank ? ' ' : string.c_str()[stringIndex], glyph1, glyph2);
-    //
-    //     shiftReg.send(glyph1 | ((dps & 0x08) ? 0x80 : 0), 8);
-    //
-    //     if (hasSecondGlyph && outputIndex != 3) {
-    //         ++outputIndex;
-    //         dps <<= 1;
-    //         shiftReg.send(glyph2 | ((dps & 0x08) ? 0x80 : 0), 8);
-    //     }
-    // }
-    // shiftReg.latch();
 }
 
 void updateDisplay()
@@ -254,8 +217,14 @@ void updateDisplay()
 		default:
 		break;
 	}
-    
-	showChars(string, pm, colon);
+
+	static String lastStringSent;
+	if (string == lastStringSent) {
+		return;
+	}
+	lastStringSent = string;
+	
+	clockDisplay.setString(string, colon, pm);
 }
 
 m8r::Blinker blinker(BUILTIN_LED, BlinkSampleRate);
@@ -440,7 +409,7 @@ void loop()
 	}
 
 	if (showWelcomeMessage) {
-		clockDisplay.scrollString(startupMessage, 50, scrollDone);
+		clockDisplay.scrollString(startupMessage, ScrollRate, scrollDone);
 		showWelcomeMessage = false;
 		scrollingWelcomeMessage = true;
 	}
