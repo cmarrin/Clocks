@@ -65,6 +65,8 @@ public:
 
 		clear();
 	}
+	
+	virtual void scrollDone() = 0;
 
 	void clear()
 	{
@@ -102,7 +104,12 @@ public:
 		_matrix.write(); // Send bitmap to display
 	}
 	
-	void scrollString(const String& s, uint32_t scrollRate, std::function<void()> doneCallback);
+	void scrollString(const String& s, uint32_t scrollRate)
+	{
+		_scrollString = s;
+		_scrollOffset = -_matrix.width(); // Make scroll start offscreen
+		_scrollTimer.attach_ms(scrollRate, _scroll, this);
+	}
 	
 private:	
 	void scrollThunk()
@@ -112,7 +119,7 @@ private:
 		_matrix.getTextBounds((char*) _scrollString.c_str(), 0, 0, &x1, &y1, &w, &h);
 		if (_scrollOffset++ >= w) {
 			_scrollTimer.detach();
-			_scrollDoneCallback();
+			scrollDone();
 		}
 
 		_matrix.fillScreen(LOW);
@@ -132,13 +139,4 @@ private:
 	Ticker _scrollTimer;
 	String _scrollString;
 	int32_t _scrollOffset;
-	std::function<void()> _scrollDoneCallback;
 };
-
-void ClockDisplay::scrollString(const String& s, uint32_t scrollRate, std::function<void()> doneCallback)
-{
-	_scrollString = s;
-	_scrollOffset = -_matrix.width(); // Make scroll start offscreen
-	_scrollDoneCallback = doneCallback;
-	_scrollTimer.attach_ms(scrollRate, _scroll, this);
-}

@@ -80,167 +80,223 @@ POSSIBILITY OF SUCH DAMAGE.
 // All rates in ms
 
 // Number of ms LED stays off in each mode
-constexpr uint32_t BlinkSampleRate = 10;
 const uint32_t ConnectingRate = 400;
 const uint32_t ConfigRate = 100;
 const uint32_t ConnectedRate = 1900;
+constexpr uint32_t BlinkSampleRate = 10;
 
+// BrightnessManager settings
 const uint32_t LightSensor = A0;
 const uint32_t MaxAmbientLightLevel = 800;
 const uint32_t NumberOfBrightnessLevels = 16;
 
+// Display related
 const char startupMessage[] = "Office Clock v1.0";
 const uint32_t ScrollRate = 50;
-bool needsUpdateDisplay = false;
-bool showWelcomeMessage = true;
 
-uint32_t _currentTime = 0;
-
+// Time and weather related
 const char* weatherCity = "Los_Altos";
 const char* weatherState = "CA";
 constexpr char* WUKey = "5bc1eac6864b7e57";
 
-ClockDisplay clockDisplay;
-
-class MyBrightnessManager : public m8r::BrightnessManager
+class OfficeClock
 {
 public:
-	MyBrightnessManager() : m8r::BrightnessManager(LightSensor, MaxAmbientLightLevel, NumberOfBrightnessLevels) { }
+	OfficeClock()
+		: _brightnessManager(this)
+		, _wUnderground(this)
+		, _clockDisplay(this)
+		, _blinker(BUILTIN_LED, BlinkSampleRate)
+	{ }
 	
-	virtual void callback(uint8_t brightness) override
+	void setup()
 	{
-		m8r::cout << "*** setting brightness to " << brightness << "\n";
-		clockDisplay.setBrightness(static_cast<float>(brightness) / (NumberOfBrightnessLevels - 1));
+		Serial.begin(115200);
+  
+		m8r::cout << "\n\nOffice Clock v1.0\n\n";
+      
+		_clockDisplay.setBrightness(0);
+		_clockDisplay.setString("[\\]]^[_");
+    
+		_blinker.setRate(ConnectingRate);
+
+		MyWiFiManager wifiManager(this);
+
+		//reset settings - for testing
+		//wifiManager.resetSettings();
+    
+		wifiManager.setAPCallback(reinterpret_cast<void(*)(WiFiManager*)>(configModeCallback));
+    
+		if (!wifiManager.autoConnect()) {
+			m8r::cout << "*** Failed to connect and hit timeout\n";
+			ESP.reset();
+			delay(1000);
+		}
+
+		m8r::cout << "Wifi connected, IP=" << WiFi.localIP() << "\n";
+
+		_blinker.setRate(ConnectedRate);
+
+		_secondTimer.attach_ms(1000, secondTick, this);		
 	}
-};
-
-MyBrightnessManager brightnessManager;
-
-class MyWUnderground : public m8r::WUnderground
-{
-public:
-	MyWUnderground() : m8r::WUnderground(WUKey, weatherCity, weatherState) { }
 	
-	virtual void callback(bool succeeded) override
+	void loop()
 	{
-		if (succeeded) {
-			::_currentTime = currentTime();
-			needsUpdateDisplay = true;
-		} else {
-			clockDisplay.setString("Failed");
+		_wUnderground.feed();
+		if (_showWelcomeMessage) {
+			_clockDisplay.scrollString(startupMessage, ScrollRate);
+			_showWelcomeMessage = false;
+			_scrollingWelcomeMessage = true;
+		}
+	
+		if (_scrollingWelcomeMessage) {
+			return;
+		}
+	
+		if (_needsUpdateDisplay) {
+			updateDisplay();
+			_needsUpdateDisplay = false;
 		}
 	}
-};
-
-MyWUnderground wUnderground;
-
-void updateDisplay()
-{
-	bool pm = false;
-	String string;
 	
-	struct tm* timeinfo = localtime(reinterpret_cast<time_t*>(&_currentTime));
+	void scrollingFinished() { _scrollingWelcomeMessage = false; }
+	void setBrightness(float brightness) { _clockDisplay.setBrightness(brightness); }
+	void setBlinkRate(uint32_t rate) { _blinker.setRate(rate); }
+	void setCurrentTime(uint32_t time)
+	{
+		_currentTime = time;
+		_needsUpdateDisplay = true;
+	}
+	void setFailure(const String& message)
+	{
+		_clockDisplay.setString(message);
+	}
+
+private:
+	void updateDisplay()
+	{
+		bool pm = false;
+		String string;
+	
+		struct tm* timeinfo = localtime(reinterpret_cast<time_t*>(&_currentTime));
             
-	uint8_t hours = timeinfo->tm_hour;
-	if (hours == 0) {
-		hours = 12;
-	} else if (hours >= 12) {
-		pm = true;
-		if (hours > 12) {
-			hours -= 12;
+		uint8_t hours = timeinfo->tm_hour;
+		if (hours == 0) {
+			hours = 12;
+		} else if (hours >= 12) {
+			pm = true;
+			if (hours > 12) {
+				hours -= 12;
+			}
 		}
-	}
-	if (hours < 10) {
-		string = " ";
-	} else {
-		string = "";
-	}
-	string += String(hours);
-	if (timeinfo->tm_min < 10) {
-		string += "0";
-	}
-	string += String(timeinfo->tm_min);
+		if (hours < 10) {
+			string = " ";
+		} else {
+			string = "";
+		}
+		string += String(hours);
+		if (timeinfo->tm_min < 10) {
+			string += "0";
+		}
+		string += String(timeinfo->tm_min);
 
-	static String lastStringSent;
-	if (string == lastStringSent) {
-		return;
-	}
-	lastStringSent = string;
+		static String lastStringSent;
+		if (string == lastStringSent) {
+			return;
+		}
+		lastStringSent = string;
 	
-	clockDisplay.setString(string, true, pm);
-}
+		_clockDisplay.setString(string, true, pm);
+	}
+	
+	class MyWiFiManager : public WiFiManager
+	{
+	public:
+		MyWiFiManager(OfficeClock* clock) : _clock(clock) { }
+		OfficeClock* _clock;
+	};
 
-m8r::Blinker blinker(BUILTIN_LED, BlinkSampleRate);
+	class MyBrightnessManager : public m8r::BrightnessManager
+	{
+	public:
+		MyBrightnessManager(OfficeClock* clock)
+			: m8r::BrightnessManager(LightSensor, MaxAmbientLightLevel, NumberOfBrightnessLevels)
+			, _clock(clock)
+		{ }
+	
+		virtual void callback(uint8_t brightness) override
+		{
+			m8r::cout << "*** setting brightness to " << brightness << "\n";
+			_clock->setBrightness(static_cast<float>(brightness) / (NumberOfBrightnessLevels - 1));
+		}
+		
+	private:
+		OfficeClock* _clock;
+	};
 
-//gets called when WiFiManager enters configuration mode
-void configModeCallback (WiFiManager *myWiFiManager)
-{
-	m8r::cout << "Entered config mode:ip=" << WiFi.softAPIP() << ", ssid='" << myWiFiManager->getConfigPortalSSID() << "'\n";
-	blinker.setRate(ConfigRate);
-}
+	class MyWUnderground : public m8r::WUnderground
+	{
+	public:
+		MyWUnderground(OfficeClock* clock)
+			: m8r::WUnderground(WUKey, weatherCity, weatherState)
+			, _clock(clock)
+		{ }
+	
+		virtual void callback(bool succeeded) override
+		{
+			if (succeeded) {
+				_clock->setCurrentTime(currentTime());
+			} else {
+				_clock->setFailure("Failed");
+			}
+		}
 
-Ticker _secondTimer;
+	private:
+		OfficeClock* _clock;
+	};
+	
+	class MyClockDisplay : public ClockDisplay
+	{
+	public:
+		MyClockDisplay(OfficeClock* clock) : _clock(clock) { }
+		virtual void scrollDone() { _clock->scrollingFinished(); }
+	
+	private:
+		OfficeClock* _clock;
+	};
 
-void secondTick()
-{
-	_currentTime++;
-	needsUpdateDisplay = true;
-}
+	static void configModeCallback (MyWiFiManager *myWiFiManager)
+	{
+		m8r::cout << "Entered config mode:ip=" << WiFi.softAPIP() << ", ssid='" << myWiFiManager->getConfigPortalSSID() << "'\n";
+		myWiFiManager->_clock->setBlinkRate(ConfigRate);
+	}
+
+	static void secondTick(OfficeClock* self)
+	{
+		self->_currentTime++;
+		self->_needsUpdateDisplay = true;
+	}
+
+	MyBrightnessManager _brightnessManager;
+	MyWUnderground _wUnderground;
+	MyClockDisplay _clockDisplay;
+	m8r::Blinker _blinker;
+	Ticker _secondTimer;
+	uint32_t _currentTime = 0;
+	bool _needsUpdateDisplay = false;
+	bool _showWelcomeMessage = true;
+	bool _scrollingWelcomeMessage = false;
+};
+
+OfficeClock officeClock;
 
 void setup()
 {
-	Serial.begin(115200);
-  
-	m8r::cout << "\n\nOffice Clock v1.0\n\n";
-      
-	clockDisplay.setBrightness(0);
-	clockDisplay.setString("[\\]]^[_");
-    
-	blinker.setRate(ConnectingRate);
-
-	WiFiManager wifiManager;
-
-	//reset settings - for testing
-	//wifiManager.resetSettings();
-    
-	wifiManager.setAPCallback(configModeCallback);
-    
-	if (!wifiManager.autoConnect()) {
-		m8r::cout << "*** Failed to connect and hit timeout\n";
-		ESP.reset();
-		delay(1000);
-	}
-
-	m8r::cout << "Wifi connected, IP=" << WiFi.localIP() << "\n";
-
-	blinker.setRate(ConnectedRate);
-
-	_secondTimer.attach_ms(1000, secondTick);
-}
-
-bool scrollingWelcomeMessage = false;
-
-void scrollDone()
-{
-	scrollingWelcomeMessage = false;
+	officeClock.setup();
 }
 
 void loop()
 {
-	wUnderground.feed();
-	if (showWelcomeMessage) {
-		clockDisplay.scrollString(startupMessage, ScrollRate, scrollDone);
-		showWelcomeMessage = false;
-		scrollingWelcomeMessage = true;
-	}
-	
-	if (scrollingWelcomeMessage) {
-		return;
-	}
-	
-	if (needsUpdateDisplay) {
-		updateDisplay();
-		needsUpdateDisplay = false;
-	}
+	officeClock.loop();
 }
 
