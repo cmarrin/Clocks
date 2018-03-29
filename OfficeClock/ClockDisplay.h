@@ -111,6 +111,42 @@ public:
 		_scrollTimer.attach_ms(scrollRate, _scroll, this);
 	}
 	
+	void setTime(uint32_t currentTime)
+	{
+		bool pm = false;
+		String string;
+	
+		struct tm* timeinfo = localtime(reinterpret_cast<time_t*>(&currentTime));
+            
+		uint8_t hours = timeinfo->tm_hour;
+		if (hours == 0) {
+			hours = 12;
+		} else if (hours >= 12) {
+			pm = true;
+			if (hours > 12) {
+				hours -= 12;
+			}
+		}
+		if (hours < 10) {
+			string = " ";
+		} else {
+			string = "";
+		}
+		string += String(hours);
+		if (timeinfo->tm_min < 10) {
+			string += "0";
+		}
+		string += String(timeinfo->tm_min);
+
+		static String lastStringSent;
+		if (string == lastStringSent) {
+			return;
+		}
+		lastStringSent = string;
+	
+		setString(string, true, pm);
+	}
+
 private:	
 	void scrollThunk()
 	{

@@ -70,6 +70,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <m8r.h>
 #include <m8r/Blinker.h>
 #include <m8r/BrightnessManager.h>
+#include <m8r/ButtonManager.h>
 #include <m8r/WUnderground.h>
 #include <WiFiManager.h>
 #include <Ticker.h>
@@ -80,31 +81,35 @@ POSSIBILITY OF SUCH DAMAGE.
 // All rates in ms
 
 // Number of ms LED stays off in each mode
-const uint32_t ConnectingRate = 400;
-const uint32_t ConfigRate = 100;
-const uint32_t ConnectedRate = 1900;
-constexpr uint32_t BlinkSampleRate = 10;
+static constexpr uint32_t ConnectingRate = 400;
+static constexpr uint32_t ConfigRate = 100;
+static constexpr uint32_t ConnectedRate = 1900;
+static constexpr uint32_t BlinkSampleRate = 10;
 
 // BrightnessManager settings
-const uint32_t LightSensor = A0;
-const uint32_t MaxAmbientLightLevel = 800;
-const uint32_t NumberOfBrightnessLevels = 16;
+static constexpr uint32_t LightSensor = A0;
+static constexpr uint32_t MaxAmbientLightLevel = 800;
+static constexpr uint32_t NumberOfBrightnessLevels = 16;
 
 // Display related
-const char startupMessage[] = "Office Clock v1.0";
-const uint32_t ScrollRate = 50;
+static constexpr char startupMessage[] = "Office Clock v1.0";
+static constexpr uint32_t ScrollRate = 50;
 
 // Time and weather related
-const char* weatherCity = "Los_Altos";
-const char* weatherState = "CA";
-constexpr char* WUKey = "5bc1eac6864b7e57";
+static constexpr char* WeatherCity = "Los_Altos";
+static constexpr char* WeatherState = "CA";
+static constexpr char* WUKey = "5bc1eac6864b7e57";
 
-class OfficeClock
+// Buttons
+static constexpr uint8_t SelectPin = D1;
+static constexpr uint32_t SelectButtonId = 1;
+
+class OfficeClock : m8r::ButtonManager, m8r::WUnderground, m8r::BrightnessManager
 {
 public:
 	OfficeClock()
-		: _brightnessManager(this)
-		, _wUnderground(this)
+		: m8r::WUnderground(WUKey, WeatherCity, WeatherState)
+		, m8r::BrightnessManager(LightSensor, MaxAmbientLightLevel, NumberOfBrightnessLevels)
 		, _clockDisplay(this)
 		, _blinker(BUILTIN_LED, BlinkSampleRate)
 	{ }
@@ -134,15 +139,17 @@ public:
 		}
 
 		m8r::cout << "Wifi connected, IP=" << WiFi.localIP() << "\n";
+		
+		addButton(m8r::Button(SelectPin, SelectButtonId));
 
 		_blinker.setRate(ConnectedRate);
 
-		_secondTimer.attach_ms(1000, secondTick, this);		
+		_secondTimer.attach_ms(1000, secondTick, this);
 	}
 	
 	void loop()
 	{
-		_wUnderground.feed();
+		feedWUnderground();
 		if (_showWelcomeMessage) {
 			_clockDisplay.scrollString(startupMessage, ScrollRate);
 			_showWelcomeMessage = false;
@@ -154,13 +161,12 @@ public:
 		}
 	
 		if (_needsUpdateDisplay) {
-			updateDisplay();
+			_clockDisplay.setTime(_currentTime);
 			_needsUpdateDisplay = false;
 		}
 	}
 	
 	void scrollingFinished() { _scrollingWelcomeMessage = false; }
-	void setBrightness(float brightness) { _clockDisplay.setBrightness(brightness); }
 	void setBlinkRate(uint32_t rate) { _blinker.setRate(rate); }
 	void setCurrentTime(uint32_t time)
 	{
@@ -173,42 +179,34 @@ public:
 	}
 
 private:
-	void updateDisplay()
+	// From ButtonManager
+	virtual void handleButtonEvent(const m8r::Button& button, Event event) override
 	{
-		bool pm = false;
-		String string;
-	
-		struct tm* timeinfo = localtime(reinterpret_cast<time_t*>(&_currentTime));
-            
-		uint8_t hours = timeinfo->tm_hour;
-		if (hours == 0) {
-			hours = 12;
-		} else if (hours >= 12) {
-			pm = true;
-			if (hours > 12) {
-				hours -= 12;
-			}
+		switch(button.id()) {
+		case SelectButtonId:
+			m8r::cout << "Select Button " << ButtonManager::stringFromEvent(event) << " event\n";
+			break;
 		}
-		if (hours < 10) {
-			string = " ";
-		} else {
-			string = "";
-		}
-		string += String(hours);
-		if (timeinfo->tm_min < 10) {
-			string += "0";
-		}
-		string += String(timeinfo->tm_min);
-
-		static String lastStringSent;
-		if (string == lastStringSent) {
-			return;
-		}
-		lastStringSent = string;
-	
-		_clockDisplay.setString(string, true, pm);
 	}
-	
+
+	// From WUnderground
+	virtual void handleWeatherInfo(bool succeeded) override
+	{
+		if (succeeded) {
+			_currentTime = currentTime();
+			_needsUpdateDisplay = true;
+		} else {
+			_clockDisplay.setString("Failed");
+		}
+	}
+
+	// From BrightnessManager
+	virtual void handleBrightnessChange(uint8_t brightness) override
+	{
+		m8r::cout << "*** setting brightness to " << brightness << "\n";
+		_clockDisplay.setBrightness(static_cast<float>(brightness) / (NumberOfBrightnessLevels - 1));
+	}
+
 	class MyWiFiManager : public WiFiManager
 	{
 	public:
@@ -216,45 +214,6 @@ private:
 		OfficeClock* _clock;
 	};
 
-	class MyBrightnessManager : public m8r::BrightnessManager
-	{
-	public:
-		MyBrightnessManager(OfficeClock* clock)
-			: m8r::BrightnessManager(LightSensor, MaxAmbientLightLevel, NumberOfBrightnessLevels)
-			, _clock(clock)
-		{ }
-	
-		virtual void callback(uint8_t brightness) override
-		{
-			m8r::cout << "*** setting brightness to " << brightness << "\n";
-			_clock->setBrightness(static_cast<float>(brightness) / (NumberOfBrightnessLevels - 1));
-		}
-		
-	private:
-		OfficeClock* _clock;
-	};
-
-	class MyWUnderground : public m8r::WUnderground
-	{
-	public:
-		MyWUnderground(OfficeClock* clock)
-			: m8r::WUnderground(WUKey, weatherCity, weatherState)
-			, _clock(clock)
-		{ }
-	
-		virtual void callback(bool succeeded) override
-		{
-			if (succeeded) {
-				_clock->setCurrentTime(currentTime());
-			} else {
-				_clock->setFailure("Failed");
-			}
-		}
-
-	private:
-		OfficeClock* _clock;
-	};
-	
 	class MyClockDisplay : public ClockDisplay
 	{
 	public:
@@ -264,7 +223,7 @@ private:
 	private:
 		OfficeClock* _clock;
 	};
-
+	
 	static void configModeCallback (MyWiFiManager *myWiFiManager)
 	{
 		m8r::cout << "Entered config mode:ip=" << WiFi.softAPIP() << ", ssid='" << myWiFiManager->getConfigPortalSSID() << "'\n";
@@ -277,8 +236,6 @@ private:
 		self->_needsUpdateDisplay = true;
 	}
 
-	MyBrightnessManager _brightnessManager;
-	MyWUnderground _wUnderground;
 	MyClockDisplay _clockDisplay;
 	m8r::Blinker _blinker;
 	Ticker _secondTimer;
