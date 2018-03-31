@@ -92,13 +92,13 @@ static constexpr uint32_t MaxAmbientLightLevel = 800;
 static constexpr uint32_t NumberOfBrightnessLevels = 16;
 
 // Display related
-static constexpr char startupMessage[] = "Office Clock v1.0";
+MakeROMString(startupMessage, "Office Clock v1.0");
 static constexpr uint32_t ScrollRate = 50;
 
 // Time and weather related
 static constexpr char* WeatherCity = "Los_Altos";
 static constexpr char* WeatherState = "CA";
-static constexpr char* WUKey = "5bc1eac6864b7e57";
+MakeROMString(WUKey, "5bc1eac6864b7e57");
 
 // Buttons
 static constexpr uint8_t SelectPin = D1;
@@ -117,8 +117,9 @@ public:
 	void setup()
 	{
 		Serial.begin(115200);
+		delay(500);
   
-		m8r::cout << "\n\nOffice Clock v1.0\n\n";
+		m8r::cout << "\n\n" << startupMessage << "\n\n";
       
 		_clockDisplay.setBrightness(0);
 		_clockDisplay.setString("[\\]]^[_");
@@ -133,12 +134,12 @@ public:
 		wifiManager.setAPCallback(reinterpret_cast<void(*)(WiFiManager*)>(configModeCallback));
     
 		if (!wifiManager.autoConnect()) {
-			m8r::cout << "*** Failed to connect and hit timeout\n";
+			m8r::cout << L_F("*** Failed to connect and hit timeout\n");
 			ESP.reset();
 			delay(1000);
 		}
 
-		m8r::cout << "Wifi connected, IP=" << WiFi.localIP() << "\n";
+		m8r::cout << L_F("Wifi connected, IP=") << WiFi.localIP() << L_F("\n");
 		
 		addButton(m8r::Button(SelectPin, SelectButtonId));
 
@@ -184,7 +185,7 @@ private:
 	{
 		switch(button.id()) {
 		case SelectButtonId:
-			m8r::cout << "Select Button " << ButtonManager::stringFromEvent(event) << " event\n";
+			m8r::cout << L_F("Select Button ") << ButtonManager::stringFromEvent(event) << L_F(" event\n");
 			break;
 		}
 	}
@@ -203,7 +204,7 @@ private:
 	// From BrightnessManager
 	virtual void handleBrightnessChange(uint8_t brightness) override
 	{
-		m8r::cout << "*** setting brightness to " << brightness << "\n";
+		m8r::cout << L_F("*** setting brightness to ") << brightness << L_F("\n");
 		_clockDisplay.setBrightness(static_cast<float>(brightness) / (NumberOfBrightnessLevels - 1));
 	}
 
@@ -226,7 +227,7 @@ private:
 	
 	static void configModeCallback (MyWiFiManager *myWiFiManager)
 	{
-		m8r::cout << "Entered config mode:ip=" << WiFi.softAPIP() << ", ssid='" << myWiFiManager->getConfigPortalSSID() << "'\n";
+		m8r::cout << L_F("Entered config mode:ip=") << WiFi.softAPIP() << L_F(", ssid='") << myWiFiManager->getConfigPortalSSID() << L_F("'\n");
 		myWiFiManager->_clock->setBlinkRate(ConfigRate);
 	}
 
