@@ -75,7 +75,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <WiFiManager.h>
 #include <Ticker.h>
 #include "ClockDisplay.h"
-#include <time.h>
 #include <assert.h>
 
 // All rates in ms

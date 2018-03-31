@@ -38,137 +38,25 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <Ticker.h>
 #include <Max72xxPanel.h>
 #include "OfficeClock_8x8_Font8pt.h"
+#include <time.h>
 
 class ClockDisplay
 {
 public:
-	ClockDisplay()
-		: _matrix(SS, 4, 1)
-	{
-		pinMode(SS, OUTPUT);
-		digitalWrite(SS, LOW);
-
-		_matrix.setFont(&OfficeClock_8x8_Font8pt);
-		_matrix.setTextWrap(false);
-    
-		_matrix.setIntensity(0); // Use a value between 0 and 15 for brightness
-
-		_matrix.setPosition(0, 0, 0); // The first display is at <0, 0>
-		_matrix.setPosition(1, 1, 0); // The second display is at <1, 0>
-		_matrix.setPosition(2, 2, 0); // The third display is at <2, 0>
-		_matrix.setPosition(3, 3, 0); // And the last display is at <3, 0>
-
-		_matrix.setRotation(0, 1);    // The first display is position upside down
-		_matrix.setRotation(1, 1);    // The first display is position upside down
-		_matrix.setRotation(2, 1);    // The first display is position upside down
-		_matrix.setRotation(3, 1);    // The same hold for the last display
-
-		clear();
-	}
+	ClockDisplay();
 	
 	virtual void scrollDone() = 0;
 
-	void clear()
-	{
-		_matrix.fillScreen(LOW);
-		_matrix.write(); // Send bitmap to display
-	}
-  
-	void setBrightness(float level)
-	{
-		level *= 15;
-		if (level > 15) {
-			level = 15;
-		} else if (level < 0) {
-			level = 0;
-		}
-		_matrix.setIntensity(level);
-	}
-		
-	void setString(const String& string, bool colon = false, bool pm = false)
-	{
-		String s = string;
-		if (string.length() >= 2 && colon) {
-			s = s.substring(0, 2) + ":" + s.substring(2);
-		}
-		s.trim();  
-    
-		// center the string
-		int16_t x1, y1;
-		uint16_t w, h;
-		_matrix.getTextBounds((char*) s.c_str(), 0, 0, &x1, &y1, &w, &h);
-    
-		_matrix.setCursor((_matrix.width() - w) / 2, _matrix.height() - (h + y1));
-		_matrix.fillScreen(LOW);
-		_matrix.print(s);
-		_matrix.write(); // Send bitmap to display
-	}
-	
-	void scrollString(const String& s, uint32_t scrollRate)
-	{
-		_scrollString = s;
-		_scrollOffset = -_matrix.width(); // Make scroll start offscreen
-		_scrollTimer.attach_ms(scrollRate, _scroll, this);
-	}
-	
-	void setTime(uint32_t currentTime)
-	{
-		bool pm = false;
-		String string;
-	
-		struct tm* timeinfo = localtime(reinterpret_cast<time_t*>(&currentTime));
-            
-		uint8_t hours = timeinfo->tm_hour;
-		if (hours == 0) {
-			hours = 12;
-		} else if (hours >= 12) {
-			pm = true;
-			if (hours > 12) {
-				hours -= 12;
-			}
-		}
-		if (hours < 10) {
-			string = " ";
-		} else {
-			string = "";
-		}
-		string += String(hours);
-		if (timeinfo->tm_min < 10) {
-			string += "0";
-		}
-		string += String(timeinfo->tm_min);
-
-		static String lastStringSent;
-		if (string == lastStringSent) {
-			return;
-		}
-		lastStringSent = string;
-	
-		setString(string, true, pm);
-	}
+	void clear();
+	void setBrightness(float level);
+	void setString(const String& string, bool colon = false, bool pm = false);
+	void scrollString(const String& s, uint32_t scrollRate);
+	void setTime(uint32_t currentTime);
 
 private:	
-	void scrollThunk()
-	{
-		int16_t x1, y1;
-		uint16_t w, h;
-		_matrix.getTextBounds((char*) _scrollString.c_str(), 0, 0, &x1, &y1, &w, &h);
-		if (_scrollOffset++ >= w) {
-			_scrollTimer.detach();
-			scrollDone();
-		}
-
-		_matrix.fillScreen(LOW);
-
-		_matrix.setCursor(-_scrollOffset, _matrix.height() - (h + y1));
-		_matrix.print(_scrollString);
-		_matrix.write(); // Send bitmap to display
-	}
+	void scroll();
 	
-	static void _scroll(ClockDisplay* self)
-	{
-		self->scrollThunk();
-	}
+	static void _scroll(ClockDisplay* self) { self->scroll(); }
 	
 private:
 	Max72xxPanel _matrix;
