@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 -------------------------------------------------------------------------*/
 
 #include "ClockDisplay.h"
+#include "Font_8x8_8pt.h"
+#include "Font_Compact_5pt.h"
 
 ClockDisplay::ClockDisplay()
 	: _matrix(SS, 4, 1)
@@ -41,7 +43,7 @@ ClockDisplay::ClockDisplay()
 	pinMode(SS, OUTPUT);
 	digitalWrite(SS, LOW);
 
-	_matrix.setFont(&OfficeClock_8x8_Font8pt);
+	setFont(Font::Normal);
 	_matrix.setTextWrap(false);
 
 	_matrix.setIntensity(0); // Use a value between 0 and 15 for brightness
@@ -57,6 +59,11 @@ ClockDisplay::ClockDisplay()
 	_matrix.setRotation(3, 1);    // The same hold for the last display
 
 	clear();
+}
+
+void ClockDisplay::setFont(Font font)
+{
+	_matrix.setFont((font == Font::Compact) ? &Font_Compact_5pt : &Font_8x8_8pt);
 }
 
 void ClockDisplay::clear()
@@ -76,8 +83,9 @@ void ClockDisplay::setBrightness(float level)
 	_matrix.setIntensity(level);
 }
 	
-void ClockDisplay::setString(const String& string, bool colon, bool pm)
+void ClockDisplay::setString(const String& string, Font font, bool colon, bool pm)
 {
+	setFont(font);
 	String s = string;
 	if (string.length() >= 2 && colon) {
 		s = s.substring(0, 2) + ":" + s.substring(2);
@@ -95,14 +103,15 @@ void ClockDisplay::setString(const String& string, bool colon, bool pm)
 	_matrix.write(); // Send bitmap to display
 }
 
-void ClockDisplay::scrollString(const String& s, uint32_t scrollRate)
+void ClockDisplay::scrollString(const String& s, uint32_t scrollRate, Font font)
 {
+	setFont(font);
 	_scrollString = s;
 	_scrollOffset = -_matrix.width(); // Make scroll start offscreen
 	_scrollTimer.attach_ms(scrollRate, _scroll, this);
 }
 
-void ClockDisplay::setTime(uint32_t currentTime)
+void ClockDisplay::setTime(uint32_t currentTime, Font font)
 {
 	bool pm = false;
 	String string;
@@ -135,7 +144,7 @@ void ClockDisplay::setTime(uint32_t currentTime)
 	}
 	lastStringSent = string;
 
-	setString(string, true, pm);
+	setString(string, font, true, pm);
 }
 
 void ClockDisplay::scroll()

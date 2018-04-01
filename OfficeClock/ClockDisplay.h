@@ -37,24 +37,28 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <Adafruit_GFX.h>
 #include <Ticker.h>
 #include <Max72xxPanel.h>
-#include "OfficeClock_8x8_Font8pt.h"
 #include <time.h>
 
 class ClockDisplay
 {
 public:
+	enum class Font { Normal, Compact };
+	
 	ClockDisplay();
 	
 	virtual void scrollDone() = 0;
 
 	void clear();
 	void setBrightness(float level);
-	void setString(const String& string, bool colon = false, bool pm = false);
-	void scrollString(const String& s, uint32_t scrollRate);
-	void setTime(uint32_t currentTime);
+	void setString(const String& string, Font = Font::Normal, bool colon = false, bool pm = false);
+	void scrollString(const String& s, uint32_t scrollRate, Font = Font::Normal);
+	void setTime(uint32_t currentTime, Font = Font::Normal);
 
 private:	
 	void scroll();
+	
+	void setFont(Font);
+	
 	
 	static void _scroll(ClockDisplay* self) { self->scroll(); }
 	
