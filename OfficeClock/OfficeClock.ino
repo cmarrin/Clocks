@@ -71,11 +71,11 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <m8r/Blinker.h>
 #include <m8r/BrightnessManager.h>
 #include <m8r/ButtonManager.h>
+#include <m8r/Max7219Display.h>
 #include <m8r/MenuSystem.h>
 #include <m8r/WUnderground.h>
 #include <WiFiManager.h>
 #include <Ticker.h>
-#include "ClockDisplay.h"
 #include <assert.h>
 
 // All rates in ms
@@ -122,7 +122,7 @@ public:
 		m8r::cout << "\n\n" << startupMessage << "\n\n";
       
 		_clockDisplay.setBrightness(0);
-		_clockDisplay.setString("Connect", ClockDisplay::Font::Compact);
+		_clockDisplay.setString("Connect", m8r::Max7219Display::Font::Compact);
     
 		_blinker.setRate(ConnectingRate);
 
@@ -215,7 +215,7 @@ private:
 	// From MenuSystem
 	virtual void showMenuItem(const m8r::MenuItem* menuItem) override
 	{
-		_clockDisplay.setString(menuItem->string(), ClockDisplay::Font::Compact);
+		_clockDisplay.setString(menuItem->string(), m8r::Max7219Display::Font::Compact);
 	}
 
 	class MyWiFiManager : public WiFiManager
@@ -225,7 +225,7 @@ private:
 		OfficeClock* _clock;
 	};
 
-	class MyClockDisplay : public ClockDisplay
+	class MyClockDisplay : public m8r::Max7219Display
 	{
 	public:
 		MyClockDisplay(OfficeClock* clock) : _clock(clock) { }
