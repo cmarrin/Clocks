@@ -215,7 +215,7 @@ private:
 	// From MenuSystem
 	virtual void showMenuItem(const m8r::MenuItem* menuItem) override
 	{
-		_clockDisplay.setString(menuItem->string());
+		_clockDisplay.setString(menuItem->string(), ClockDisplay::Font::Compact);
 	}
 
 	class MyWiFiManager : public WiFiManager
