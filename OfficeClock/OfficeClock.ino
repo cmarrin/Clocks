@@ -122,7 +122,7 @@ public:
 		m8r::cout << "\n\n" << startupMessage << "\n\n";
       
 		_clockDisplay.setBrightness(0);
-		_clockDisplay.setString("[\\]]^[_");
+		_clockDisplay.setString("Connect", ClockDisplay::Font::Compact);
     
 		_blinker.setRate(ConnectingRate);
 
