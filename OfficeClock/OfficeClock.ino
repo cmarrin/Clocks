@@ -71,6 +71,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <m8r/Blinker.h>
 #include <m8r/BrightnessManager.h>
 #include <m8r/ButtonManager.h>
+#include <m8r/MenuSystem.h>
 #include <m8r/WUnderground.h>
 #include <WiFiManager.h>
 #include <Ticker.h>
@@ -103,7 +104,7 @@ MakeROMString(WUKey, "5bc1eac6864b7e57");
 static constexpr uint8_t SelectPin = D1;
 static constexpr uint32_t SelectButtonId = 1;
 
-class OfficeClock : m8r::ButtonManager, m8r::WUnderground, m8r::BrightnessManager
+class OfficeClock : m8r::ButtonManager, m8r::WUnderground, m8r::BrightnessManager, m8r::MenuSystem
 {
 public:
 	OfficeClock()
@@ -141,6 +142,9 @@ public:
 		m8r::cout << L_F("Wifi connected, IP=") << WiFi.localIP() << L_F("\n");
 		
 		addButton(m8r::Button(SelectPin, SelectButtonId));
+		
+		std::shared_ptr<m8r::MenuItem> menu = std::make_shared<m8r::Menu>("Setup?");
+		setMenu(menu);
 
 		_blinker.setRate(ConnectedRate);
 
@@ -185,6 +189,7 @@ private:
 		switch(button.id()) {
 		case SelectButtonId:
 			m8r::cout << L_F("Select Button ") << ButtonManager::stringFromEvent(event) << L_F(" event\n");
+			MenuSystem::start();
 			break;
 		}
 	}
@@ -205,6 +210,12 @@ private:
 	{
 		m8r::cout << L_F("*** setting brightness to ") << brightness << L_F("\n");
 		_clockDisplay.setBrightness(static_cast<float>(brightness) / (NumberOfBrightnessLevels - 1));
+	}
+	
+	// From MenuSystem
+	virtual void showMenuItem(const m8r::MenuItem* menuItem) override
+	{
+		_clockDisplay.setString(menuItem->string());
 	}
 
 	class MyWiFiManager : public WiFiManager
