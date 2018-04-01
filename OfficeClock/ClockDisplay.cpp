@@ -97,7 +97,11 @@ void ClockDisplay::setString(const String& string, Font font, bool colon, bool p
 	uint16_t w, h;
 	_matrix.getTextBounds((char*) s.c_str(), 0, 0, &x1, &y1, &w, &h);
 
-	_matrix.setCursor((_matrix.width() - w) / 2, _matrix.height() - (h + y1));
+	int32_t yoff = (_matrix.height() - h + 1) / 2;
+	if (yoff < 0) {
+		yoff = 0;
+	}
+	_matrix.setCursor((_matrix.width() - w) / 2, _matrix.height() - (h + y1) - yoff);
 	_matrix.fillScreen(LOW);
 	_matrix.print(s);
 	_matrix.write(); // Send bitmap to display
