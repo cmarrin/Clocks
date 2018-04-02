@@ -104,13 +104,14 @@ MakeROMString(WUKey, "5bc1eac6864b7e57");
 static constexpr uint8_t SelectPin = D1;
 static constexpr uint32_t SelectButtonId = 1;
 
-class OfficeClock : m8r::ButtonManager, m8r::WUnderground, m8r::BrightnessManager, m8r::MenuSystem
+class OfficeClock : m8r::WUnderground, m8r::BrightnessManager, m8r::MenuSystem
 {
 public:
 	OfficeClock()
 		: m8r::WUnderground(WUKey, WeatherCity, WeatherState)
 		, m8r::BrightnessManager(LightSensor, MaxAmbientLightLevel, NumberOfBrightnessLevels)
 		, _clockDisplay(this)
+		, _buttonManager([this](const m8r::Button& b, m8r::ButtonManager::Event e) { handleButtonEvent(b, e); })
 		, _blinker(BUILTIN_LED, BlinkSampleRate)
 	{ }
 	
@@ -141,7 +142,7 @@ public:
 
 		m8r::cout << L_F("Wifi connected, IP=") << WiFi.localIP() << L_F("\n");
 		
-		addButton(m8r::Button(SelectPin, SelectButtonId));
+		_buttonManager.addButton(m8r::Button(SelectPin, SelectButtonId));
 		
 		std::shared_ptr<m8r::MenuItem> menu = std::make_shared<m8r::Menu>("Setup?");
 		setMenu(menu);
@@ -183,13 +184,20 @@ public:
 	}
 
 private:
-	// From ButtonManager
-	virtual void handleButtonEvent(const m8r::Button& button, Event event) override
+	void handleButtonEvent(const m8r::Button& button, m8r::ButtonManager::Event event)
 	{
 		switch(button.id()) {
-		case SelectButtonId:
-			m8r::cout << L_F("Select Button ") << ButtonManager::stringFromEvent(event) << L_F(" event\n");
-			MenuSystem::start();
+			case SelectButtonId:
+			if (event == m8r::ButtonManager::Event::Click) {
+				String time = strftime("%a %b ", _currentTime);
+				String day = prettyDay(_currentTime);
+				day.trim();
+				time += day;
+				time = time + "    Today's weather: " + conditions() + "   currently "; // + currentTemp() + "`  hi:" + highTemp() + "`  lo:" + lowTemp() + "`";
+				_clockDisplay.scrollString(time, DateScrollRate);
+			} else if (event == m8r::ButtonManager::Event::LongPress) {
+				MenuSystem::start();
+			}
 			break;
 		}
 	}
@@ -248,6 +256,7 @@ private:
 	}
 
 	MyClockDisplay _clockDisplay;
+	m8r::ButtonManager _buttonManager;
 	m8r::Blinker _blinker;
 	Ticker _secondTimer;
 	uint32_t _currentTime = 0;
