@@ -93,7 +93,8 @@ static constexpr uint32_t NumberOfBrightnessLevels = 16;
 
 // Display related
 MakeROMString(startupMessage, "Office Clock v1.0");
-static constexpr uint32_t ScrollRate = 50;
+static constexpr uint32_t StartupScrollRate = 50;
+static constexpr uint32_t DateScrollRate = 100;
 
 // Time and weather related
 static constexpr char* WeatherCity = "Los_Altos";
@@ -156,7 +157,7 @@ public:
 	{
 		feedWUnderground();
 		if (_showWelcomeMessage) {
-			_clockDisplay.scrollString(startupMessage, ScrollRate);
+			_clockDisplay.scrollString(startupMessage, StartupScrollRate);
 			_showWelcomeMessage = false;
 			_scrollingWelcomeMessage = true;
 		}
