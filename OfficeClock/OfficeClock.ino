@@ -105,14 +105,14 @@ MakeROMString(WUKey, "5bc1eac6864b7e57");
 static constexpr uint8_t SelectPin = D1;
 static constexpr uint32_t SelectButtonId = 1;
 
-class OfficeClock : m8r::WUnderground, m8r::BrightnessManager, m8r::MenuSystem
+class OfficeClock : m8r::BrightnessManager, m8r::MenuSystem
 {
 public:
 	OfficeClock()
-		: m8r::WUnderground(WUKey, WeatherCity, WeatherState)
-		, m8r::BrightnessManager(LightSensor, MaxAmbientLightLevel, NumberOfBrightnessLevels)
+		: m8r::BrightnessManager(LightSensor, MaxAmbientLightLevel, NumberOfBrightnessLevels)
 		, _clockDisplay(this)
 		, _buttonManager([this](const m8r::Button& b, m8r::ButtonManager::Event e) { handleButtonEvent(b, e); })
+		, _wUnderground(WUKey, WeatherCity, WeatherState, [this](bool succeeded) { handleWeatherInfo(succeeded); }) 
 		, _blinker(BUILTIN_LED, BlinkSampleRate)
 	{ }
 	
@@ -155,7 +155,7 @@ public:
 	
 	void loop()
 	{
-		feedWUnderground();
+		_wUnderground.feed();
 		if (_showWelcomeMessage) {
 			_clockDisplay.scrollString(startupMessage, StartupScrollRate);
 			_showWelcomeMessage = false;
@@ -190,11 +190,11 @@ private:
 		switch(button.id()) {
 			case SelectButtonId:
 			if (event == m8r::ButtonManager::Event::Click) {
-				String time = strftime("%a %b ", _currentTime);
-				String day = prettyDay(_currentTime);
+				String time = _wUnderground.strftime("%a %b ", _currentTime);
+				String day = _wUnderground.prettyDay(_currentTime);
 				day.trim();
 				time += day;
-				time = time + "    Today's weather: " + conditions() + "   currently " + currentTemp() + "`  hi:" + highTemp() + "`  lo:" + lowTemp() + "`";
+				time = time + "    Today's weather: " + _wUnderground.conditions() + "   currently " + _wUnderground.currentTemp() + "`  hi:" + _wUnderground.highTemp() + "`  lo:" + _wUnderground.lowTemp() + "`";
 				_clockDisplay.scrollString(time, DateScrollRate);
 			} else if (event == m8r::ButtonManager::Event::LongPress) {
 				MenuSystem::start();
@@ -203,11 +203,10 @@ private:
 		}
 	}
 
-	// From WUnderground
-	virtual void handleWeatherInfo(bool succeeded) override
+	void handleWeatherInfo(bool succeeded)
 	{
 		if (succeeded) {
-			_currentTime = currentTime();
+			_currentTime = _wUnderground.currentTime();
 			_needsUpdateDisplay = true;
 		} else {
 			_clockDisplay.setString("Failed");
@@ -258,6 +257,7 @@ private:
 
 	MyClockDisplay _clockDisplay;
 	m8r::ButtonManager _buttonManager;
+	m8r::WUnderground _wUnderground;
 	m8r::Blinker _blinker;
 	Ticker _secondTimer;
 	uint32_t _currentTime = 0;
