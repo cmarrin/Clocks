@@ -105,7 +105,7 @@ MakeROMString(WUKey, "5bc1eac6864b7e57");
 static constexpr uint8_t SelectPin = D1;
 static constexpr uint32_t SelectButtonId = 1;
 
-class OfficeClock : m8r::MenuSystem
+class OfficeClock
 {
 public:
 	OfficeClock()
@@ -113,6 +113,7 @@ public:
 		, _buttonManager([this](const m8r::Button& b, m8r::ButtonManager::Event e) { handleButtonEvent(b, e); })
 		, _wUnderground(WUKey, WeatherCity, WeatherState, [this](bool succeeded) { handleWeatherInfo(succeeded); })
 		, _brightnessManager([this](uint8_t b) { handleBrightnessChange(b); }, LightSensor, MaxAmbientLightLevel, NumberOfBrightnessLevels)
+		, _menuSystem([this](const m8r::MenuItem* menuItem) { showMenuItem(menuItem); })
 		, _blinker(BUILTIN_LED, BlinkSampleRate)
 	{ }
 	
@@ -146,7 +147,7 @@ public:
 		_buttonManager.addButton(m8r::Button(SelectPin, SelectButtonId));
 		
 		std::shared_ptr<m8r::MenuItem> menu = std::make_shared<m8r::Menu>("Setup?");
-		setMenu(menu);
+		_menuSystem.setMenu(menu);
 
 		_blinker.setRate(ConnectedRate);
 
@@ -197,7 +198,7 @@ private:
 				time = time + "    Today's weather: " + _wUnderground.conditions() + "   currently " + _wUnderground.currentTemp() + "`  hi:" + _wUnderground.highTemp() + "`  lo:" + _wUnderground.lowTemp() + "`";
 				_clockDisplay.scrollString(time, DateScrollRate);
 			} else if (event == m8r::ButtonManager::Event::LongPress) {
-				MenuSystem::start();
+				_menuSystem.start();
 			}
 			break;
 		}
@@ -219,8 +220,7 @@ private:
 		_clockDisplay.setBrightness(static_cast<float>(brightness) / (NumberOfBrightnessLevels - 1));
 	}
 	
-	// From MenuSystem
-	virtual void showMenuItem(const m8r::MenuItem* menuItem) override
+	void showMenuItem(const m8r::MenuItem* menuItem)
 	{
 		_clockDisplay.setString(menuItem->string(), m8r::Max7219Display::Font::Compact);
 	}
@@ -258,6 +258,7 @@ private:
 	m8r::ButtonManager _buttonManager;
 	m8r::WUnderground _wUnderground;
 	m8r::BrightnessManager _brightnessManager;
+	m8r::MenuSystem _menuSystem;
 	m8r::Blinker _blinker;
 	Ticker _secondTimer;
 	uint32_t _currentTime = 0;
