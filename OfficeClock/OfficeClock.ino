@@ -105,14 +105,14 @@ MakeROMString(WUKey, "5bc1eac6864b7e57");
 static constexpr uint8_t SelectPin = D1;
 static constexpr uint32_t SelectButtonId = 1;
 
-class OfficeClock : m8r::BrightnessManager, m8r::MenuSystem
+class OfficeClock : m8r::MenuSystem
 {
 public:
 	OfficeClock()
-		: m8r::BrightnessManager(LightSensor, MaxAmbientLightLevel, NumberOfBrightnessLevels)
-		, _clockDisplay(this)
+		: _clockDisplay(this)
 		, _buttonManager([this](const m8r::Button& b, m8r::ButtonManager::Event e) { handleButtonEvent(b, e); })
-		, _wUnderground(WUKey, WeatherCity, WeatherState, [this](bool succeeded) { handleWeatherInfo(succeeded); }) 
+		, _wUnderground(WUKey, WeatherCity, WeatherState, [this](bool succeeded) { handleWeatherInfo(succeeded); })
+		, _brightnessManager([this](uint8_t b) { handleBrightnessChange(b); }, LightSensor, MaxAmbientLightLevel, NumberOfBrightnessLevels)
 		, _blinker(BUILTIN_LED, BlinkSampleRate)
 	{ }
 	
@@ -213,8 +213,7 @@ private:
 		}
 	}
 
-	// From BrightnessManager
-	virtual void handleBrightnessChange(uint8_t brightness) override
+	void handleBrightnessChange(uint8_t brightness)
 	{
 		m8r::cout << L_F("*** setting brightness to ") << brightness << L_F("\n");
 		_clockDisplay.setBrightness(static_cast<float>(brightness) / (NumberOfBrightnessLevels - 1));
@@ -258,6 +257,7 @@ private:
 	MyClockDisplay _clockDisplay;
 	m8r::ButtonManager _buttonManager;
 	m8r::WUnderground _wUnderground;
+	m8r::BrightnessManager _brightnessManager;
 	m8r::Blinker _blinker;
 	Ticker _secondTimer;
 	uint32_t _currentTime = 0;
