@@ -111,7 +111,7 @@ public:
 	OfficeClock()
 		: _clockDisplay(this)
 		, _buttonManager([this](const m8r::Button& b, m8r::ButtonManager::Event e) { handleButtonEvent(b, e); })
-		, _wUnderground(WUKey, WeatherCity, WeatherState, [this](bool succeeded) { handleWeatherInfo(succeeded); })
+		, _wUnderground(WUKey, WeatherCity, WeatherState, [this]() { needsWeatherUpdate(); })
 		, _brightnessManager([this](uint8_t b) { handleBrightnessChange(b); }, LightSensor, MaxAmbientLightLevel, NumberOfBrightnessLevels)
 		, _menuSystem([this](const m8r::MenuItem* menuItem) { showMenuItem(menuItem); })
 		, _blinker(BUILTIN_LED, BlinkSampleRate)
@@ -152,11 +152,23 @@ public:
 		_blinker.setRate(ConnectedRate);
 
 		_secondTimer.attach_ms(1000, secondTick, this);
+
+		_needsWUndergroundUpdate = true;
 	}
 	
 	void loop()
 	{
-		_wUnderground.feed();
+		if (_needsWUndergroundUpdate) {
+			if (_wUnderground.update()) {
+				_currentTime = _wUnderground.currentTime();
+				_needsUpdateDisplay = true;
+			} else {
+				_clockDisplay.setString("Failed");
+			}
+
+			_needsWUndergroundUpdate = false;
+		}
+	
 		if (_showWelcomeMessage) {
 			_clockDisplay.scrollString(startupMessage, StartupScrollRate);
 			_showWelcomeMessage = false;
@@ -166,7 +178,7 @@ public:
 		if (_scrollingWelcomeMessage) {
 			return;
 		}
-	
+		
 		if (_needsUpdateDisplay) {
 			_clockDisplay.setTime(_currentTime);
 			_needsUpdateDisplay = false;
@@ -204,14 +216,9 @@ private:
 		}
 	}
 
-	void handleWeatherInfo(bool succeeded)
+	void needsWeatherUpdate()
 	{
-		if (succeeded) {
-			_currentTime = _wUnderground.currentTime();
-			_needsUpdateDisplay = true;
-		} else {
-			_clockDisplay.setString("Failed");
-		}
+		_needsWUndergroundUpdate = true;
 	}
 
 	void handleBrightnessChange(uint8_t brightness)
@@ -263,6 +270,7 @@ private:
 	Ticker _secondTimer;
 	uint32_t _currentTime = 0;
 	bool _needsUpdateDisplay = false;
+	bool _needsWUndergroundUpdate = false;
 	bool _showWelcomeMessage = true;
 	bool _scrollingWelcomeMessage = false;
 };
