@@ -111,7 +111,7 @@ public:
 	OfficeClock()
 		: _clockDisplay([this]() { _scrollingWelcomeMessage = false; })
 		, _buttonManager([this](const m8r::Button& b, m8r::ButtonManager::Event e) { handleButtonEvent(b, e); })
-		, _wUnderground(WUKey, WeatherCity, WeatherState, [this]() { needsWeatherUpdate(); })
+		, _wUnderground(WUKey, WeatherCity, WeatherState, [this]() { _needsWUndergroundUpdate = true; })
 		, _brightnessManager([this](uint8_t b) { handleBrightnessChange(b); }, LightSensor, MaxAmbientLightLevel, NumberOfBrightnessLevels)
 		, _menuSystem([this](const m8r::MenuItem* menuItem) { showMenuItem(menuItem); })
 		, _blinker(BUILTIN_LED, BlinkSampleRate)
@@ -186,15 +186,6 @@ public:
 	}
 	
 	void setBlinkRate(uint32_t rate) { _blinker.setRate(rate); }
-	void setCurrentTime(uint32_t time)
-	{
-		_currentTime = time;
-		_needsUpdateDisplay = true;
-	}
-	void setFailure(const String& message)
-	{
-		_clockDisplay.setString(message);
-	}
 
 private:
 	void handleButtonEvent(const m8r::Button& button, m8r::ButtonManager::Event event)
@@ -213,11 +204,6 @@ private:
 			}
 			break;
 		}
-	}
-
-	void needsWeatherUpdate()
-	{
-		_needsWUndergroundUpdate = true;
 	}
 
 	void handleBrightnessChange(uint8_t brightness)
