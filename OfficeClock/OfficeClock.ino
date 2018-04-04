@@ -109,7 +109,7 @@ class OfficeClock
 {
 public:
 	OfficeClock()
-		: _clockDisplay(this)
+		: _clockDisplay([this]() { _scrollingWelcomeMessage = false; })
 		, _buttonManager([this](const m8r::Button& b, m8r::ButtonManager::Event e) { handleButtonEvent(b, e); })
 		, _wUnderground(WUKey, WeatherCity, WeatherState, [this]() { needsWeatherUpdate(); })
 		, _brightnessManager([this](uint8_t b) { handleBrightnessChange(b); }, LightSensor, MaxAmbientLightLevel, NumberOfBrightnessLevels)
@@ -185,7 +185,6 @@ public:
 		}
 	}
 	
-	void scrollingFinished() { _scrollingWelcomeMessage = false; }
 	void setBlinkRate(uint32_t rate) { _blinker.setRate(rate); }
 	void setCurrentTime(uint32_t time)
 	{
@@ -239,16 +238,6 @@ private:
 		OfficeClock* _clock;
 	};
 
-	class MyClockDisplay : public m8r::Max7219Display
-	{
-	public:
-		MyClockDisplay(OfficeClock* clock) : _clock(clock) { }
-		virtual void scrollDone() { _clock->scrollingFinished(); }
-	
-	private:
-		OfficeClock* _clock;
-	};
-	
 	static void configModeCallback (MyWiFiManager *myWiFiManager)
 	{
 		m8r::cout << L_F("Entered config mode:ip=") << WiFi.softAPIP() << L_F(", ssid='") << myWiFiManager->getConfigPortalSSID() << L_F("'\n");
@@ -261,7 +250,7 @@ private:
 		self->_needsUpdateDisplay = true;
 	}
 
-	MyClockDisplay _clockDisplay;
+	m8r::Max7219Display _clockDisplay;
 	m8r::ButtonManager _buttonManager;
 	m8r::WUnderground _wUnderground;
 	m8r::BrightnessManager _brightnessManager;
