@@ -106,7 +106,7 @@ MakeROMString(WUKey, "5bc1eac6864b7e57");
 static constexpr uint8_t SelectPin = D1;
 static constexpr uint32_t SelectButtonId = 1;
 
-enum class State { Connecting, NetConfig, NetFail, UpdateFail, Startup, ShowInfo, Idle, Setup };
+enum class State { Connecting, NetConfig, NetFail, UpdateFail, Startup, ShowInfo, ShowTime, Idle, Setup };
 enum class Input { Idle, SelectClick, SelectLongPress, ScrollDone, Connected, NetConfig, NetFail, EndSetup };
 
 class OfficeClock
@@ -214,14 +214,18 @@ private:
 		);
 		_stateMachine.addState(State::Startup, [this] { _clockDisplay.scrollString(startupMessage, StartupScrollRate); },
 			{
-				  { Input::ScrollDone, State::Idle }
+				  { Input::ScrollDone, State::ShowTime }
     			, { Input::SelectClick, State::Setup }
 			}
 		);
 		_stateMachine.addState(State::ShowInfo, [this] { showInfo(); },
 			{
-				  { Input::ScrollDone, State::Idle }
-				, { Input::SelectClick, State::Idle }
+				  { Input::ScrollDone, State::ShowTime }
+				, { Input::SelectClick, State::ShowTime }
+			}
+		);
+		_stateMachine.addState(State::ShowTime, [this] { _clockDisplay.setTime(_currentTime, true); _stateMachine.gotoState(State::Idle); },
+			{
 			}
 		);
 		_stateMachine.addState(State::Idle, [this] { _clockDisplay.setTime(_currentTime); },
@@ -233,8 +237,8 @@ private:
 		);
 		_stateMachine.addState(State::Setup, [this] { _menuSystem.start(); },
 			{
-				  { Input::EndSetup, State::Idle }
-				, { Input::SelectLongPress, State::Idle }
+				  { Input::EndSetup, State::ShowTime }
+				, { Input::SelectLongPress, State::ShowTime }
 			}
 		);
 		
@@ -247,7 +251,7 @@ private:
 		String day = _wUnderground.prettyDay(_currentTime);
 		day.trim();
 		time += day;
-		time = time + "    Today's weather: " + _wUnderground.conditions() + "   currently " + _wUnderground.currentTemp() + "`  hi:" + _wUnderground.highTemp() + "`  lo:" + _wUnderground.lowTemp() + "`";
+		time = time + "  Forecast:" + _wUnderground.conditions() + "  Currently " + _wUnderground.currentTemp() + "`  High " + _wUnderground.highTemp() + "`  Low " + _wUnderground.lowTemp() + "`";
 		_clockDisplay.scrollString(time, DateScrollRate);
 	}
 	
