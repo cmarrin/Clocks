@@ -73,6 +73,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <m8r/ButtonManager.h>
 #include <m8r/Max7219Display.h>
 #include <m8r/MenuSystem.h>
+#include <m8r/StateMachine.h>
 #include <m8r/WUnderground.h>
 #include <WiFiManager.h>
 #include <Ticker.h>
@@ -105,13 +106,16 @@ MakeROMString(WUKey, "5bc1eac6864b7e57");
 static constexpr uint8_t SelectPin = D1;
 static constexpr uint32_t SelectButtonId = 1;
 
+enum class State { Connecting, NetConfig, NetFail, UpdateFail, Startup, ShowInfo, Idle, Setup };
+enum class Input { Idle, SelectClick, SelectLongPress, ScrollDone, Connected, NetConfig, NetFail, EndSetup };
+
 class OfficeClock
 {
 public:
 	OfficeClock()
-		: _clockDisplay([this]() { _scrollingWelcomeMessage = false; })
+		: _clockDisplay([this]() { scrollComplete(); })
 		, _buttonManager([this](const m8r::Button& b, m8r::ButtonManager::Event e) { handleButtonEvent(b, e); })
-		, _wUnderground(WUKey, WeatherCity, WeatherState, [this]() { _needsWUndergroundUpdate = true; })
+		, _wUnderground(WUKey, WeatherCity, WeatherState, [this]() { _needsUpdateInfo = true; })
 		, _brightnessManager([this](uint8_t b) { handleBrightnessChange(b); }, LightSensor, MaxAmbientLightLevel, NumberOfBrightnessLevels)
 		, _menuSystem([this](const m8r::MenuItem* menuItem) { showMenuItem(menuItem); })
 		, _blinker(BUILTIN_LED, BlinkSampleRate)
@@ -125,9 +129,10 @@ public:
 		m8r::cout << "\n\n" << startupMessage << "\n\n";
       
 		_clockDisplay.setBrightness(0);
-		_clockDisplay.setString("Connect", m8r::Max7219Display::Font::Compact);
     
 		_blinker.setRate(ConnectingRate);
+
+		startStateMachine();
 
 		MyWiFiManager wifiManager(this);
 
@@ -151,56 +156,111 @@ public:
 
 		_blinker.setRate(ConnectedRate);
 
+		_stateMachine.sendInput(Input::Connected);
+
 		_secondTimer.attach_ms(1000, secondTick, this);
 
-		_needsWUndergroundUpdate = true;
+		_needsUpdateInfo = true;
 	}
 	
 	void loop()
 	{
-		if (_needsWUndergroundUpdate) {
+		if (_needsUpdateInfo) {
+			_needsUpdateInfo = false;
 			if (_wUnderground.update()) {
 				_currentTime = _wUnderground.currentTime();
-				_needsUpdateDisplay = true;
+				_stateMachine.sendInput(Input::Idle);
 			} else {
-				_clockDisplay.setString("Failed");
+				// FIXME: Need to do something here
 			}
-
-			_needsWUndergroundUpdate = false;
-		}
-	
-		if (_showWelcomeMessage) {
-			_clockDisplay.scrollString(startupMessage, StartupScrollRate);
-			_showWelcomeMessage = false;
-			_scrollingWelcomeMessage = true;
-		}
-	
-		if (_scrollingWelcomeMessage) {
-			return;
-		}
-		
-		if (_needsUpdateDisplay) {
-			_clockDisplay.setTime(_currentTime);
-			_needsUpdateDisplay = false;
 		}
 	}
 	
-	void setBlinkRate(uint32_t rate) { _blinker.setRate(rate); }
+	void netConfigStarted()
+	{
+		_blinker.setRate(ConfigRate);
+		_stateMachine.sendInput(Input::NetConfig);
+	}
 
 private:
+	void startStateMachine()
+	{
+		_stateMachine.addState(State::Connecting, [this] { _clockDisplay.scrollString("Connecting...", StartupScrollRate); },
+			{
+				  { Input::ScrollDone, State::Connecting }
+				, { Input::Connected, State::Startup }
+				, { Input::NetFail, State::NetFail }
+				, { Input::NetConfig, State::NetConfig }
+			}
+		);
+		_stateMachine.addState(State::NetConfig, [this] { _clockDisplay.scrollString("Waiting for network (see instructions or press [select])", StartupScrollRate); },
+			{
+				  { Input::ScrollDone, State::NetConfig }
+				, { Input::SelectClick, State::Setup }
+				, { Input::Connected, State::Startup }
+				, { Input::NetFail, State::NetFail }
+			}
+		);
+		_stateMachine.addState(State::NetFail, [this] { _clockDisplay.scrollString("Network failed, press [select]", StartupScrollRate); },
+			{
+				  { Input::ScrollDone, State::NetFail }
+  				, { Input::SelectClick, State::Setup }
+			}
+		);
+		_stateMachine.addState(State::UpdateFail, [this] { _clockDisplay.scrollString("Time update failed, retrying...", StartupScrollRate); },
+			{
+				  // { Input::ScrollDone, State::GetInfo }
+			}
+		);
+		_stateMachine.addState(State::Startup, [this] { _clockDisplay.scrollString(startupMessage, StartupScrollRate); },
+			{
+				  { Input::ScrollDone, State::Idle }
+    			, { Input::SelectClick, State::Setup }
+			}
+		);
+		_stateMachine.addState(State::ShowInfo, [this] { showInfo(); },
+			{
+				  { Input::ScrollDone, State::Idle }
+				, { Input::SelectClick, State::Idle }
+			}
+		);
+		_stateMachine.addState(State::Idle, [this] { _clockDisplay.setTime(_currentTime); },
+			{
+				  { Input::SelectClick, State::ShowInfo }
+				, { Input::SelectLongPress, State::Setup }
+				, { Input::Idle, State::Idle }
+			}
+		);
+		_stateMachine.addState(State::Setup, [this] { _menuSystem.start(); },
+			{
+				  { Input::EndSetup, State::Idle }
+				, { Input::SelectLongPress, State::Idle }
+			}
+		);
+		
+		_stateMachine.gotoState(State::Connecting);
+	}
+	
+	void showInfo()
+	{
+		String time = _wUnderground.strftime("%a %b ", _currentTime);
+		String day = _wUnderground.prettyDay(_currentTime);
+		day.trim();
+		time += day;
+		time = time + "    Today's weather: " + _wUnderground.conditions() + "   currently " + _wUnderground.currentTemp() + "`  hi:" + _wUnderground.highTemp() + "`  lo:" + _wUnderground.lowTemp() + "`";
+		_clockDisplay.scrollString(time, DateScrollRate);
+	}
+	
+	void scrollComplete() { _stateMachine.sendInput(Input::ScrollDone); }
+
 	void handleButtonEvent(const m8r::Button& button, m8r::ButtonManager::Event event)
 	{
 		switch(button.id()) {
 			case SelectButtonId:
 			if (event == m8r::ButtonManager::Event::Click) {
-				String time = _wUnderground.strftime("%a %b ", _currentTime);
-				String day = _wUnderground.prettyDay(_currentTime);
-				day.trim();
-				time += day;
-				time = time + "    Today's weather: " + _wUnderground.conditions() + "   currently " + _wUnderground.currentTemp() + "`  hi:" + _wUnderground.highTemp() + "`  lo:" + _wUnderground.lowTemp() + "`";
-				_clockDisplay.scrollString(time, DateScrollRate);
+				_stateMachine.sendInput(Input::SelectClick);
 			} else if (event == m8r::ButtonManager::Event::LongPress) {
-				_menuSystem.start();
+				_stateMachine.sendInput(Input::SelectLongPress);
 			}
 			break;
 		}
@@ -227,15 +287,16 @@ private:
 	static void configModeCallback (MyWiFiManager *myWiFiManager)
 	{
 		m8r::cout << L_F("Entered config mode:ip=") << WiFi.softAPIP() << L_F(", ssid='") << myWiFiManager->getConfigPortalSSID() << L_F("'\n");
-		myWiFiManager->_clock->setBlinkRate(ConfigRate);
+		myWiFiManager->_clock->netConfigStarted();
 	}
 
 	static void secondTick(OfficeClock* self)
 	{
 		self->_currentTime++;
-		self->_needsUpdateDisplay = true;
+		self->_stateMachine.sendInput(Input::Idle);
 	}
 
+	m8r::StateMachine<State, Input> _stateMachine;
 	m8r::Max7219Display _clockDisplay;
 	m8r::ButtonManager _buttonManager;
 	m8r::WUnderground _wUnderground;
@@ -244,10 +305,7 @@ private:
 	m8r::Blinker _blinker;
 	Ticker _secondTimer;
 	uint32_t _currentTime = 0;
-	bool _needsUpdateDisplay = false;
-	bool _needsWUndergroundUpdate = false;
-	bool _showWelcomeMessage = true;
-	bool _scrollingWelcomeMessage = false;
+	bool _needsUpdateInfo = false;
 };
 
 OfficeClock officeClock;
