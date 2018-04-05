@@ -95,7 +95,7 @@ static constexpr uint32_t NumberOfBrightnessLevels = 16;
 // Display related
 MakeROMString(startupMessage, "Office Clock v1.0");
 static constexpr uint32_t StartupScrollRate = 50;
-static constexpr uint32_t DateScrollRate = 70;
+static constexpr uint32_t DateScrollRate = 50;
 
 // Time and weather related
 static constexpr char* WeatherCity = "Los_Altos";
