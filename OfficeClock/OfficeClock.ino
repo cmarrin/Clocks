@@ -233,11 +233,11 @@ private:
 				, { Input::SelectClick, State::ShowTime }
 			}
 		);
-		_stateMachine.addState(State::ShowTime, [this] { _clockDisplay.setTime(_currentTime, true); _stateMachine.gotoState(State::Idle); },
+		_stateMachine.addState(State::ShowTime, [this] { _clockDisplay.showTime(_currentTime, true); _stateMachine.gotoState(State::Idle); },
 			{
 			}
 		);
-		_stateMachine.addState(State::Idle, [this] { _clockDisplay.setTime(_currentTime); },
+		_stateMachine.addState(State::Idle, [this] { _clockDisplay.showTime(_currentTime); },
 			{
 				  { Input::SelectClick, State::ShowInfo }
 				, { Input::SelectLongPress, State::Setup }
@@ -287,7 +287,7 @@ private:
 	
 	void showMenuItem(const m8r::MenuItem* menuItem)
 	{
-		_clockDisplay.setString(menuItem->string(), m8r::Max7219Display::Font::Compact);
+		_clockDisplay.showString(menuItem->string(), m8r::Max7219Display::Font::Compact);
 	}
 
 	static void secondTick(OfficeClock* self)
