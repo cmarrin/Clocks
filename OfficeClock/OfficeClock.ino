@@ -96,6 +96,8 @@ static constexpr uint32_t NumberOfBrightnessLevels = 16;
 MakeROMString(startupMessage, "Office Clock v1.0");
 static constexpr uint32_t StartupScrollRate = 50;
 static constexpr uint32_t DateScrollRate = 50;
+static constexpr const char* ConfigPortalName = "MT Galileo Clock";
+static constexpr const char* ConfigPortalPassword = "clock99";
 
 // Time and weather related
 static constexpr char* WeatherCity = "Los_Altos";
@@ -130,37 +132,19 @@ public:
       
 		_clockDisplay.setBrightness(0);
     
-		_blinker.setRate(ConnectingRate);
-
-		startStateMachine();
-
-		MyWiFiManager wifiManager(this);
-
-		//reset settings - for testing
-		//wifiManager.resetSettings();
-    
-		wifiManager.setAPCallback(reinterpret_cast<void(*)(WiFiManager*)>(configModeCallback));
-    
-		if (!wifiManager.autoConnect()) {
-			m8r::cout << L_F("*** Failed to connect and hit timeout\n");
-			ESP.reset();
-			delay(1000);
-		}
-
-		m8r::cout << L_F("Wifi connected, IP=") << WiFi.localIP() << L_F("\n");
-		
 		_buttonManager.addButton(m8r::Button(SelectPin, SelectButtonId));
 		
+		_wifiManager.setAPCallback([this](WiFiManager* wifiManager) {
+			m8r::cout << L_F("Entered config mode:ip=") << WiFi.softAPIP() << L_F(", ssid='") << wifiManager->getConfigPortalSSID() << L_F("'\n");
+			netConfigStarted();
+		});
+
 		std::shared_ptr<m8r::MenuItem> menu = std::make_shared<m8r::Menu>("Setup?");
 		_menuSystem.setMenu(menu);
 
-		_blinker.setRate(ConnectedRate);
-
-		_stateMachine.sendInput(Input::Connected);
+		startStateMachine();
 
 		_secondTimer.attach_ms(1000, secondTick, this);
-
-		_needsUpdateInfo = true;
 	}
 	
 	void loop()
@@ -183,9 +167,34 @@ public:
 	}
 
 private:
+	void startNetwork()
+	{
+		_blinker.setRate(ConnectingRate);
+
+		//reset settings - for testing
+		//_wifiManager.resetSettings();
+
+		if (!_wifiManager.autoConnect(ConfigPortalName, ConfigPortalPassword)) {
+			m8r::cout << L_F("*** Failed to connect and hit timeout\n");
+			ESP.reset();
+			delay(1000);
+		}
+
+		m8r::cout << L_F("Wifi connected, IP=") << WiFi.localIP() << L_F("\n");
+	
+		_blinker.setRate(ConnectedRate);
+
+		_stateMachine.sendInput(Input::Connected);
+	}
+	
 	void startStateMachine()
 	{
-		_stateMachine.addState(State::Connecting, [this] { _clockDisplay.scrollString("Connecting...", StartupScrollRate); },
+		_stateMachine.addState(State::Connecting, [this] {
+			_wifiManager.cancelConfigPortal();
+			_clockDisplay.scrollString("Connecting...", StartupScrollRate);
+			startNetwork();
+			_needsUpdateInfo = true;
+		},
 			{
 				  { Input::ScrollDone, State::Connecting }
 				, { Input::Connected, State::Startup }
@@ -193,7 +202,7 @@ private:
 				, { Input::NetConfig, State::NetConfig }
 			}
 		);
-		_stateMachine.addState(State::NetConfig, [this] { _clockDisplay.scrollString("Waiting for network (see instructions or press [select])", StartupScrollRate); },
+		_stateMachine.addState(State::NetConfig, [this] { _clockDisplay.scrollString("Waiting for network. See back of clock or press [select].", StartupScrollRate); },
 			{
 				  { Input::ScrollDone, State::NetConfig }
 				, { Input::SelectClick, State::Setup }
@@ -237,8 +246,8 @@ private:
 		);
 		_stateMachine.addState(State::Setup, [this] { _menuSystem.start(); },
 			{
-				  { Input::EndSetup, State::ShowTime }
-				, { Input::SelectLongPress, State::ShowTime }
+				  { Input::EndSetup, State::Connecting }
+				, { Input::SelectLongPress, State::Connecting }
 			}
 		);
 		
@@ -281,25 +290,13 @@ private:
 		_clockDisplay.setString(menuItem->string(), m8r::Max7219Display::Font::Compact);
 	}
 
-	class MyWiFiManager : public WiFiManager
-	{
-	public:
-		MyWiFiManager(OfficeClock* clock) : _clock(clock) { }
-		OfficeClock* _clock;
-	};
-
-	static void configModeCallback (MyWiFiManager *myWiFiManager)
-	{
-		m8r::cout << L_F("Entered config mode:ip=") << WiFi.softAPIP() << L_F(", ssid='") << myWiFiManager->getConfigPortalSSID() << L_F("'\n");
-		myWiFiManager->_clock->netConfigStarted();
-	}
-
 	static void secondTick(OfficeClock* self)
 	{
 		self->_currentTime++;
 		self->_stateMachine.sendInput(Input::Idle);
 	}
 
+	WiFiManager _wifiManager;
 	m8r::StateMachine<State, Input> _stateMachine;
 	m8r::Max7219Display _clockDisplay;
 	m8r::ButtonManager _buttonManager;
