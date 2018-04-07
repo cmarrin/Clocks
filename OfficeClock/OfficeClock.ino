@@ -191,7 +191,7 @@ private:
 	{
 		_stateMachine.addState(State::Connecting, [this] {
 			_wifiManager.cancelConfigPortal();
-			_clockDisplay.scrollString("Connecting...", StartupScrollRate);
+			_clockDisplay.showString("Connecting...", m8r::Max7219Display::Font::Compact);
 			startNetwork();
 			_needsUpdateInfo = true;
 		},
