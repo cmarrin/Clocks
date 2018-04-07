@@ -72,7 +72,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <m8r/BrightnessManager.h>
 #include <m8r/ButtonManager.h>
 #include <m8r/Max7219Display.h>
-#include <m8r/MenuSystem.h>
 #include <m8r/StateMachine.h>
 #include <m8r/WUnderground.h>
 #include <WiFiManager.h>
@@ -120,7 +119,6 @@ public:
 		, _buttonManager([this](const m8r::Button& b, m8r::ButtonManager::Event e) { handleButtonEvent(b, e); })
 		, _wUnderground(WUKey, WeatherCity, WeatherState, [this]() { _needsUpdateInfo = true; })
 		, _brightnessManager([this](uint8_t b) { handleBrightnessChange(b); }, LightSensor, MaxAmbientLightLevel, NumberOfBrightnessLevels)
-		, _menuSystem([this](const m8r::MenuItem* menuItem) { showMenuItem(menuItem); })
 		, _blinker(BUILTIN_LED, BlinkSampleRate)
 	{ }
 	
@@ -139,9 +137,6 @@ public:
 			m8r::cout << L_F("Entered config mode:ip=") << WiFi.softAPIP() << L_F(", ssid='") << wifiManager->getConfigPortalSSID() << L_F("'\n");
 			netConfigStarted();
 		});
-
-		std::shared_ptr<m8r::MenuItem> menu = std::make_shared<m8r::Menu>("Setup?");
-		_menuSystem.setMenu(menu);
 
 		startStateMachine();
 
@@ -284,11 +279,6 @@ private:
 		_clockDisplay.setBrightness(static_cast<float>(brightness) / (NumberOfBrightnessLevels - 1));
 	}
 	
-	void showMenuItem(const m8r::MenuItem* menuItem)
-	{
-		_clockDisplay.showString(menuItem->string(), m8r::Max7219Display::Font::Compact);
-	}
-
 	static void secondTick(OfficeClock* self)
 	{
 		self->_currentTime++;
@@ -301,7 +291,6 @@ private:
 	m8r::ButtonManager _buttonManager;
 	m8r::WUnderground _wUnderground;
 	m8r::BrightnessManager _brightnessManager;
-	m8r::MenuSystem _menuSystem;
 	m8r::Blinker _blinker;
 	Ticker _secondTimer;
 	uint32_t _currentTime = 0;
