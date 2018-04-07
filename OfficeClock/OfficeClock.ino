@@ -287,7 +287,7 @@ private:
 	
 	void showMenuItem(const m8r::MenuItem* menuItem)
 	{
-		_clockDisplay.showString(menuItem->string());
+		_clockDisplay.showString(menuItem->string(), m8r::Max7219Display::Font::Compact);
 	}
 
 	static void secondTick(OfficeClock* self)
