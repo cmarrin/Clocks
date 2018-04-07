@@ -92,7 +92,7 @@ static constexpr uint32_t MaxAmbientLightLevel = 800;
 static constexpr uint32_t NumberOfBrightnessLevels = 16;
 
 // Display related
-MakeROMString(startupMessage, "Office Clock v1.0");
+MakeROMString(startupMessage, "\vOffice Clock v1.0");
 static constexpr uint32_t StartupScrollRate = 50;
 static constexpr uint32_t DateScrollRate = 50;
 static constexpr const char* ConfigPortalName = "MT Galileo Clock";
@@ -186,7 +186,7 @@ private:
 	void startStateMachine()
 	{
 		_stateMachine.addState(State::Connecting, [this] {
-			_clockDisplay.showString("Connecting...", m8r::Max7219Display::Font::Compact);
+			_clockDisplay.showString("\aConnecting...");
 			startNetwork();
 			_needsUpdateInfo = true;
 		},
@@ -197,7 +197,7 @@ private:
 				, { Input::NetConfig, State::NetConfig }
 			}
 		);
-		_stateMachine.addState(State::NetConfig, [this] { _clockDisplay.scrollString("Waiting for network. See back of clock or press [select].", StartupScrollRate); },
+		_stateMachine.addState(State::NetConfig, [this] { _clockDisplay.showString("\vWaiting for network. See back of clock or press [select]."); },
 			{
 				  { Input::ScrollDone, State::NetConfig }
 				, { Input::SelectClick, State::Setup }
@@ -205,18 +205,18 @@ private:
 				, { Input::NetFail, State::NetFail }
 			}
 		);
-		_stateMachine.addState(State::NetFail, [this] { _clockDisplay.scrollString("Network failed, press [select]", StartupScrollRate); },
+		_stateMachine.addState(State::NetFail, [this] { _clockDisplay.showString("\vNetwork failed, press [select]"); },
 			{
 				  { Input::ScrollDone, State::NetFail }
   				, { Input::SelectClick, State::Setup }
 			}
 		);
-		_stateMachine.addState(State::UpdateFail, [this] { _clockDisplay.scrollString("Time update failed, retrying...", StartupScrollRate); },
+		_stateMachine.addState(State::UpdateFail, [this] { _clockDisplay.showString("\vTime update failed, retrying..."); },
 			{
 				  // { Input::ScrollDone, State::GetInfo }
 			}
 		);
-		_stateMachine.addState(State::Startup, [this] { _clockDisplay.scrollString(startupMessage, StartupScrollRate); },
+		_stateMachine.addState(State::Startup, [this] { _clockDisplay.showString(startupMessage); },
 			{
 				  { Input::ScrollDone, State::ShowTime }
     			, { Input::SelectClick, State::Setup }
@@ -238,7 +238,7 @@ private:
 				, { Input::Idle, State::Idle }
 			}
 		);
-		_stateMachine.addState(State::Setup, "Setup?",
+		_stateMachine.addState(State::Setup, "\aSetup?",
 			{
 				  { Input::EndSetup, State::Connecting }
 				, { Input::SelectLongPress, State::Connecting }
@@ -250,12 +250,13 @@ private:
 	
 	void showInfo()
 	{
-		String time = _wUnderground.strftime("%a %b ", _currentTime);
+		String time = "\v";
+		time += _wUnderground.strftime("%a %b ", _currentTime);
 		String day = _wUnderground.prettyDay(_currentTime);
 		day.trim();
 		time += day;
 		time = time + "  Forecast:" + _wUnderground.conditions() + "  Currently " + _wUnderground.currentTemp() + "`  High " + _wUnderground.highTemp() + "`  Low " + _wUnderground.lowTemp() + "`";
-		_clockDisplay.scrollString(time, DateScrollRate);
+		_clockDisplay.showString(time);
 	}
 	
 	void scrollComplete() { _stateMachine.sendInput(Input::ScrollDone); }
