@@ -57,9 +57,9 @@ POSSIBILITY OF SUCH DAMAGE.
 //      A0 - Light sensor
 //
 //      D0 - GPIO16 (Do Not Use)
-//      D1 - X
-//      D2 - X
-//      D3 - N/O Button (This is the Flash switch, as long as it's high on boot you're OK
+//      D1 - Select Button (active low)
+//      D2 - Next Button (active low)
+//      D3 - Back Button (active low) (GPIO0, as long as it's high on boot you're OK)
 //      D4 - On board LED
 //      D5 - Matrix CLK
 //      D6 - X
@@ -104,11 +104,12 @@ static constexpr char* WeatherState = "CA";
 MakeROMString(WUKey, "5bc1eac6864b7e57");
 
 // Buttons
-static constexpr uint8_t SelectPin = D1;
-static constexpr uint32_t SelectButtonId = 1;
+static constexpr uint8_t SelectButton = D1;
+static constexpr uint8_t NextButton = D2;
+static constexpr uint8_t BackButton = D3;
 
 enum class State { Connecting, NetConfig, NetFail, UpdateFail, Startup, ShowInfo, ShowTime, Idle, Setup };
-enum class Input { Idle, SelectClick, SelectLongPress, ScrollDone, Connected, NetConfig, NetFail, EndSetup };
+enum class Input { Idle, SelectClick, SelectLongPress, Next, Back, ScrollDone, Connected, NetConfig, NetFail, EndSetup };
 
 class OfficeClock
 {
@@ -131,7 +132,9 @@ public:
       
 		_clockDisplay.setBrightness(0);
     
-		_buttonManager.addButton(m8r::Button(SelectPin, SelectButtonId));
+		_buttonManager.addButton(m8r::Button(SelectButton, SelectButton));
+		_buttonManager.addButton(m8r::Button(NextButton, NextButton));
+		_buttonManager.addButton(m8r::Button(BackButton, BackButton));
 		
 		_wifiManager.setAPCallback([this](WiFiManager* wifiManager) {
 			m8r::cout << L_F("Entered config mode:ip=") << WiFi.softAPIP() << L_F(", ssid='") << wifiManager->getConfigPortalSSID() << L_F("'\n");
@@ -264,11 +267,27 @@ private:
 	void handleButtonEvent(const m8r::Button& button, m8r::ButtonManager::Event event)
 	{
 		switch(button.id()) {
-			case SelectButtonId:
+			case SelectButton:
 			if (event == m8r::ButtonManager::Event::Click) {
 				_stateMachine.sendInput(Input::SelectClick);
+				m8r::cout << "SelectClick\n";
 			} else if (event == m8r::ButtonManager::Event::LongPress) {
 				_stateMachine.sendInput(Input::SelectLongPress);
+				m8r::cout << "SelectLongPress\n";
+			}
+			break;
+
+			case NextButton:
+			if (event == m8r::ButtonManager::Event::Click) {
+				_stateMachine.sendInput(Input::Next);
+				m8r::cout << "Next Click\n";
+			}
+			break;
+
+			case BackButton:
+			if (event == m8r::ButtonManager::Event::Click) {
+				_stateMachine.sendInput(Input::Back);
+				m8r::cout << "Back Click\n";
 			}
 			break;
 		}
