@@ -115,7 +115,8 @@ class OfficeClock
 {
 public:
 	OfficeClock()
-		: _clockDisplay([this]() { scrollComplete(); })
+		: _stateMachine([this](const String s) { m8r::cout << "OfficeClock:" << s << m8r::endl; _clockDisplay.showString(s); })
+		, _clockDisplay([this]() { scrollComplete(); })
 		, _buttonManager([this](const m8r::Button& b, m8r::ButtonManager::Event e) { handleButtonEvent(b, e); })
 		, _wUnderground(WUKey, WeatherCity, WeatherState, [this]() { _needsUpdateInfo = true; })
 		, _brightnessManager([this](uint8_t b) { handleBrightnessChange(b); }, LightSensor, MaxAmbientLightLevel, NumberOfBrightnessLevels)
@@ -242,7 +243,7 @@ private:
 				, { Input::Idle, State::Idle }
 			}
 		);
-		_stateMachine.addState(State::Setup, [this] { _menuSystem.start(); },
+		_stateMachine.addState(State::Setup, "Setup?",
 			{
 				  { Input::EndSetup, State::Connecting }
 				, { Input::SelectLongPress, State::Connecting }
