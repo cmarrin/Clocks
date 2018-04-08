@@ -207,10 +207,7 @@ private:
 	
 	void startStateMachine()
 	{
-		_stateMachine.addState(State::Connecting, [this] {
-			_clockDisplay.showString("\aConnecting...");
-			startNetwork();
-		},
+		_stateMachine.addState(State::Connecting, L_F("\aConnecting..."), [this] { startNetwork(); },
 			{
 				  { Input::ScrollDone, State::Connecting }
 				, { Input::Connected, State::Startup }
@@ -218,7 +215,7 @@ private:
 				, { Input::NetConfig, State::NetConfig }
 			}
 		);
-		_stateMachine.addState(State::NetConfig, [this] { _clockDisplay.showString("\vWaiting for network. See back of clock or press [select]."); },
+		_stateMachine.addState(State::NetConfig, L_F("\vWaiting for network. See back of clock or press [select]."),
 			{
 				  { Input::ScrollDone, State::NetConfig }
 				, { Input::SelectClick, State::SetTimeDate }
@@ -226,13 +223,13 @@ private:
 				, { Input::NetFail, State::NetFail }
 			}
 		);
-		_stateMachine.addState(State::NetFail, [this] { _clockDisplay.showString("\vNetwork failed, press [select]"); },
+		_stateMachine.addState(State::NetFail, L_F("\vNetwork failed, press [select]"),
 			{
 				  { Input::ScrollDone, State::NetFail }
   				, { Input::SelectClick, State::Connecting }
 			}
 		);
-		_stateMachine.addState(State::UpdateFail, [this] { _clockDisplay.showString("\vTime update failed, press [select]"); },
+		_stateMachine.addState(State::UpdateFail, L_F("\vTime update failed, press [select]"),
 			{
 			  { Input::ScrollDone, State::UpdateFail }
 				, { Input::SelectClick, State::Startup }
@@ -259,28 +256,34 @@ private:
 				, { Input::Idle, State::Idle }
 			}
 		);
-		_stateMachine.addState(State::Setup, "\aSetup?",
+		
+		// Enter Setup
+		_stateMachine.addState(State::Setup, L_F("\aSetup?"),
 			{
   				  { Input::SelectClick, State::SetTimeDate }
   				, { Input::Next, State::SetTimeDate }
 				, { Input::Back, State::ShowTime }
 			}
 		);
-		_stateMachine.addState(State::SetTimeDate, "\aTime/date?",
+		
+		// Time/Date setting
+		_stateMachine.addState(State::SetTimeDate, L_F("\aTime/date?"),
 			{
 				  { Input::SelectClick, State::SetTimeHour }
 				, { Input::Next, State::AskResetNetwork }
 				, { Input::Back, State::Setup }
 			}
 		);
-		_stateMachine.addState(State::AskResetNetwork, "\aReset network?",
+		
+		// Network reset
+		_stateMachine.addState(State::AskResetNetwork, L_F("\aReset network?"),
 			{
 				  { Input::SelectClick, State::VerifyResetNetwork }
 				, { Input::Next, State::AskRestart }
 				, { Input::Back, State::Setup }
 			}
 		);
-		_stateMachine.addState(State::VerifyResetNetwork, "\aYou sure?",
+		_stateMachine.addState(State::VerifyResetNetwork, L_F("\aYou sure?"),
 			{
 				  { Input::SelectClick, State::ResetNetwork }
 				, { Input::Next, State::SetTimeDate }
@@ -288,7 +291,9 @@ private:
 			}
 		);
 		_stateMachine.addState(State::ResetNetwork, [this] { _needsNetworkReset = true; }, State::NetConfig);
-		_stateMachine.addState(State::AskRestart, "\aRestart?",
+		
+		// Restart
+		_stateMachine.addState(State::AskRestart, L_F("\aRestart?"),
 			{
 				  { Input::SelectClick, State::Restart }
 				, { Input::Next, State::SetTimeDate }
@@ -296,6 +301,8 @@ private:
 			}
 		);
 		_stateMachine.addState(State::Restart, [] { ESP.reset(); delay(1000); }, State::Connecting);
+		
+		// Start the state machine
 		_stateMachine.gotoState(State::Connecting);
 	}
 	
@@ -306,7 +313,10 @@ private:
 		String day = _wUnderground.prettyDay(_currentTime);
 		day.trim();
 		time += day;
-		time = time + "  Forecast:" + _wUnderground.conditions() + "  Currently " + _wUnderground.currentTemp() + "`  High " + _wUnderground.highTemp() + "`  Low " + _wUnderground.lowTemp() + "`";
+		time = time + L_F("  Weather:") + _wUnderground.conditions() + 
+					  L_F("  Currently ") + _wUnderground.currentTemp() + 
+					  L_F("`  High ") + _wUnderground.highTemp() + 
+					  L_F("`  Low ") + _wUnderground.lowTemp() + L_F("`");
 		_clockDisplay.showString(time);
 	}
 	
