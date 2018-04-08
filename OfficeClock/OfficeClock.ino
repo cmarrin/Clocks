@@ -113,7 +113,13 @@ enum class State {
 	Startup, ShowInfo, ShowTime, Idle,
 	Setup,
 	AskResetNetwork, VerifyResetNetwork, ResetNetwork,
-	SetTimeDate, SetTimeHour, SetTimeMinute, SetTimeAMPM, SetDateMonth, SetDateDay, SetDateYear,
+	SetTimeDate, 
+		SetTimeHour, SetTimeHourNext,
+		SetTimeMinute, SetTimeMinuteNext, 
+		SetTimeAMPM, SetTimeAMPMNext,
+		SetDateMonth, SetDateMonthNext,
+		SetDateDay, SetDateDayNext,
+		SetDateYear, SetDateYearNext,
 	AskRestart, Restart
 };
 
@@ -139,7 +145,7 @@ public:
 		m8r::cout << "\n\n" << startupMessage << "\n\n";
       
 		_clockDisplay.setBrightness(0);
-    
+		
 		_buttonManager.addButton(m8r::Button(SelectButton, SelectButton));
 		_buttonManager.addButton(m8r::Button(NextButton, NextButton));
 		_buttonManager.addButton(m8r::Button(BackButton, BackButton));
@@ -268,6 +274,60 @@ private:
 		
 		// Time/Date setting
 		_stateMachine.addState(State::SetTimeDate, L_F("\aTime/date?"),
+			{
+				  { Input::SelectClick, State::SetTimeHour }
+				, { Input::Next, State::AskResetNetwork }
+				, { Input::Back, State::Setup }
+			}
+		);
+		_stateMachine.addState(State::SetTimeHour, [this] {
+			_clockDisplay.showString(_wUnderground.strftime("\a%I:%M", _currentTime), 0, 2);
+		},
+			{
+				  { Input::SelectClick, State::SetTimeMinute }
+				, { Input::Next, State::SetTimeHourNext }
+				, { Input::Back, State::Setup }
+			}
+		);
+		_stateMachine.addState(State::SetTimeHourNext, [this] { _currentTime += 3600; }, State::SetTimeHour);
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		_stateMachine.addState(State::SetTimeMinute, L_F("\aTime/date?"),
+			{
+				  { Input::SelectClick, State::SetTimeHour }
+				, { Input::Next, State::AskResetNetwork }
+				, { Input::Back, State::Setup }
+			}
+		);
+		_stateMachine.addState(State::SetTimeAMPM, L_F("\aTime/date?"),
+			{
+				  { Input::SelectClick, State::SetTimeHour }
+				, { Input::Next, State::AskResetNetwork }
+				, { Input::Back, State::Setup }
+			}
+		);
+		_stateMachine.addState(State::SetDateMonth, L_F("\aTime/date?"),
+			{
+				  { Input::SelectClick, State::SetTimeHour }
+				, { Input::Next, State::AskResetNetwork }
+				, { Input::Back, State::Setup }
+			}
+		);
+		_stateMachine.addState(State::SetDateDay, L_F("\aTime/date?"),
+			{
+				  { Input::SelectClick, State::SetTimeHour }
+				, { Input::Next, State::AskResetNetwork }
+				, { Input::Back, State::Setup }
+			}
+		);
+		_stateMachine.addState(State::SetDateYear, L_F("\aTime/date?"),
 			{
 				  { Input::SelectClick, State::SetTimeHour }
 				, { Input::Next, State::AskResetNetwork }
