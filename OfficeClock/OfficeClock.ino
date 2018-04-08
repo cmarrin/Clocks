@@ -121,7 +121,7 @@ class OfficeClock
 {
 public:
 	OfficeClock()
-		: _stateMachine([this](const String s) { _clockDisplay.showString(s); })
+		: _stateMachine([this](const String s) { _clockDisplay.showString(s); }, { { Input::SelectLongPress, State::Setup } })
 		, _clockDisplay([this]() { scrollComplete(); })
 		, _buttonManager([this](const m8r::Button& b, m8r::ButtonManager::Event e) { handleButtonEvent(b, e); })
 		, _wUnderground(WUKey, WeatherCity, WeatherState, [this]() { _needsUpdateInfo = true; })
@@ -254,7 +254,6 @@ private:
 		_stateMachine.addState(State::Idle, [this] { _clockDisplay.showTime(_currentTime); },
 			{
 				  { Input::SelectClick, State::ShowInfo }
-				, { Input::SelectLongPress, State::Setup }
 				, { Input::Idle, State::Idle }
 			}
 		);
