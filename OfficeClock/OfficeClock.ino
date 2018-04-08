@@ -310,24 +310,20 @@ private:
 			case SelectButton:
 			if (event == m8r::ButtonManager::Event::Click) {
 				_stateMachine.sendInput(Input::SelectClick);
-				m8r::cout << "SelectClick\n";
 			} else if (event == m8r::ButtonManager::Event::LongPress) {
 				_stateMachine.sendInput(Input::SelectLongPress);
-				m8r::cout << "SelectLongPress\n";
 			}
 			break;
 
 			case NextButton:
 			if (event == m8r::ButtonManager::Event::Click) {
 				_stateMachine.sendInput(Input::Next);
-				m8r::cout << "Next Click\n";
 			}
 			break;
 
 			case BackButton:
 			if (event == m8r::ButtonManager::Event::Click) {
 				_stateMachine.sendInput(Input::Back);
-				m8r::cout << "Back Click\n";
 			}
 			break;
 		}
