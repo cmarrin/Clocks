@@ -96,7 +96,7 @@ MakeROMString(startupMessage, "\vOffice Clock v1.0");
 static constexpr uint32_t StartupScrollRate = 50;
 static constexpr uint32_t DateScrollRate = 50;
 static constexpr const char* ConfigPortalName = "MT Galileo Clock";
-static constexpr const char* ConfigPortalPassword = "clock99";
+static constexpr const char* ConfigPortalPassword = "";
 
 // Time and weather related
 static constexpr char* WeatherCity = "Los_Altos";
