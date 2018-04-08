@@ -142,11 +142,6 @@ public:
 		_buttonManager.addButton(m8r::Button(NextButton, NextButton));
 		_buttonManager.addButton(m8r::Button(BackButton, BackButton));
 		
-		_wifiManager.setAPCallback([this](WiFiManager* wifiManager) {
-			m8r::cout << L_F("Entered config mode:ip=") << WiFi.softAPIP() << L_F(", ssid='") << wifiManager->getConfigPortalSSID() << L_F("'\n");
-			netConfigStarted();
-		});
-
 		startStateMachine();
 
 		_secondTimer.attach_ms(1000, secondTick, this);
@@ -155,32 +150,46 @@ public:
 	void loop()
 	{
 		if (_needsUpdateInfo) {
-			_needsUpdateInfo = false;
+			_needsUpdateInfo = false;			
 			if (_wUnderground.update()) {
 				_currentTime = _wUnderground.currentTime();
 				_stateMachine.sendInput(Input::Idle);
 			} else {
-				// FIXME: Need to do something here
+				_stateMachine.sendInput(Input::UpdateFail);
 			}
+		}
+		if (_needsNetworkReset) {
+			startNetwork();
 		}
 	}
 	
-	void netConfigStarted()
-	{
-		_blinker.setRate(ConfigRate);
-		_stateMachine.sendInput(Input::NetConfig);
-	}
-
 private:
 	void startNetwork()
 	{
 		_blinker.setRate(ConnectingRate);
+		
+		WiFiManager wifiManager;
 
-		//reset settings - for testing
-		//_wifiManager.resetSettings();
+		if (_needsNetworkReset) {
+			_needsNetworkReset = false;
+			wifiManager.resetSettings();			
+		}
+		
+		wifiManager.setAPCallback([this](WiFiManager* wifiManager) {
+			m8r::cout << L_F("Entered config mode:ip=") << WiFi.softAPIP() << L_F(", ssid='") << wifiManager->getConfigPortalSSID() << L_F("'\n");
+			_blinker.setRate(ConfigRate);
+			_stateMachine.sendInput(Input::NetConfig);
+			_enteredConfigMode = true;
+		});
 
-		if (!_wifiManager.autoConnect(ConfigPortalName, ConfigPortalPassword)) {
+		if (!wifiManager.autoConnect(ConfigPortalName)) {
 			m8r::cout << L_F("*** Failed to connect and hit timeout\n");
+			ESP.reset();
+			delay(1000);
+		}
+		
+		if (_enteredConfigMode) {
+			// If we've been in config mode, the network doesn't startup correctly, let's reboot
 			ESP.reset();
 			delay(1000);
 		}
@@ -189,6 +198,8 @@ private:
 	
 		_blinker.setRate(ConnectedRate);
 
+		delay(500);
+		_needsUpdateInfo = true;
 		_stateMachine.sendInput(Input::Connected);
 	}
 	
@@ -197,7 +208,6 @@ private:
 		_stateMachine.addState(State::Connecting, [this] {
 			_clockDisplay.showString("\aConnecting...");
 			startNetwork();
-			_needsUpdateInfo = true;
 		},
 			{
 				  { Input::ScrollDone, State::Connecting }
@@ -217,12 +227,13 @@ private:
 		_stateMachine.addState(State::NetFail, [this] { _clockDisplay.showString("\vNetwork failed, press [select]"); },
 			{
 				  { Input::ScrollDone, State::NetFail }
-  				, { Input::SelectClick, State::Setup }
+  				, { Input::SelectClick, State::Connecting }
 			}
 		);
-		_stateMachine.addState(State::UpdateFail, [this] { _clockDisplay.showString("\vTime update failed, retrying..."); },
+		_stateMachine.addState(State::UpdateFail, [this] { _clockDisplay.showString("\vTime update failed, press [select]"); },
 			{
-				  // { Input::ScrollDone, State::GetInfo }
+			  { Input::ScrollDone, State::UpdateFail }
+				, { Input::SelectClick, State::Startup }
 			}
 		);
 		_stateMachine.addState(State::Startup, [this] { _clockDisplay.showString(startupMessage); },
@@ -334,7 +345,6 @@ private:
 		self->_stateMachine.sendInput(Input::Idle);
 	}
 
-	WiFiManager _wifiManager;
 	m8r::StateMachine<State, Input> _stateMachine;
 	m8r::Max7219Display _clockDisplay;
 	m8r::ButtonManager _buttonManager;
@@ -344,6 +354,8 @@ private:
 	Ticker _secondTimer;
 	uint32_t _currentTime = 0;
 	bool _needsUpdateInfo = false;
+	bool _needsNetworkReset = false;
+	bool _enteredConfigMode = false;
 };
 
 OfficeClock officeClock;
