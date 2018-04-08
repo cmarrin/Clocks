@@ -111,8 +111,10 @@ static constexpr uint8_t BackButton = D3;
 enum class State {
 	Connecting, NetConfig, NetFail, UpdateFail, 
 	Startup, ShowInfo, ShowTime, Idle,
-	Setup, SetTimeDate, AskResetNetwork, VerifyResetNetwork, ResetNetwork,
-	SetTimeHour, SetTimeMinute, SetTimeAMPM, SetDateMonth, SetDateDay, SetDateYear
+	Setup,
+	AskResetNetwork, VerifyResetNetwork, ResetNetwork,
+	SetTimeDate, SetTimeHour, SetTimeMinute, SetTimeAMPM, SetDateMonth, SetDateDay, SetDateYear,
+	AskRestart, Restart
 };
 
 enum class Input { Idle, SelectClick, SelectLongPress, Next, Back, ScrollDone, Connected, NetConfig, NetFail, UpdateFail };
@@ -219,7 +221,7 @@ private:
 		_stateMachine.addState(State::NetConfig, [this] { _clockDisplay.showString("\vWaiting for network. See back of clock or press [select]."); },
 			{
 				  { Input::ScrollDone, State::NetConfig }
-				, { Input::SelectClick, State::Setup }
+				, { Input::SelectClick, State::SetTimeDate }
 				, { Input::Connected, State::Startup }
 				, { Input::NetFail, State::NetFail }
 			}
@@ -260,7 +262,7 @@ private:
 		_stateMachine.addState(State::Setup, "\aSetup?",
 			{
   				  { Input::SelectClick, State::SetTimeDate }
-  				, { Input::Next, State::ResetNetwork }
+  				, { Input::Next, State::SetTimeDate }
 				, { Input::Back, State::ShowTime }
 			}
 		);
@@ -271,10 +273,10 @@ private:
 				, { Input::Back, State::Setup }
 			}
 		);
-		_stateMachine.addState(State::AskResetNetwork, "\aReset?",
+		_stateMachine.addState(State::AskResetNetwork, "\aReset network?",
 			{
 				  { Input::SelectClick, State::VerifyResetNetwork }
-				, { Input::Next, State::SetTimeDate }
+				, { Input::Next, State::AskRestart }
 				, { Input::Back, State::Setup }
 			}
 		);
@@ -286,7 +288,14 @@ private:
 			}
 		);
 		_stateMachine.addState(State::ResetNetwork, [this] { _needsNetworkReset = true; }, State::NetConfig);
-		
+		_stateMachine.addState(State::AskRestart, "\aRestart?",
+			{
+				  { Input::SelectClick, State::Restart }
+				, { Input::Next, State::SetTimeDate }
+				, { Input::Back, State::Setup }
+			}
+		);
+		_stateMachine.addState(State::Restart, [] { ESP.reset(); delay(1000); }, State::Connecting);
 		_stateMachine.gotoState(State::Connecting);
 	}
 	
