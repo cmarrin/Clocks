@@ -108,14 +108,20 @@ static constexpr uint8_t SelectButton = D1;
 static constexpr uint8_t NextButton = D2;
 static constexpr uint8_t BackButton = D3;
 
-enum class State { Connecting, NetConfig, NetFail, UpdateFail, Startup, ShowInfo, ShowTime, Idle, Setup };
-enum class Input { Idle, SelectClick, SelectLongPress, Next, Back, ScrollDone, Connected, NetConfig, NetFail, EndSetup };
+enum class State {
+	Connecting, NetConfig, NetFail, UpdateFail, 
+	Startup, ShowInfo, ShowTime, Idle,
+	Setup, SetTimeDate, AskResetNetwork, VerifyResetNetwork, ResetNetwork,
+	SetTimeHour, SetTimeMinute, SetTimeAMPM, SetDateMonth, SetDateDay, SetDateYear
+};
+
+enum class Input { Idle, SelectClick, SelectLongPress, Next, Back, ScrollDone, Connected, NetConfig, NetFail, UpdateFail };
 
 class OfficeClock
 {
 public:
 	OfficeClock()
-		: _stateMachine([this](const String s) { m8r::cout << "OfficeClock:" << s << m8r::endl; _clockDisplay.showString(s); })
+		: _stateMachine([this](const String s) { _clockDisplay.showString(s); })
 		, _clockDisplay([this]() { scrollComplete(); })
 		, _buttonManager([this](const m8r::Button& b, m8r::ButtonManager::Event e) { handleButtonEvent(b, e); })
 		, _wUnderground(WUKey, WeatherCity, WeatherState, [this]() { _needsUpdateInfo = true; })
@@ -243,10 +249,33 @@ private:
 		);
 		_stateMachine.addState(State::Setup, "\aSetup?",
 			{
-				  { Input::EndSetup, State::Connecting }
-				, { Input::SelectLongPress, State::Connecting }
+  				  { Input::SelectClick, State::SetTimeDate }
+  				, { Input::Next, State::ResetNetwork }
+				, { Input::Back, State::ShowTime }
 			}
 		);
+		_stateMachine.addState(State::SetTimeDate, "\aTime/date?",
+			{
+				  { Input::SelectClick, State::SetTimeHour }
+				, { Input::Next, State::AskResetNetwork }
+				, { Input::Back, State::Setup }
+			}
+		);
+		_stateMachine.addState(State::AskResetNetwork, "\aReset?",
+			{
+				  { Input::SelectClick, State::VerifyResetNetwork }
+				, { Input::Next, State::SetTimeDate }
+				, { Input::Back, State::Setup }
+			}
+		);
+		_stateMachine.addState(State::VerifyResetNetwork, "\aYou sure?",
+			{
+				  { Input::SelectClick, State::ResetNetwork }
+				, { Input::Next, State::SetTimeDate }
+				, { Input::Back, State::Setup }
+			}
+		);
+		_stateMachine.addState(State::ResetNetwork, [this] { _needsNetworkReset = true; }, State::NetConfig);
 		
 		_stateMachine.gotoState(State::Connecting);
 	}
