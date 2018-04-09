@@ -77,6 +77,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <WiFiManager.h>
 #include <Ticker.h>
 #include <assert.h>
+#include <time.h>
 
 // All rates in ms
 
@@ -135,7 +136,10 @@ public:
 		, _wUnderground(WUKey, WeatherCity, WeatherState, [this]() { _needsUpdateInfo = true; })
 		, _brightnessManager([this](uint8_t b) { handleBrightnessChange(b); }, LightSensor, MaxAmbientLightLevel, NumberOfBrightnessLevels)
 		, _blinker(BUILTIN_LED, BlinkSampleRate)
-	{ }
+	{
+		memset(&_settingTime, 0, sizeof(_settingTime));
+		_settingTime.tm_year = 100;
+	}
 	
 	void setup()
 	{
@@ -281,7 +285,11 @@ private:
 			}
 		);
 		_stateMachine.addState(State::SetTimeHour, [this] {
-			_clockDisplay.showString(_wUnderground.strftime("\a%I:%M", _currentTime), 0, 2);
+			String s = _wUnderground.strftime("\a%I:%M", _settingTime);
+			if (s[1] == '0') {
+				s[1] = '_';
+			}
+			_clockDisplay.showString(s, 0, 2);
 		},
 			{
 				  { Input::SelectClick, State::SetTimeMinute }
@@ -289,7 +297,14 @@ private:
 				, { Input::Back, State::Setup }
 			}
 		);
-		_stateMachine.addState(State::SetTimeHourNext, [this] { _currentTime += 3600; }, State::SetTimeHour);
+		_stateMachine.addState(State::SetTimeHourNext, [this] {
+			_settingTime.tm_hour += 1;
+			if (_settingTime.tm_hour >= 12) {
+				_settingTime.tm_hour = 0;
+			} else if (_settingTime.tm_hour >= 24) {
+				_settingTime.tm_hour = 12;
+			}
+		}, State::SetTimeHour);
 		
 		
 		
@@ -430,6 +445,8 @@ private:
 	bool _needsUpdateInfo = false;
 	bool _needsNetworkReset = false;
 	bool _enteredConfigMode = false;
+	
+	struct tm  _settingTime;
 };
 
 OfficeClock officeClock;
