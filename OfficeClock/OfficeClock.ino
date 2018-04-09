@@ -206,7 +206,8 @@ private:
 			delay(1000);
 		}
 
-		m8r::cout << L_F("Wifi connected, IP=") << WiFi.localIP() << L_F("\n");
+        WiFiMode_t currentMode = WiFi.getMode();
+		m8r::cout << L_F("Wifi connected, Mode=") << wifiManager.getModeString(currentMode) << L_F(", IP=") << WiFi.localIP() << m8r::endl;
 	
 		_blinker.setRate(ConnectedRate);
 
