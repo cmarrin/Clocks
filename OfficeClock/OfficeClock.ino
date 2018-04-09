@@ -216,6 +216,23 @@ private:
 		_stateMachine.sendInput(Input::Connected);
 	}
 	
+	void showSettingTime(bool hour)
+	{
+		String s = _wUnderground.strftime("\a%I:%M", _settingTime);
+		if (s[1] == '0') {
+			s[1] = '_';
+		}
+		_clockDisplay.showString(s, hour ? 0 : 3, 2);
+		
+	}
+
+	void showSettingAMPM()
+	{
+		bool pm = _settingTime.tm_hour >= 11;
+		_clockDisplay.showString("\aAM/PM", pm ? 3 : 0, 2);
+		
+	}
+
 	void startStateMachine()
 	{
 		_stateMachine.addState(State::Connecting, L_F("\aConnecting..."), [this] { startNetwork(); },
@@ -285,13 +302,7 @@ private:
 				, { Input::Back, State::Setup }
 			}
 		);
-		_stateMachine.addState(State::SetTimeHour, [this] {
-			String s = _wUnderground.strftime("\a%I:%M", _settingTime);
-			if (s[1] == '0') {
-				s[1] = '_';
-			}
-			_clockDisplay.showString(s, 0, 2);
-		},
+		_stateMachine.addState(State::SetTimeHour, [this] { showSettingTime(true); },
 			{
 				  { Input::SelectClick, State::SetTimeMinute }
 				, { Input::Next, State::SetTimeHourNext }
@@ -300,28 +311,44 @@ private:
 		);
 		_stateMachine.addState(State::SetTimeHourNext, [this] {
 			_settingTime.tm_hour += 1;
-			if (_settingTime.tm_hour >= 12) {
+			if (_settingTime.tm_hour == 12) {
 				_settingTime.tm_hour = 0;
-			} else if (_settingTime.tm_hour >= 24) {
+			} else if (_settingTime.tm_hour == 24) {
 				_settingTime.tm_hour = 12;
 			}
 		}, State::SetTimeHour);
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		_stateMachine.addState(State::SetTimeMinute, L_F("\aTime/date?"),
+		_stateMachine.addState(State::SetTimeMinute, [this] { showSettingTime(false); },
 			{
-				  { Input::SelectClick, State::SetTimeHour }
-				, { Input::Next, State::AskResetNetwork }
+				  { Input::SelectClick, State::SetTimeAMPM }
+				, { Input::Next, State::SetTimeMinuteNext }
 				, { Input::Back, State::Setup }
 			}
 		);
+		_stateMachine.addState(State::SetTimeMinuteNext, [this] {
+			_settingTime.tm_min += 1;
+			if (_settingTime.tm_min >= 60) {
+				_settingTime.tm_min = 0;
+			}
+		}, State::SetTimeMinute);
+		_stateMachine.addState(State::SetTimeAMPM, [this] { showSettingAMPM(); },
+			{
+				  { Input::SelectClick, State::SetDateMonth }
+				, { Input::Next, State::SetTimeAMPMNext }
+				, { Input::Back, State::Setup }
+			}
+		);
+		_stateMachine.addState(State::SetTimeAMPMNext, [this] {
+			_settingTime.tm_hour += (_settingTime.tm_hour >= 12) ? -12 : 12;
+		}, State::SetTimeAMPM);
+
+
+
+
+
+
+
+
+
 		_stateMachine.addState(State::SetTimeAMPM, L_F("\aTime/date?"),
 			{
 				  { Input::SelectClick, State::SetTimeHour }
