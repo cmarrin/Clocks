@@ -138,6 +138,7 @@ public:
 		, _blinker(BUILTIN_LED, BlinkSampleRate)
 	{
 		memset(&_settingTime, 0, sizeof(_settingTime));
+		_settingTime.tm_mday = 1;
 		_settingTime.tm_year = 100;
 	}
 	
@@ -220,7 +221,7 @@ private:
 	{
 		String s = _wUnderground.strftime("\a%I:%M", _settingTime);
 		if (s[1] == '0') {
-			s[1] = '_';
+			s[1] = ' ';
 		}
 		_clockDisplay.showString(s, hour ? 0 : 3, 2);
 		
@@ -231,6 +232,16 @@ private:
 		bool pm = _settingTime.tm_hour >= 11;
 		_clockDisplay.showString("\aAM/PM", pm ? 3 : 0, 2);
 		
+	}
+
+	void showSettingDate(bool month)
+	{
+		String s = _wUnderground.strftime("\a%b %e", _settingTime);
+		if (month) {
+			_clockDisplay.showString(s, 0, 3);
+		} else {
+			_clockDisplay.showString(s, 4, 2);
+		}
 	}
 
 	void startStateMachine()
@@ -340,43 +351,49 @@ private:
 		_stateMachine.addState(State::SetTimeAMPMNext, [this] {
 			_settingTime.tm_hour += (_settingTime.tm_hour >= 12) ? -12 : 12;
 		}, State::SetTimeAMPM);
-
-
-
-
-
-
-
-
-
-		_stateMachine.addState(State::SetTimeAMPM, L_F("\aTime/date?"),
+		_stateMachine.addState(State::SetDateMonth, [this] { showSettingDate(true); },
 			{
-				  { Input::SelectClick, State::SetTimeHour }
-				, { Input::Next, State::AskResetNetwork }
+				  { Input::SelectClick, State::SetDateDay }
+				, { Input::Next, State::SetDateMonthNext }
 				, { Input::Back, State::Setup }
 			}
 		);
-		_stateMachine.addState(State::SetDateMonth, L_F("\aTime/date?"),
+		_stateMachine.addState(State::SetDateMonthNext, [this] {
+			_settingTime.tm_mon += 1;
+			if (_settingTime.tm_mon >= 12) {
+				_settingTime.tm_mon = 0;
+			}
+		}, State::SetDateMonth);
+		_stateMachine.addState(State::SetDateDay, [this] { showSettingDate(false); },
 			{
-				  { Input::SelectClick, State::SetTimeHour }
-				, { Input::Next, State::AskResetNetwork }
+				  { Input::SelectClick, State::SetDateYear }
+				, { Input::Next, State::SetDateDayNext }
 				, { Input::Back, State::Setup }
 			}
 		);
-		_stateMachine.addState(State::SetDateDay, L_F("\aTime/date?"),
+		_stateMachine.addState(State::SetDateDayNext, [this] {
+			_settingTime.tm_mday += 1;
+			
+			// Allow 31 days in each month and fix it later
+			if (_settingTime.tm_mday > 31) {
+				_settingTime.tm_mday = 1;
+			}
+		}, State::SetDateDay);
+		_stateMachine.addState(State::SetDateYear, [this] { _clockDisplay.showString(String("\a") + (_settingTime.tm_year + 1900), 0, 4); },
 			{
 				  { Input::SelectClick, State::SetTimeHour }
-				, { Input::Next, State::AskResetNetwork }
+				, { Input::Next, State::SetDateYearNext }
 				, { Input::Back, State::Setup }
 			}
 		);
-		_stateMachine.addState(State::SetDateYear, L_F("\aTime/date?"),
-			{
-				  { Input::SelectClick, State::SetTimeHour }
-				, { Input::Next, State::AskResetNetwork }
-				, { Input::Back, State::Setup }
+		_stateMachine.addState(State::SetDateYearNext, [this] {
+			_settingTime.tm_year += 1;
+			
+			// Only go up  to the year 2099
+			if (_settingTime.tm_year >= 200) {
+				_settingTime.tm_year = 1;
 			}
-		);
+		}, State::SetDateYear);
 		
 		// Network reset
 		_stateMachine.addState(State::AskResetNetwork, L_F("\aReset network?"),
