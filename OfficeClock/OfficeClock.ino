@@ -114,7 +114,7 @@ enum class State {
 	Startup, ShowInfo, ShowTime, Idle,
 	Setup,
 	AskResetNetwork, VerifyResetNetwork, ResetNetwork,
-	SetTimeDate, 
+	SetTimeDate, AskSaveTime, SaveTime, 
 		SetTimeHour, SetTimeHourNext,
 		SetTimeMinute, SetTimeMinuteNext, 
 		SetTimeAMPM, SetTimeAMPMNext,
@@ -163,12 +163,15 @@ public:
 	void loop()
 	{
 		if (_needsUpdateInfo) {
-			_needsUpdateInfo = false;			
-			if (_wUnderground.update()) {
-				_currentTime = _wUnderground.currentTime();
-				_stateMachine.sendInput(Input::Idle);
-			} else {
-				_stateMachine.sendInput(Input::UpdateFail);
+			_needsUpdateInfo = false;
+			
+			if (_enableNetwork) {
+				if (_wUnderground.update()) {
+					_currentTime = _wUnderground.currentTime();
+					_stateMachine.sendInput(Input::Idle);
+				} else {
+					_stateMachine.sendInput(Input::UpdateFail);
+				}
 			}
 		}
 		if (_needsNetworkReset) {
@@ -210,6 +213,7 @@ private:
         WiFiMode_t currentMode = WiFi.getMode();
 		m8r::cout << L_F("Wifi connected, Mode=") << wifiManager.getModeString(currentMode) << L_F(", IP=") << WiFi.localIP() << m8r::endl;
 	
+		_enableNetwork = true;
 		_blinker.setRate(ConnectedRate);
 
 		delay(500);
@@ -305,6 +309,25 @@ private:
 			}
 		);
 		
+		// Save time settings if needed
+		_stateMachine.addState(State::AskSaveTime, [this] {
+			if (_settingTimeChanged) {
+				_settingTimeChanged = false;
+				_clockDisplay.showString("\aSave Time/Date?");
+			} else {
+				_stateMachine.gotoState(State::Setup);
+			}
+		},
+			{
+  				  { Input::SelectClick, State::SaveTime }
+				, { Input::Back, State::Setup }
+			}
+		);
+		_stateMachine.addState(State::SaveTime, [this] {
+			_enableNetwork = false;
+			_currentTime = static_cast<uint32_t>(std::mktime(&_settingTime));
+		}, State::Setup);
+		
 		// Time/Date setting
 		_stateMachine.addState(State::SetTimeDate, L_F("\aTime/date?"),
 			{
@@ -317,10 +340,11 @@ private:
 			{
 				  { Input::SelectClick, State::SetTimeMinute }
 				, { Input::Next, State::SetTimeHourNext }
-				, { Input::Back, State::Setup }
+				, { Input::Back, State::AskSaveTime }
 			}
 		);
 		_stateMachine.addState(State::SetTimeHourNext, [this] {
+			_settingTimeChanged = true;
 			_settingTime.tm_hour += 1;
 			if (_settingTime.tm_hour == 12) {
 				_settingTime.tm_hour = 0;
@@ -332,10 +356,11 @@ private:
 			{
 				  { Input::SelectClick, State::SetTimeAMPM }
 				, { Input::Next, State::SetTimeMinuteNext }
-				, { Input::Back, State::Setup }
+				, { Input::Back, State::AskSaveTime }
 			}
 		);
 		_stateMachine.addState(State::SetTimeMinuteNext, [this] {
+			_settingTimeChanged = true;
 			_settingTime.tm_min += 1;
 			if (_settingTime.tm_min >= 60) {
 				_settingTime.tm_min = 0;
@@ -345,20 +370,22 @@ private:
 			{
 				  { Input::SelectClick, State::SetDateMonth }
 				, { Input::Next, State::SetTimeAMPMNext }
-				, { Input::Back, State::Setup }
+				, { Input::Back, State::AskSaveTime }
 			}
 		);
 		_stateMachine.addState(State::SetTimeAMPMNext, [this] {
+			_settingTimeChanged = true;
 			_settingTime.tm_hour += (_settingTime.tm_hour >= 12) ? -12 : 12;
 		}, State::SetTimeAMPM);
 		_stateMachine.addState(State::SetDateMonth, [this] { showSettingDate(true); },
 			{
 				  { Input::SelectClick, State::SetDateDay }
 				, { Input::Next, State::SetDateMonthNext }
-				, { Input::Back, State::Setup }
+				, { Input::Back, State::AskSaveTime }
 			}
 		);
 		_stateMachine.addState(State::SetDateMonthNext, [this] {
+			_settingTimeChanged = true;
 			_settingTime.tm_mon += 1;
 			if (_settingTime.tm_mon >= 12) {
 				_settingTime.tm_mon = 0;
@@ -368,10 +395,11 @@ private:
 			{
 				  { Input::SelectClick, State::SetDateYear }
 				, { Input::Next, State::SetDateDayNext }
-				, { Input::Back, State::Setup }
+				, { Input::Back, State::AskSaveTime }
 			}
 		);
 		_stateMachine.addState(State::SetDateDayNext, [this] {
+			_settingTimeChanged = true;
 			_settingTime.tm_mday += 1;
 			
 			// Allow 31 days in each month and fix it later
@@ -379,14 +407,17 @@ private:
 				_settingTime.tm_mday = 1;
 			}
 		}, State::SetDateDay);
-		_stateMachine.addState(State::SetDateYear, [this] { _clockDisplay.showString(String("\a") + (_settingTime.tm_year + 1900), 0, 4); },
+		_stateMachine.addState(State::SetDateYear, [this] {
+			_clockDisplay.showString(String("\a") + (_settingTime.tm_year + 1900), 0, 4);
+		},
 			{
 				  { Input::SelectClick, State::SetTimeHour }
 				, { Input::Next, State::SetDateYearNext }
-				, { Input::Back, State::Setup }
+				, { Input::Back, State::AskSaveTime }
 			}
 		);
 		_stateMachine.addState(State::SetDateYearNext, [this] {
+			_settingTimeChanged = true;
 			_settingTime.tm_year += 1;
 			
 			// Only go up  to the year 2099
@@ -433,10 +464,12 @@ private:
 		String day = _wUnderground.prettyDay(_currentTime);
 		day.trim();
 		time += day;
-		time = time + L_F("  Weather:") + _wUnderground.conditions() + 
-					  L_F("  Currently ") + _wUnderground.currentTemp() + 
-					  L_F("`  High ") + _wUnderground.highTemp() + 
-					  L_F("`  Low ") + _wUnderground.lowTemp() + L_F("`");
+		if (_enableNetwork) {
+			time = time + L_F("  Weather:") + _wUnderground.conditions() + 
+						  L_F("  Currently ") + _wUnderground.currentTemp() + 
+						  L_F("`  High ") + _wUnderground.highTemp() + 
+						  L_F("`  Low ") + _wUnderground.lowTemp() + L_F("`");
+		}
 		_clockDisplay.showString(time);
 	}
 	
@@ -492,6 +525,8 @@ private:
 	bool _enteredConfigMode = false;
 	
 	struct tm  _settingTime;
+	bool _settingTimeChanged = false;
+	bool _enableNetwork = false;
 };
 
 OfficeClock officeClock;
