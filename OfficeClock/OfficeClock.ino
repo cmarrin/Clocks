@@ -89,8 +89,12 @@ static constexpr uint32_t BlinkSampleRate = 10;
 
 // BrightnessManager settings
 static constexpr uint32_t LightSensor = A0;
-static constexpr uint32_t MaxAmbientLightLevel = 800;
-static constexpr uint32_t NumberOfBrightnessLevels = 16;
+static constexpr bool InvertAmbientLightLevel = true;
+static constexpr uint32_t MaxAmbientLightLevel = 900;
+static constexpr uint32_t MinAmbientLightLevel = 100;
+static constexpr uint32_t NumberOfBrightnessLevels = 10;
+
+static constexpr uint32_t BrightnessLevelOffset = 0; // offset discrete brightness level when sending to display
 
 // Display related
 MakeROMString(startupMessage, "\vOffice Clock v1.0");
@@ -134,7 +138,7 @@ public:
 		, _clockDisplay([this]() { scrollComplete(); })
 		, _buttonManager([this](const m8r::Button& b, m8r::ButtonManager::Event e) { handleButtonEvent(b, e); })
 		, _wUnderground(WUKey, WeatherCity, WeatherState, [this]() { _needsUpdateInfo = true; })
-		, _brightnessManager([this](uint8_t b) { handleBrightnessChange(b); }, LightSensor, MaxAmbientLightLevel, NumberOfBrightnessLevels)
+		, _brightnessManager([this](uint32_t b) { handleBrightnessChange(b); }, LightSensor, InvertAmbientLightLevel, MinAmbientLightLevel, MaxAmbientLightLevel, NumberOfBrightnessLevels)
 		, _blinker(BUILTIN_LED, BlinkSampleRate)
 	{
 		memset(&_settingTime, 0, sizeof(_settingTime));
@@ -149,8 +153,6 @@ public:
   
 		m8r::cout << "\n\n" << startupMessage << "\n\n";
       
-		_clockDisplay.setBrightness(0);
-		
 		_buttonManager.addButton(m8r::Button(SelectButton, SelectButton));
 		_buttonManager.addButton(m8r::Button(NextButton, NextButton));
 		_buttonManager.addButton(m8r::Button(BackButton, BackButton));
@@ -500,10 +502,10 @@ private:
 		}
 	}
 
-	void handleBrightnessChange(uint8_t brightness)
+	void handleBrightnessChange(uint32_t brightness)
 	{
-		m8r::cout << L_F("*** setting brightness to ") << brightness << L_F("\n");
-		_clockDisplay.setBrightness(static_cast<float>(brightness) / (NumberOfBrightnessLevels - 1));
+		_clockDisplay.setBrightness(brightness + BrightnessLevelOffset);
+		m8r::cout << "setting brightness to " << (brightness + BrightnessLevelOffset) << "\n";
 	}
 	
 	static void secondTick(OfficeClock* self)
