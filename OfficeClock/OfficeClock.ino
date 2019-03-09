@@ -38,18 +38,8 @@ POSSIBILITY OF SUCH DAMAGE.
  * constant current drivers which take 2 pins to operate. It also has an
  * ambient light sensor on AO, and a single switch to change functions.
  * 
- * It uses a Weather Underground feed to get the current time and temps
- * Data is obtained with a request to weather underground, which looks like this:
- * 
- *     http://api.wunderground.com/api/5bc1eac6864b7e57/conditions/forecast/q/CA/Los_Altos.json
- *     
- * This will get a JSON stream with the current and forecast weather. Using JsonStreamingParser to pick out the local time, current temp and
- * forecast high and low temps. Format for these items looks like:
- * 
- *     local time:   { "current_observation": { "local_epoch": "<number>" } }
- *     current temp: { "current_observation": { "temp_f": "<number>" } }
- *     low temp:     { "forecast": { "simpleforecast": { "forecastday": [ { "low": { "fahrenheit": "<number>" } } ] } } }
- *     high temp:    { "forecast": { "simpleforecast": { "forecastday": [ { "high": { "fahrenheit": "<number>" } } ] } } }
+ * It uses the m8r::LocalTimeServer to get the time. Currently weather is not
+ * enabled
  */
 
 // Ports
@@ -73,7 +63,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <m8r/ButtonManager.h>
 #include <m8r/Max7219Display.h>
 #include <m8r/StateMachine.h>
-#include <m8r/WUnderground.h>
+#include <m8r/LocalTimeServer.h>
 #include <WiFiManager.h>
 #include <Ticker.h>
 #include <assert.h>
@@ -94,8 +84,6 @@ static constexpr uint32_t MaxAmbientLightLevel = 900;
 static constexpr uint32_t MinAmbientLightLevel = 100;
 static constexpr uint32_t NumberOfBrightnessLevels = 10;
 
-static constexpr uint32_t BrightnessLevelOffset = 0; // offset discrete brightness level when sending to display
-
 // Display related
 MakeROMString(startupMessage, "\vOffice Clock v1.0");
 static constexpr uint32_t StartupScrollRate = 50;
@@ -104,9 +92,8 @@ static constexpr const char* ConfigPortalName = "MT Galileo Clock";
 static constexpr const char* ConfigPortalPassword = "";
 
 // Time and weather related
-static constexpr char* WeatherCity = "Los_Altos";
-static constexpr char* WeatherState = "CA";
-MakeROMString(WUKey, "5bc1eac6864b7e57");
+static constexpr char* TimeCity = "America/Los_Angeles";
+MakeROMString(APIKey, "5bc1eac6864b7e57");
 
 // Buttons
 static constexpr uint8_t SelectButton = D1;
@@ -137,7 +124,7 @@ public:
 		: _stateMachine([this](const String s) { _clockDisplay.showString(s); }, { { Input::SelectLongPress, State::Setup } })
 		, _clockDisplay([this]() { scrollComplete(); })
 		, _buttonManager([this](const m8r::Button& b, m8r::ButtonManager::Event e) { handleButtonEvent(b, e); })
-		, _wUnderground(WUKey, WeatherCity, WeatherState, [this]() { _needsUpdateInfo = true; })
+		, _localTimeServer(APIKey, TimeCity, [this]() { _needsUpdateInfo = true; })
 		, _brightnessManager([this](uint32_t b) { handleBrightnessChange(b); }, LightSensor, InvertAmbientLightLevel, MinAmbientLightLevel, MaxAmbientLightLevel, NumberOfBrightnessLevels)
 		, _blinker(BUILTIN_LED, BlinkSampleRate)
 	{
@@ -153,6 +140,8 @@ public:
   
 		m8r::cout << "\n\n" << startupMessage << "\n\n";
       
+		_brightnessManager.start();
+
 		_buttonManager.addButton(m8r::Button(SelectButton, SelectButton));
 		_buttonManager.addButton(m8r::Button(NextButton, NextButton));
 		_buttonManager.addButton(m8r::Button(BackButton, BackButton));
@@ -168,8 +157,8 @@ public:
 			_needsUpdateInfo = false;
 			
 			if (_enableNetwork) {
-				if (_wUnderground.update()) {
-					_currentTime = _wUnderground.currentTime();
+				if (_localTimeServer.update()) {
+					_currentTime = _localTimeServer.currentTime();
 					_stateMachine.sendInput(Input::Idle);
 				} else {
 					_stateMachine.sendInput(Input::UpdateFail);
@@ -225,7 +214,7 @@ private:
 	
 	void showSettingTime(bool hour)
 	{
-		String s = _wUnderground.strftime("\a%I:%M", _settingTime);
+		String s = _localTimeServer.strftime("\a%I:%M", _settingTime);
 		if (s[1] == '0') {
 			s[1] = ' ';
 		}
@@ -242,7 +231,7 @@ private:
 
 	void showSettingDate(bool month)
 	{
-		String s = _wUnderground.strftime("\a%b %e", _settingTime);
+		String s = _localTimeServer.strftime("\a%b %e", _settingTime);
 		if (month) {
 			_clockDisplay.showString(s, 0, 3);
 		} else {
@@ -462,15 +451,15 @@ private:
 	void showInfo()
 	{
 		String time = "\v";
-		time += _wUnderground.strftime("%a %b ", _currentTime);
-		String day = _wUnderground.prettyDay(_currentTime);
+		time += _localTimeServer.strftime("%a %b ", _currentTime);
+		String day = _localTimeServer.prettyDay(_currentTime);
 		day.trim();
 		time += day;
 		if (_enableNetwork) {
-			time = time + L_F("  Weather:") + _wUnderground.conditions() + 
-						  L_F("  Currently ") + _wUnderground.currentTemp() + 
-						  L_F("`  High ") + _wUnderground.highTemp() + 
-						  L_F("`  Low ") + _wUnderground.lowTemp() + L_F("`");
+			// time = time + L_F("  Weather:") + _wUnderground.conditions() +
+			// 			  L_F("  Currently ") + _wUnderground.currentTemp() +
+			// 			  L_F("`  High ") + _wUnderground.highTemp() +
+			// 			  L_F("`  Low ") + _wUnderground.lowTemp() + L_F("`");
 		}
 		_clockDisplay.showString(time);
 	}
@@ -504,8 +493,8 @@ private:
 
 	void handleBrightnessChange(uint32_t brightness)
 	{
-		_clockDisplay.setBrightness(brightness + BrightnessLevelOffset);
-		m8r::cout << "setting brightness to " << (brightness + BrightnessLevelOffset) << "\n";
+		_clockDisplay.setBrightness(brightness);
+		m8r::cout << "setting brightness to " << brightness << "\n";
 	}
 	
 	static void secondTick(OfficeClock* self)
@@ -517,7 +506,7 @@ private:
 	m8r::StateMachine<State, Input> _stateMachine;
 	m8r::Max7219Display _clockDisplay;
 	m8r::ButtonManager _buttonManager;
-	m8r::WUnderground _wUnderground;
+	m8r::LocalTimeServer _localTimeServer;
 	m8r::BrightnessManager _brightnessManager;
 	m8r::Blinker _blinker;
 	Ticker _secondTimer;
