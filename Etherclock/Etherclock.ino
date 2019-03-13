@@ -33,7 +33,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 -------------------------------------------------------------------------*/
 
-// Etherclock3 is an ESP8266 based digital clock, using the I2C display DSP7S04B.
+// Arduino IDE Setup:
+//
+// Board: LOLIN(WEMOS) D1 R2 & mini
+
+// Etherclock3 is an ESP8266 (NodeMCU) based digital clock, using the I2C display DSP7S04B.
 // Time information comes from m8r::LocalTimeServer
 //
 // The hardware has a button on top of the box, used to display the current date
