@@ -115,7 +115,7 @@ static constexpr const char* ConfigPortalPassword = "";
 
 // Time and weather related
 static constexpr char* TimeCity = "America/Los_Angeles";
-MakeROMString(APIKey, "5bc1eac6864b7e57");
+MakeROMString(APIKey, "OFTZYMX4MSPG");
 
 // Buttons
 static constexpr uint8_t SelectButton = D1;
