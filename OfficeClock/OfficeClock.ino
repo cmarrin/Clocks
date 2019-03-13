@@ -33,14 +33,18 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 -------------------------------------------------------------------------*/
 
-/*
- * Office Clock is an ESP8266 based digital clock. LEDs are driven by serial
- * constant current drivers which take 2 pins to operate. It also has an
- * ambient light sensor on AO, and a single switch to change functions.
- * 
- * It uses the m8r::LocalTimeServer to get the time. Currently weather is not
- * enabled
- */
+// Arduino IDE Setup:
+//
+// Board: LOLIN(WEMOS) D1 R2 & mini
+
+// Office Clock is an ESP8266 (Wemos D1 Mini) based digital clock. Display is a
+// 32 x 8 dot matrix LED array driven by a MAX7219 over SPI. The SPI interface
+// does not use MISO, so it only uses 3 pins. It also has an ambient light sensor
+// on AO, and 3 switches to change functions and settings.
+//
+// It uses the m8r::LocalTimeServer to get the time. Currently weather is not
+// enabled
+
 
 // Ports
 //
@@ -56,6 +60,24 @@ POSSIBILITY OF SUCH DAMAGE.
 //      D7 - Matrix DIN
 //      D8 - Matrix CS
 //
+// Since the MAX7219 is a 5v part and the ESP8266 is 3.3v, a 74HCT367 is used to adapt
+// the voltage levels:
+//
+//		74HCT367 pin
+//
+//			1		GND
+//			2		Wemos D7 (DIN)
+//			3		MAX7219 DIN
+//			4		Wemos D5 (CLK)
+//			5		MAX7219 CLK
+//			6		Wemos D8 (CS)
+//			7 		MAX7219 CS
+//			8		GND
+//			15		GND
+//			16		5V
+//
+// Vcc and GND on the display, along with the same pins on the 74HCT367 connect to 5v and GND
+// on the Wemos
 
 #include <m8r.h>
 #include <m8r/Blinker.h>
