@@ -86,6 +86,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <m8r/Max7219Display.h>
 #include <m8r/StateMachine.h>
 #include <m8r/LocalTimeServer.h>
+#include <m8r/WeatherServer.h>
 #include <WiFiManager.h>
 #include <Ticker.h>
 #include <assert.h>
@@ -114,8 +115,11 @@ static constexpr const char* ConfigPortalName = "MT Galileo Clock";
 static constexpr const char* ConfigPortalPassword = "";
 
 // Time and weather related
-static constexpr char* TimeCity = "America/Los_Angeles";
-MakeROMString(APIKey, "OFTZYMX4MSPG");
+MakeROMString(TimeAPIKey, "OFTZYMX4MSPG");
+MakeROMString(TimeCity, "America/Los_Angeles");
+MakeROMString(WeatherAPIKey, "371015873839446ea41233016191303");
+MakeROMString(WeatherCity, "Los%20Altos,CA");
+
 
 // Buttons
 static constexpr uint8_t SelectButton = D1;
@@ -146,7 +150,8 @@ public:
 		: _stateMachine([this](const String s) { _clockDisplay.showString(s); }, { { Input::SelectLongPress, State::Setup } })
 		, _clockDisplay([this]() { scrollComplete(); })
 		, _buttonManager([this](const m8r::Button& b, m8r::ButtonManager::Event e) { handleButtonEvent(b, e); })
-		, _localTimeServer(APIKey, TimeCity, [this]() { _needsUpdateInfo = true; })
+		, _localTimeServer(TimeAPIKey, TimeCity, [this]() { _needsUpdateTime = true; })
+		, _weatherServer(WeatherAPIKey, WeatherCity, [this]() { _needsUpdateWeather = true; })
 		, _brightnessManager([this](uint32_t b) { handleBrightnessChange(b); }, LightSensor, InvertAmbientLightLevel, MinAmbientLightLevel, MaxAmbientLightLevel, NumberOfBrightnessLevels)
 		, _blinker(BUILTIN_LED, BlinkSampleRate)
 	{
@@ -175,12 +180,23 @@ public:
 	
 	void loop()
 	{
-		if (_needsUpdateInfo) {
-			_needsUpdateInfo = false;
+		if (_needsUpdateTime) {
+			_needsUpdateTime = false;
 			
 			if (_enableNetwork) {
 				if (_localTimeServer.update()) {
 					_currentTime = _localTimeServer.currentTime();
+					_stateMachine.sendInput(Input::Idle);
+				} else {
+					_stateMachine.sendInput(Input::UpdateFail);
+				}
+			}
+		}
+		if (_needsUpdateWeather) {
+			_needsUpdateWeather = false;
+			
+			if (_enableNetwork) {
+				if (_weatherServer.update()) {
 					_stateMachine.sendInput(Input::Idle);
 				} else {
 					_stateMachine.sendInput(Input::UpdateFail);
@@ -230,7 +246,8 @@ private:
 		_blinker.setRate(ConnectedRate);
 
 		delay(500);
-		_needsUpdateInfo = true;
+		_needsUpdateTime = true;
+		_needsUpdateWeather = true;
 		_stateMachine.sendInput(Input::Connected);
 	}
 	
@@ -478,10 +495,10 @@ private:
 		day.trim();
 		time += day;
 		if (_enableNetwork) {
-			// time = time + L_F("  Weather:") + _wUnderground.conditions() +
-			// 			  L_F("  Currently ") + _wUnderground.currentTemp() +
-			// 			  L_F("`  High ") + _wUnderground.highTemp() +
-			// 			  L_F("`  Low ") + _wUnderground.lowTemp() + L_F("`");
+			time = time + L_F("  Weather:") + _weatherServer.conditions() +
+						  L_F("  Currently ") + _weatherServer.currentTemp() +
+						  L_F("`  High ") + _weatherServer.highTemp() +
+						  L_F("`  Low ") + _weatherServer.lowTemp() + L_F("`");
 		}
 		_clockDisplay.showString(time);
 	}
@@ -529,11 +546,13 @@ private:
 	m8r::Max7219Display _clockDisplay;
 	m8r::ButtonManager _buttonManager;
 	m8r::LocalTimeServer _localTimeServer;
+	m8r::WeatherServer _weatherServer;
 	m8r::BrightnessManager _brightnessManager;
 	m8r::Blinker _blinker;
 	Ticker _secondTimer;
 	uint32_t _currentTime = 0;
-	bool _needsUpdateInfo = false;
+	bool _needsUpdateTime = false;
+	bool _needsUpdateWeather = false;
 	bool _needsNetworkReset = false;
 	bool _enteredConfigMode = false;
 	
