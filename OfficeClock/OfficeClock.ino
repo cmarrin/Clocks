@@ -42,8 +42,8 @@ POSSIBILITY OF SUCH DAMAGE.
 // does not use MISO, so it only uses 3 pins. It also has an ambient light sensor
 // on AO, and 3 switches to change functions and settings.
 //
-// It uses the m8r::LocalTimeServer to get the time. Currently weather is not
-// enabled
+// It uses the m8r::LocalTimeServer to get the time and m8r::WeatherServer for
+// current conditions, current, low and high temps
 
 
 // Ports
