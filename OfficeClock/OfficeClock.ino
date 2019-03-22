@@ -51,7 +51,7 @@ POSSIBILITY OF SUCH DAMAGE.
 //      A0 - Light sensor
 //
 //      D0 - GPIO16 (Do Not Use)
-//      D1 - Select Button (active low)
+//      D1 - Select Button (active high)
 //      D2 - Next Button (active low)
 //      D3 - Back Button (active low) (GPIO0, as long as it's high on boot you're OK)
 //      D4 - On board LED
@@ -129,25 +129,17 @@ static constexpr uint8_t BackButton = D3;
 enum class State {
 	Connecting, NetConfig, NetFail, UpdateFail, 
 	Startup, ShowInfo, ShowTime, Idle,
-	Setup,
 	AskResetNetwork, VerifyResetNetwork, ResetNetwork,
-	SetTimeDate, AskSaveTime, SaveTime, 
-		SetTimeHour, SetTimeHourNext,
-		SetTimeMinute, SetTimeMinuteNext, 
-		SetTimeAMPM, SetTimeAMPMNext,
-		SetDateMonth, SetDateMonthNext,
-		SetDateDay, SetDateDayNext,
-		SetDateYear, SetDateYearNext,
 	AskRestart, Restart
 };
 
-enum class Input { Idle, SelectClick, SelectLongPress, Next, Back, ScrollDone, Connected, NetConfig, NetFail, UpdateFail };
+enum class Input { Idle, SelectClick, SelectLongPress, ScrollDone, Connected, NetConfig, NetFail, UpdateFail };
 
 class OfficeClock
 {
 public:
 	OfficeClock()
-		: _stateMachine([this](const String s) { _clockDisplay.showString(s); }, { { Input::SelectLongPress, State::Setup } })
+		: _stateMachine([this](const String s) { _clockDisplay.showString(s); }, { { Input::SelectLongPress, State::AskRestart } })
 		, _clockDisplay([this]() { scrollComplete(); })
 		, _buttonManager([this](const m8r::Button& b, m8r::ButtonManager::Event e) { handleButtonEvent(b, e); })
 		, _localTimeServer(TimeAPIKey, TimeCity, [this]() { _needsUpdateTime = true; })
@@ -169,9 +161,7 @@ public:
       
 		_brightnessManager.start();
 
-		_buttonManager.addButton(m8r::Button(SelectButton, SelectButton));
-		_buttonManager.addButton(m8r::Button(NextButton, NextButton));
-		_buttonManager.addButton(m8r::Button(BackButton, BackButton));
+		_buttonManager.addButton(m8r::Button(SelectButton, SelectButton, true, m8r::Button::PinMode::Float));
 		
 		startStateMachine();
 
@@ -288,30 +278,34 @@ private:
 				, { Input::NetConfig, State::NetConfig }
 			}
 		);
-		_stateMachine.addState(State::NetConfig, L_F("\vWaiting for network. See back of clock or press [select]."),
+		_stateMachine.addState(State::NetConfig, [this] {
+			String s = "\vConfigure WiFi. Connect to the '";
+			s += ConfigPortalName;
+			s += "' wifi network from your computer or mobile device, or press [select] to retry.";
+		},
 			{
-				  { Input::ScrollDone, State::NetConfig }
-				, { Input::SelectClick, State::SetTimeDate }
-				, { Input::Connected, State::Startup }
-				, { Input::NetFail, State::NetFail }
+			      { Input::ScrollDone, State::NetConfig }
+			    , { Input::SelectClick, State::Connecting }
+			    , { Input::Connected, State::Startup }
+			    , { Input::NetFail, State::NetFail }
 			}
 		);
-		_stateMachine.addState(State::NetFail, L_F("\vNetwork failed, press [select]"),
+		_stateMachine.addState(State::NetFail, L_F("\vNetwork failed, press [select] to retry."),
 			{
 				  { Input::ScrollDone, State::NetFail }
   				, { Input::SelectClick, State::Connecting }
 			}
 		);
-		_stateMachine.addState(State::UpdateFail, L_F("\vTime update failed, press [select]"),
+		_stateMachine.addState(State::UpdateFail, L_F("\vTime or weather update failed, press [select] to retry."),
 			{
-			  { Input::ScrollDone, State::UpdateFail }
-				, { Input::SelectClick, State::Startup }
+			      { Input::ScrollDone, State::UpdateFail }
+				, { Input::SelectClick, State::Connecting }
 			}
 		);
 		_stateMachine.addState(State::Startup, [this] { _clockDisplay.showString(startupMessage); },
 			{
 				  { Input::ScrollDone, State::ShowTime }
-    			, { Input::SelectClick, State::Setup }
+    			, { Input::SelectClick, State::ShowTime }
 			}
 		);
 		_stateMachine.addState(State::ShowInfo, [this] { showInfo(); },
@@ -330,158 +324,29 @@ private:
 			}
 		);
 		
-		// Enter Setup
-		_stateMachine.addState(State::Setup, L_F("\aSetup?"),
-			{
-  				  { Input::SelectClick, State::SetTimeDate }
-  				, { Input::Next, State::SetTimeDate }
-				, { Input::Back, State::ShowTime }
-			}
-		);
-		
-		// Save time settings if needed
-		_stateMachine.addState(State::AskSaveTime, [this] {
-			if (_settingTimeChanged) {
-				_settingTimeChanged = false;
-				_clockDisplay.showString("\aSave Time/Date?");
-			} else {
-				_stateMachine.gotoState(State::Setup);
-			}
-		},
-			{
-  				  { Input::SelectClick, State::SaveTime }
-				, { Input::Back, State::Setup }
-			}
-		);
-		_stateMachine.addState(State::SaveTime, [this] {
-			_enableNetwork = false;
-			_currentTime = static_cast<uint32_t>(std::mktime(&_settingTime));
-		}, State::Setup);
-		
-		// Time/Date setting
-		_stateMachine.addState(State::SetTimeDate, L_F("\aTime/date?"),
-			{
-				  { Input::SelectClick, State::SetTimeHour }
-				, { Input::Next, State::AskResetNetwork }
-				, { Input::Back, State::Setup }
-			}
-		);
-		_stateMachine.addState(State::SetTimeHour, [this] { showSettingTime(true); },
-			{
-				  { Input::SelectClick, State::SetTimeMinute }
-				, { Input::Next, State::SetTimeHourNext }
-				, { Input::Back, State::AskSaveTime }
-			}
-		);
-		_stateMachine.addState(State::SetTimeHourNext, [this] {
-			_settingTimeChanged = true;
-			_settingTime.tm_hour += 1;
-			if (_settingTime.tm_hour == 12) {
-				_settingTime.tm_hour = 0;
-			} else if (_settingTime.tm_hour == 24) {
-				_settingTime.tm_hour = 12;
-			}
-		}, State::SetTimeHour);
-		_stateMachine.addState(State::SetTimeMinute, [this] { showSettingTime(false); },
-			{
-				  { Input::SelectClick, State::SetTimeAMPM }
-				, { Input::Next, State::SetTimeMinuteNext }
-				, { Input::Back, State::AskSaveTime }
-			}
-		);
-		_stateMachine.addState(State::SetTimeMinuteNext, [this] {
-			_settingTimeChanged = true;
-			_settingTime.tm_min += 1;
-			if (_settingTime.tm_min >= 60) {
-				_settingTime.tm_min = 0;
-			}
-		}, State::SetTimeMinute);
-		_stateMachine.addState(State::SetTimeAMPM, [this] { showSettingAMPM(); },
-			{
-				  { Input::SelectClick, State::SetDateMonth }
-				, { Input::Next, State::SetTimeAMPMNext }
-				, { Input::Back, State::AskSaveTime }
-			}
-		);
-		_stateMachine.addState(State::SetTimeAMPMNext, [this] {
-			_settingTimeChanged = true;
-			_settingTime.tm_hour += (_settingTime.tm_hour >= 12) ? -12 : 12;
-		}, State::SetTimeAMPM);
-		_stateMachine.addState(State::SetDateMonth, [this] { showSettingDate(true); },
-			{
-				  { Input::SelectClick, State::SetDateDay }
-				, { Input::Next, State::SetDateMonthNext }
-				, { Input::Back, State::AskSaveTime }
-			}
-		);
-		_stateMachine.addState(State::SetDateMonthNext, [this] {
-			_settingTimeChanged = true;
-			_settingTime.tm_mon += 1;
-			if (_settingTime.tm_mon >= 12) {
-				_settingTime.tm_mon = 0;
-			}
-		}, State::SetDateMonth);
-		_stateMachine.addState(State::SetDateDay, [this] { showSettingDate(false); },
-			{
-				  { Input::SelectClick, State::SetDateYear }
-				, { Input::Next, State::SetDateDayNext }
-				, { Input::Back, State::AskSaveTime }
-			}
-		);
-		_stateMachine.addState(State::SetDateDayNext, [this] {
-			_settingTimeChanged = true;
-			_settingTime.tm_mday += 1;
-			
-			// Allow 31 days in each month and fix it later
-			if (_settingTime.tm_mday > 31) {
-				_settingTime.tm_mday = 1;
-			}
-		}, State::SetDateDay);
-		_stateMachine.addState(State::SetDateYear, [this] {
-			_clockDisplay.showString(String("\a") + (_settingTime.tm_year + 1900), 0, 4);
-		},
-			{
-				  { Input::SelectClick, State::SetTimeHour }
-				, { Input::Next, State::SetDateYearNext }
-				, { Input::Back, State::AskSaveTime }
-			}
-		);
-		_stateMachine.addState(State::SetDateYearNext, [this] {
-			_settingTimeChanged = true;
-			_settingTime.tm_year += 1;
-			
-			// Only go up  to the year 2099
-			if (_settingTime.tm_year >= 200) {
-				_settingTime.tm_year = 1;
-			}
-		}, State::SetDateYear);
-		
-		// Network reset
-		_stateMachine.addState(State::AskResetNetwork, L_F("\aReset network?"),
-			{
-				  { Input::SelectClick, State::VerifyResetNetwork }
-				, { Input::Next, State::AskRestart }
-				, { Input::Back, State::Setup }
-			}
-		);
-		_stateMachine.addState(State::VerifyResetNetwork, L_F("\aYou sure?"),
-			{
-				  { Input::SelectClick, State::ResetNetwork }
-				, { Input::Next, State::SetTimeDate }
-				, { Input::Back, State::Setup }
-			}
-		);
-		_stateMachine.addState(State::ResetNetwork, [this] { _needsNetworkReset = true; }, State::NetConfig);
-		
 		// Restart
-		_stateMachine.addState(State::AskRestart, L_F("\aRestart?"),
+		_stateMachine.addState(State::AskRestart, L_F("\aRestart? (long press for yes)"),
 			{
-				  { Input::SelectClick, State::Restart }
-				, { Input::Next, State::SetTimeDate }
-				, { Input::Back, State::Setup }
+				  { Input::SelectClick, State::AskResetNetwork }
+				, { Input::SelectLongPress, State::Restart }
 			}
 		);
 		_stateMachine.addState(State::Restart, [] { ESP.reset(); delay(1000); }, State::Connecting);
+		
+		// Network reset
+		_stateMachine.addState(State::AskResetNetwork, L_F("\aReset network? (long press for yes)"),
+			{
+				  { Input::SelectClick, State::ShowTime }
+				, { Input::SelectLongPress, State::VerifyResetNetwork }
+			}
+		);
+		_stateMachine.addState(State::VerifyResetNetwork, L_F("\aAre you sure? (long press for yes)"),
+			{
+				  { Input::SelectClick, State::ShowTime }
+				, { Input::SelectLongPress, State::ResetNetwork }
+			}
+		);
+		_stateMachine.addState(State::ResetNetwork, [this] { _needsNetworkReset = true; }, State::NetConfig);
 		
 		// Start the state machine
 		_stateMachine.gotoState(State::Connecting);
@@ -513,18 +378,6 @@ private:
 				_stateMachine.sendInput(Input::SelectClick);
 			} else if (event == m8r::ButtonManager::Event::LongPress) {
 				_stateMachine.sendInput(Input::SelectLongPress);
-			}
-			break;
-
-			case NextButton:
-			if (event == m8r::ButtonManager::Event::Click) {
-				_stateMachine.sendInput(Input::Next);
-			}
-			break;
-
-			case BackButton:
-			if (event == m8r::ButtonManager::Event::Click) {
-				_stateMachine.sendInput(Input::Back);
 			}
 			break;
 		}
