@@ -361,9 +361,9 @@ private:
 		time += day;
 		if (_enableNetwork) {
 			time = time + L_F("  Weather:") + _weatherServer.conditions() +
-						  L_F("  Currently ") + _weatherServer.currentTemp() +
-						  L_F("`  High ") + _weatherServer.highTemp() +
-						  L_F("`  Low ") + _weatherServer.lowTemp() + L_F("`");
+						  L_F("  Cur:") + _weatherServer.currentTemp() +
+						  L_F("`  Hi:") + _weatherServer.highTemp() +
+						  L_F("`  Lo:") + _weatherServer.lowTemp() + L_F("`");
 		}
 		_clockDisplay.showString(time);
 	}
