@@ -105,7 +105,7 @@ static constexpr uint32_t LightSensor = A0;
 static constexpr bool InvertAmbientLightLevel = true;
 static constexpr uint32_t MaxAmbientLightLevel = 900;
 static constexpr uint32_t MinAmbientLightLevel = 100;
-static constexpr uint32_t NumberOfBrightnessLevels = 10;
+static constexpr uint32_t NumberOfBrightnessLevels = 15;
 
 // Display related
 MakeROMString(startupMessage, "\vOffice Clock v1.0");
