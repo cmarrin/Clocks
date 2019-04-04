@@ -325,7 +325,7 @@ private:
 		);
 		
 		// Restart
-		_stateMachine.addState(State::AskRestart, L_F("\aRestart? (long press for yes)"),
+		_stateMachine.addState(State::AskRestart, L_F("\vRestart? (long press for yes)"),
 			{
 				  { Input::SelectClick, State::AskResetNetwork }
 				, { Input::SelectLongPress, State::Restart }
@@ -334,13 +334,13 @@ private:
 		_stateMachine.addState(State::Restart, [] { ESP.reset(); delay(1000); }, State::Connecting);
 		
 		// Network reset
-		_stateMachine.addState(State::AskResetNetwork, L_F("\aReset network? (long press for yes)"),
+		_stateMachine.addState(State::AskResetNetwork, L_F("\vReset network? (long press for yes)"),
 			{
 				  { Input::SelectClick, State::ShowTime }
 				, { Input::SelectLongPress, State::VerifyResetNetwork }
 			}
 		);
-		_stateMachine.addState(State::VerifyResetNetwork, L_F("\aAre you sure? (long press for yes)"),
+		_stateMachine.addState(State::VerifyResetNetwork, L_F("\vAre you sure? (long press for yes)"),
 			{
 				  { Input::SelectClick, State::ShowTime }
 				, { Input::SelectLongPress, State::ResetNetwork }
