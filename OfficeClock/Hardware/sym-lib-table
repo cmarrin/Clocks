@@ -1,0 +1,5 @@
+(sym_lib_table
+  (lib (name OfficeClock-rescue)(type Legacy)(uri ${KIPRJMOD}/OfficeClock-rescue.lib)(options "")(descr ""))
+  (lib (name wemos_mini)(type Legacy)(uri ${KIPRJMOD}/library/wemos_mini.lib)(options "")(descr ""))
+  (lib (name Displays)(type Legacy)(uri ${KIPRJMOD}/Displays.lib)(options "")(descr ""))
+)

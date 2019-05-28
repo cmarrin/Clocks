@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name OfficeClock)(type KiCad)(uri ${KIPRJMOD}/OfficeClock.pretty)(options "")(descr ""))
+)

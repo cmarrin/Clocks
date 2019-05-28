@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP FC-16
+D 8x32 LED dot matrix display, +5V VCC, I2C
+K display LED dot matrix graphic
+F https://datasheets.maximintegrated.com/en/ds/MAX7219-MAX7221.pdf
+$ENDCMP
+#
+#End Doc Library
