@@ -125,7 +125,7 @@ static constexpr uint32_t LightSensor = A0;
 static constexpr bool InvertAmbientLightLevel = true;
 static constexpr uint32_t MaxAmbientLightLevel = 900;
 static constexpr uint32_t MinAmbientLightLevel = 100;
-static constexpr uint32_t NumberOfBrightnessLevels = 15;
+static constexpr uint32_t NumberOfBrightnessLevels = 31;
 
 // Display related
 MakeROMString(startupMessage, "\vOffice Clock v1.0");
@@ -143,8 +143,6 @@ MakeROMString(WeatherCity, "94022");
 
 // Buttons
 static constexpr uint8_t SelectButton = D1;
-static constexpr uint8_t NextButton = D2;
-static constexpr uint8_t BackButton = D3;
 
 enum class State {
 	Connecting, NetConfig, NetFail, UpdateFail, 
@@ -181,7 +179,7 @@ public:
       
 		_brightnessManager.start();
 
-		_buttonManager.addButton(m8r::Button(SelectButton, SelectButton, true, m8r::Button::PinMode::Float));
+		_buttonManager.addButton(m8r::Button(SelectButton, SelectButton, false, m8r::Button::PinMode::Pullup));
 		
 		startStateMachine();
 
