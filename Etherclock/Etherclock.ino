@@ -62,7 +62,7 @@ POSSIBILITY OF SUCH DAMAGE.
 //      D0 - GPIO16 (Do Not Use)
 //      D1 - SCL
 //      D2 - SDA
-//      D3 - N/O Button (This is the Flash switch, as long as it's high on boot you're OK
+//      D3 - N/O Button (This is the Flash switch, as long as it's high on boot you're OK)
 //      D4 - On board LED
 //      D5 - X
 //      D6 - X
