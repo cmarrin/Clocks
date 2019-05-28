@@ -46,22 +46,33 @@ POSSIBILITY OF SUCH DAMAGE.
 // current conditions, current, low and high temps
 
 
-// Ports
+// Wemos Pinout
 //
 //      A0 - Light sensor
 //
-//      D0 - GPIO16 (Do Not Use)
 //      D1 - Select Button (active high)
-//      D2 - Next Button (active low)
-//      D3 - Back Button (active low) (GPIO0, as long as it's high on boot you're OK)
 //      D4 - On board LED
 //      D5 - Matrix CLK
-//      D6 - X
 //      D7 - Matrix DIN
 //      D8 - Matrix CS
 //
-// Since the MAX7219 is a 5v part and the ESP8266 is 3.3v, a 74HCT367 is used to adapt
-// the voltage levels:
+// Light sensor
+//
+//                           Wemos A0
+//                             |
+//                             |
+//		3.3v -------- 47KΩ ----|---- Sensor -------- GND
+//                                   ^
+//                                   |
+//                             Longer Lead
+//
+// Button
+//
+//		D1 -------- Button (N/O) -------- GND
+// 74HCT367
+//
+// 		Since the MAX7219 is a 5v part and the ESP8266 is 3.3v, a 74HCT367 is used to adapt
+// 		the voltage levels:
 //
 //		74HCT367 pin
 //
@@ -73,11 +84,20 @@ POSSIBILITY OF SUCH DAMAGE.
 //			6		Wemos D8 (CS)
 //			7 		MAX7219 CS
 //			8		GND
+//			9		N/C
+//			10		GND
+//			11		N/C
+//			12		GND
+//			13		N/C
+//			14		GND
 //			15		GND
 //			16		5V
 //
-// Vcc and GND on the display, along with the same pins on the 74HCT367 connect to 5v and GND
-// on the Wemos
+// Power
+//
+//		Connect: Wemos 5v, 74HCT367 pin 16, Max7219 Vcc
+//		Connect: Wemos 3.3v, Light sensor (through 47KΩ resistor)
+//		Connect: Wemos GND, 74HCT367 (pins 1, 8, 10, 12, 14, 15), Light sensor (shorter lead), Max7219 GND, One end of Button
 
 #include <m8r.h>
 #include <m8r/Blinker.h>
