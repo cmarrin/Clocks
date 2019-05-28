@@ -137,8 +137,8 @@ static constexpr const char* ConfigPortalPassword = "";
 // Time and weather related
 MakeROMString(TimeAPIKey, "OFTZYMX4MSPG");
 MakeROMString(TimeCity, "America/Los_Angeles");
-MakeROMString(WeatherAPIKey, "371015873839446ea41233016191303");
-MakeROMString(WeatherCity, "Los%20Altos,CA");
+MakeROMString(WeatherAPIKey, "1a3bb16aff43416b9c9144158191705");
+MakeROMString(WeatherCity, "94022");
 
 
 // Buttons
