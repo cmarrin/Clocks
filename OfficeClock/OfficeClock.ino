@@ -300,6 +300,7 @@ private:
 			String s = "\vConfigure WiFi. Connect to the '";
 			s += ConfigPortalName;
 			s += "' wifi network from your computer or mobile device, or press [select] to retry.";
+			_clockDisplay.showString(s);
 		},
 			{
 			      { Input::ScrollDone, State::NetConfig }
@@ -345,7 +346,8 @@ private:
 		// Restart
 		_stateMachine.addState(State::AskRestart, L_F("\vRestart? (long press for yes)"),
 			{
-				  { Input::SelectClick, State::AskResetNetwork }
+			  	  { Input::ScrollDone, State::AskRestart }
+				, { Input::SelectClick, State::AskResetNetwork }
 				, { Input::SelectLongPress, State::Restart }
 			}
 		);
@@ -354,13 +356,15 @@ private:
 		// Network reset
 		_stateMachine.addState(State::AskResetNetwork, L_F("\vReset network? (long press for yes)"),
 			{
-				  { Input::SelectClick, State::ShowTime }
+		  	  	  { Input::ScrollDone, State::AskResetNetwork }
+				, { Input::SelectClick, State::ShowTime }
 				, { Input::SelectLongPress, State::VerifyResetNetwork }
 			}
 		);
 		_stateMachine.addState(State::VerifyResetNetwork, L_F("\vAre you sure? (long press for yes)"),
 			{
-				  { Input::SelectClick, State::ShowTime }
+		  	  	  { Input::ScrollDone, State::VerifyResetNetwork }
+				, { Input::SelectClick, State::ShowTime }
 				, { Input::SelectLongPress, State::ResetNetwork }
 			}
 		);
