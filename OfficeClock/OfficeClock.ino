@@ -135,9 +135,7 @@ static constexpr const char* ConfigPortalName = "MT Galileo Clock";
 static constexpr const char* ConfigPortalPassword = "";
 
 // Time and weather related
-MakeROMString(TimeAPIKey, "OFTZYMX4MSPG");
 MakeROMString(TimeCity, "America/Los_Angeles");
-MakeROMString(WeatherAPIKey, "4a5c6eaf78d449f88d5182555210312");
 MakeROMString(WeatherCity, "93405");
 
 
@@ -160,8 +158,8 @@ public:
 		: _stateMachine([this](const String s) { _clockDisplay.showString(s); }, { { Input::SelectLongPress, State::AskRestart } })
 		, _clockDisplay([this]() { scrollComplete(); })
 		, _buttonManager([this](const mil::Button& b, mil::ButtonManager::Event e) { handleButtonEvent(b, e); })
-		, _localTimeServer(TimeAPIKey, TimeCity, [this]() { _needsUpdateTime = true; })
-		, _weatherServer(WeatherAPIKey, WeatherCity, [this]() { _needsUpdateWeather = true; })
+		, _localTimeServer(TimeCity, [this]() { _needsUpdateTime = true; })
+		, _weatherServer(WeatherCity, [this]() { _needsUpdateWeather = true; })
 		, _brightnessManager([this](uint32_t b) { handleBrightnessChange(b); }, 
 							 LightSensor, InvertAmbientLightLevel, MinAmbientLightLevel, 
 							 MaxAmbientLightLevel, NumberOfBrightnessLevels)

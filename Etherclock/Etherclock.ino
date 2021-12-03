@@ -115,7 +115,6 @@ MakeROMString(startupMessage, "EC-4");
 
 // Time related
 static constexpr char* TimeCity = "America/Los_Angeles";
-MakeROMString(APIKey, "OFTZYMX4MSPG");
 
 // Buttons
 static constexpr uint8_t SelectButton = D3;
@@ -132,7 +131,7 @@ public:
 	Etherclock()
 		: _stateMachine([this](const String s) { _clockDisplay.print(s.c_str()); })
 		, _buttonManager([this](const mil::Button& b, mil::ButtonManager::Event e) { handleButtonEvent(b, e); })
-		, _localTimeServer(APIKey, TimeCity, [this]() { _needsUpdateInfo = true; })
+		, _localTimeServer(TimeCity, [this]() { _needsUpdateInfo = true; })
 		, _brightnessManager([this](uint32_t b) { handleBrightnessChange(b); }, 
 							 LightSensor, InvertAmbientLightLevel, MinAmbientLightLevel, MaxAmbientLightLevel,
 							 NumberOfBrightnessLevels, MinBrightness, MaxBrightness)
