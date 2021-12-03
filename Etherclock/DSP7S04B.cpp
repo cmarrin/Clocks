@@ -38,7 +38,7 @@ Contact us at source [at] embeddedadventures.com
 // This version works over i2c
 //
 
-#include <m8r.h>
+#include <mil.h>
 #include "DSP7S04B.h"
 
 void DSP7S04B::setDot(uint8_t position, bool on)
@@ -60,7 +60,7 @@ void DSP7S04B::setColon(bool on) {
 
 void DSP7S04B::print(const char* str)
 {
-	m8r::cout << "*** print '" << str << "', addr=" << _addr << "\n";
+	mil::cout << "*** print '" << str << "', addr=" << _addr << "\n";
 	uint8_t count;
 
     Wire.beginTransmission(_addr);

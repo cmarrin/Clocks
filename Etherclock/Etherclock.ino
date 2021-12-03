@@ -38,7 +38,7 @@ POSSIBILITY OF SUCH DAMAGE.
 // Board: LOLIN(WEMOS) D1 R2 & mini
 
 // Etherclock3 is an ESP8266 (NodeMCU) based digital clock, using the I2C display DSP7S04B.
-// Time information comes from m8r::LocalTimeServer
+// Time information comes from mil::LocalTimeServer
 //
 // The hardware has a button on top of the box, used to display the current date
 
@@ -76,13 +76,13 @@ POSSIBILITY OF SUCH DAMAGE.
 //
 // Missing letters: kmqvwxyz
 
-#include <m8r.h>
-#include <m8r/Blinker.h>
-#include <m8r/BrightnessManager.h>
-#include <m8r/ButtonManager.h>
+#include <mil.h>
+#include <mil/Blinker.h>
+#include <mil/BrightnessManager.h>
+#include <mil/ButtonManager.h>
 #include "DSP7S04B.h"
-#include <m8r/StateMachine.h>
-#include <m8r/LocalTimeServer.h>
+#include <mil/StateMachine.h>
+#include <mil/LocalTimeServer.h>
 #include <WiFiManager.h>
 #include <Ticker.h>
 #include <assert.h>
@@ -131,7 +131,7 @@ class Etherclock
 public:
 	Etherclock()
 		: _stateMachine([this](const String s) { _clockDisplay.print(s.c_str()); })
-		, _buttonManager([this](const m8r::Button& b, m8r::ButtonManager::Event e) { handleButtonEvent(b, e); })
+		, _buttonManager([this](const mil::Button& b, mil::ButtonManager::Event e) { handleButtonEvent(b, e); })
 		, _localTimeServer(APIKey, TimeCity, [this]() { _needsUpdateInfo = true; })
 		, _brightnessManager([this](uint32_t b) { handleBrightnessChange(b); }, 
 							 LightSensor, InvertAmbientLightLevel, MinAmbientLightLevel, MaxAmbientLightLevel,
@@ -146,13 +146,13 @@ public:
 		Serial.begin(115200);
 		delay(500);
   
-		m8r::cout << "\n\nStarting " << startupMessage << "...\n\n";
+		mil::cout << "\n\nStarting " << startupMessage << "...\n\n";
 		_clockDisplay.print(String(startupMessage).c_str());
 	    _clockDisplay.setBrightness(50);
 		
 		_brightnessManager.start();
 		
-		_buttonManager.addButton(m8r::Button(SelectButton, SelectButton));
+		_buttonManager.addButton(mil::Button(SelectButton, SelectButton));
 		startStateMachine();
 		
 		_secondTimer.attach_ms(1000, [this]()
@@ -196,18 +196,18 @@ private:
 		//wifiManager.resetSettings();			
 		
 		wifiManager.setAPCallback([this](WiFiManager* wifiManager) {
-			m8r::cout << L_F("Entered config mode:ip=") << WiFi.softAPIP() << L_F(", ssid='") << wifiManager->getConfigPortalSSID() << L_F("'\n");
+			mil::cout << L_F("Entered config mode:ip=") << WiFi.softAPIP() << L_F(", ssid='") << wifiManager->getConfigPortalSSID() << L_F("'\n");
 			_blinker.setRate(ConfigRate);
 		});
 
 		if (!wifiManager.autoConnect(ConfigPortalName)) {
-			m8r::cout << L_F("*** Failed to connect and hit timeout\n");
+			mil::cout << L_F("*** Failed to connect and hit timeout\n");
 			ESP.reset();
 			delay(1000);
 		}
 		
         WiFiMode_t currentMode = WiFi.getMode();
-		m8r::cout << L_F("Wifi connected, Mode=") << wifiManager.getModeString(currentMode) << L_F(", IP=") << WiFi.localIP() << m8r::endl;
+		mil::cout << L_F("Wifi connected, Mode=") << wifiManager.getModeString(currentMode) << L_F(", IP=") << WiFi.localIP() << mil::endl;
 	
 		_blinker.setRate(ConnectedRate);
 
@@ -360,13 +360,13 @@ private:
 	    showChars(s, 0, true);
 	}
 
-	void handleButtonEvent(const m8r::Button& button, m8r::ButtonManager::Event event)
+	void handleButtonEvent(const mil::Button& button, mil::ButtonManager::Event event)
 	{
 		switch(button.id()) {
 			case SelectButton:
-			if (event == m8r::ButtonManager::Event::Click) {
+			if (event == mil::ButtonManager::Event::Click) {
 				_stateMachine.sendInput(Input::SelectClick);
-			} else if (event == m8r::ButtonManager::Event::LongPress) {
+			} else if (event == mil::ButtonManager::Event::LongPress) {
 				_stateMachine.sendInput(Input::SelectLongPress);
 			}
 			break;
@@ -376,15 +376,15 @@ private:
 	void handleBrightnessChange(uint32_t brightness)
 	{
 		_clockDisplay.setBrightness(brightness);
-		m8r::cout << "setting brightness to " << brightness << "\n";
+		mil::cout << "setting brightness to " << brightness << "\n";
 	}
 	
-	m8r::StateMachine<State, Input> _stateMachine;
+	mil::StateMachine<State, Input> _stateMachine;
 	DSP7S04B _clockDisplay;
-	m8r::ButtonManager _buttonManager;
-	m8r::LocalTimeServer _localTimeServer;
-	m8r::BrightnessManager _brightnessManager;
-	m8r::Blinker _blinker;
+	mil::ButtonManager _buttonManager;
+	mil::LocalTimeServer _localTimeServer;
+	mil::BrightnessManager _brightnessManager;
+	mil::Blinker _blinker;
 	Ticker _secondTimer;
 	uint32_t _currentTime = 0;
 	bool _needsUpdateInfo = false;

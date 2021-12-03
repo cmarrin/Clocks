@@ -177,7 +177,7 @@ public:
 		
 	void setString(uint8_t n, const char* s)
 	{
-		m8r::cout << "Setting string:'" << s << "' on display "<< n << "\n";
+		mil::cout << "Setting string:'" << s << "' on display "<< n << "\n";
 	}
 	
 	void setPM(bool b) { }
@@ -247,12 +247,12 @@ private:
 
 			if (brightness != _currentBrightness) {
 				_currentBrightness = brightness;
-				m8r::cout << "Setting brightness:'" << _currentBrightness << "'\n";
+				mil::cout << "Setting brightness:'" << _currentBrightness << "'\n";
 				
 				float v = _currentBrightness;
 				v /= NumberOfBrightnessLevels - 1;
 			    clockDisplay.setBrightness(v);
-				m8r::cout << "    level:'" << v << "'\n";
+				mil::cout << "    level:'" << v << "'\n";
 			}
 		}
 	}
@@ -308,7 +308,7 @@ static void showChars(const String& string, bool pm, bool colon)
     //         blank = true;
     //
     //     uint8_t glyph1, glyph2 = 0;
-    //     bool hasSecondGlyph = m8r::SevenSegmentDisplay::glyphForChar(blank ? ' ' : string.c_str()[stringIndex], glyph1, glyph2);
+    //     bool hasSecondGlyph = mil::SevenSegmentDisplay::glyphForChar(blank ? ' ' : string.c_str()[stringIndex], glyph1, glyph2);
     //
     //     shiftReg.send(glyph1 | ((dps & 0x08) ? 0x80 : 0), 8);
     //
@@ -411,7 +411,7 @@ void setup()
     Wire.begin();
     Serial.begin(115200);
 	
-	m8r::cout << "\n\nOffice Clock v1.0\n\n";
+	mil::cout << "\n\nOffice Clock v1.0\n\n";
 		
 	dlx3416 = new DLX3416(DLX3416DATA, DLX3416CLK, DLX3416WA0, DLX3416A1, DLX3416WR);
 	
@@ -449,7 +449,7 @@ void setup()
     }
 
     //if you get here you have connected to the WiFi
-    m8r::cout << "Wifi connected, IP=" << WiFi.localIP() << "\n";
+    mil::cout << "Wifi connected, IP=" << WiFi.localIP() << "\n";
 	blinker.setRate(ConnectedRate);
 	needWeatherLookup = true;
 }
@@ -504,7 +504,7 @@ void setCheckWeather()
 void checkWeather()
 {
     HTTPClient http;
-	m8r::cout << "Getting weather and time feed...\n";
+	mil::cout << "Getting weather and time feed...\n";
 
 	String wuURL;
 	wuURL += "http://api.wunderground.com/api/";
@@ -516,17 +516,17 @@ void checkWeather()
 	wuURL += ".json?a=";
 	wuURL += millis();
 	
-	m8r::cout << "URL='" << wuURL << "'\n";
+	mil::cout << "URL='" << wuURL << "'\n";
 	
 	http.begin(wuURL);
     int httpCode = http.GET();
 
     if(httpCode > 0) {
-		m8r::cout << "    got response: " << httpCode << "\n";
+		mil::cout << "    got response: " << httpCode << "\n";
 
      	if(httpCode == HTTP_CODE_OK) {
         	String payload = http.getString();
-			m8r::cout << "Got payload, parsing...\n";
+			mil::cout << "Got payload, parsing...\n";
 			JsonStreamingParser parser;
 			MyJsonListener listener;
 			parser.setListener(&listener);
@@ -538,7 +538,7 @@ void checkWeather()
 			needsUpdateDisplay = true;
 		}
 	} else {
-    	m8r::cout << "[HTTP] GET... failed, error: " << http.errorToString(httpCode) << "\n";
+    	mil::cout << "[HTTP] GET... failed, error: " << http.errorToString(httpCode) << "\n";
     }
 
     http.end();
@@ -549,7 +549,7 @@ void checkWeather()
 	int32_t timeToNextHour = (60 * 60) - (static_cast<int32_t>(currentTime % (60 * 60))) + 60;
 	ticker.once(timeToNextHour, setCheckWeather);
 	
-	m8r::cout << "Time set to:" << ctime(reinterpret_cast<time_t*>(&currentTime)) << ", next setting in " << timeToNextHour << " seconds\n";
+	mil::cout << "Time set to:" << ctime(reinterpret_cast<time_t*>(&currentTime)) << ", next setting in " << timeToNextHour << " seconds\n";
 }
 
 uint32_t startupMessageIndex = 0;
@@ -579,8 +579,8 @@ void loop()
     if(nextDebugPrint < currentTime) {
         nextDebugPrint = currentTime + DebugPrintRate;
 		
-		// m8r::cout << "***** current brightness=" << brightnessManager.brightness() << "\n";
-		// m8r::cout << "***** Ambient Light Level = " << analogRead(LIGHT_SENSOR) << "\n";
+		// mil::cout << "***** current brightness=" << brightnessManager.brightness() << "\n";
+		// mil::cout << "***** Ambient Light Level = " << analogRead(LIGHT_SENSOR) << "\n";
     }
 	
 	// Get the time and weather if needed

@@ -42,7 +42,7 @@ POSSIBILITY OF SUCH DAMAGE.
 // does not use MISO, so it only uses 3 pins. It also has an ambient light sensor
 // on AO, and 3 switches to change functions and settings.
 //
-// It uses the m8r::LocalTimeServer to get the time and m8r::WeatherServer for
+// It uses the mil::LocalTimeServer to get the time and mil::WeatherServer for
 // current conditions, current, low and high temps
 
 
@@ -99,14 +99,14 @@ POSSIBILITY OF SUCH DAMAGE.
 //		Connect: Wemos 3.3v, Light sensor (through 47KΩ resistor)
 //		Connect: Wemos GND, 74HCT367 (pins 1, 8, 10, 12, 14, 15), Light sensor (shorter lead), Max7219 GND, One end of Button
 
-#include <m8r.h>
-#include <m8r/Blinker.h>
-#include <m8r/BrightnessManager.h>
-#include <m8r/ButtonManager.h>
-#include <m8r/Max7219Display.h>
-#include <m8r/StateMachine.h>
-#include <m8r/LocalTimeServer.h>
-#include <m8r/WeatherServer.h>
+#include <mil.h>
+#include <mil/Blinker.h>
+#include <mil/BrightnessManager.h>
+#include <mil/ButtonManager.h>
+#include <mil/Max7219Display.h>
+#include <mil/StateMachine.h>
+#include <mil/LocalTimeServer.h>
+#include <mil/WeatherServer.h>
 #include <WiFiManager.h>
 #include <Ticker.h>
 #include <assert.h>
@@ -159,10 +159,12 @@ public:
 	OfficeClock()
 		: _stateMachine([this](const String s) { _clockDisplay.showString(s); }, { { Input::SelectLongPress, State::AskRestart } })
 		, _clockDisplay([this]() { scrollComplete(); })
-		, _buttonManager([this](const m8r::Button& b, m8r::ButtonManager::Event e) { handleButtonEvent(b, e); })
+		, _buttonManager([this](const mil::Button& b, mil::ButtonManager::Event e) { handleButtonEvent(b, e); })
 		, _localTimeServer(TimeAPIKey, TimeCity, [this]() { _needsUpdateTime = true; })
 		, _weatherServer(WeatherAPIKey, WeatherCity, [this]() { _needsUpdateWeather = true; })
-		, _brightnessManager([this](uint32_t b) { handleBrightnessChange(b); }, LightSensor, InvertAmbientLightLevel, MinAmbientLightLevel, MaxAmbientLightLevel, NumberOfBrightnessLevels)
+		, _brightnessManager([this](uint32_t b) { handleBrightnessChange(b); }, 
+							 LightSensor, InvertAmbientLightLevel, MinAmbientLightLevel, 
+							 MaxAmbientLightLevel, NumberOfBrightnessLevels)
 		, _blinker(BUILTIN_LED, BlinkSampleRate)
 	{
 		memset(&_settingTime, 0, sizeof(_settingTime));
@@ -175,11 +177,11 @@ public:
 		Serial.begin(115200);
 		delay(500);
   
-		m8r::cout << "\n\n" << startupMessage << "\n\n";
+		mil::cout << "\n\n" << startupMessage << "\n\n";
       
 		_brightnessManager.start();
 
-		_buttonManager.addButton(m8r::Button(SelectButton, SelectButton, false, m8r::Button::PinMode::Pullup));
+		_buttonManager.addButton(mil::Button(SelectButton, SelectButton, false, mil::Button::PinMode::Pullup));
 		
 		startStateMachine();
 
@@ -229,14 +231,14 @@ private:
 		}
 		
 		wifiManager.setAPCallback([this](WiFiManager* wifiManager) {
-			m8r::cout << L_F("Entered config mode:ip=") << WiFi.softAPIP() << L_F(", ssid='") << wifiManager->getConfigPortalSSID() << L_F("'\n");
+			mil::cout << L_F("Entered config mode:ip=") << WiFi.softAPIP() << L_F(", ssid='") << wifiManager->getConfigPortalSSID() << L_F("'\n");
 			_blinker.setRate(ConfigRate);
 			_stateMachine.sendInput(Input::NetConfig);
 			_enteredConfigMode = true;
 		});
 
 		if (!wifiManager.autoConnect(ConfigPortalName)) {
-			m8r::cout << L_F("*** Failed to connect and hit timeout\n");
+			mil::cout << L_F("*** Failed to connect and hit timeout\n");
 			ESP.reset();
 			delay(1000);
 		}
@@ -248,7 +250,7 @@ private:
 		}
 
         WiFiMode_t currentMode = WiFi.getMode();
-		m8r::cout << L_F("Wifi connected, Mode=") << wifiManager.getModeString(currentMode) << L_F(", IP=") << WiFi.localIP() << m8r::endl;
+		mil::cout << L_F("Wifi connected, Mode=") << wifiManager.getModeString(currentMode) << L_F(", IP=") << WiFi.localIP() << mil::endl;
 	
 		_enableNetwork = true;
 		_blinker.setRate(ConnectedRate);
@@ -392,13 +394,13 @@ private:
 	
 	void scrollComplete() { _stateMachine.sendInput(Input::ScrollDone); }
 
-	void handleButtonEvent(const m8r::Button& button, m8r::ButtonManager::Event event)
+	void handleButtonEvent(const mil::Button& button, mil::ButtonManager::Event event)
 	{
 		switch(button.id()) {
 			case SelectButton:
-			if (event == m8r::ButtonManager::Event::Click) {
+			if (event == mil::ButtonManager::Event::Click) {
 				_stateMachine.sendInput(Input::SelectClick);
-			} else if (event == m8r::ButtonManager::Event::LongPress) {
+			} else if (event == mil::ButtonManager::Event::LongPress) {
 				_stateMachine.sendInput(Input::SelectLongPress);
 			}
 			break;
@@ -408,7 +410,7 @@ private:
 	void handleBrightnessChange(uint32_t brightness)
 	{
 		_clockDisplay.setBrightness(brightness);
-		m8r::cout << "setting brightness to " << brightness << "\n";
+		mil::cout << "setting brightness to " << brightness << "\n";
 	}
 	
 	static void secondTick(OfficeClock* self)
@@ -417,13 +419,13 @@ private:
 		self->_stateMachine.sendInput(Input::Idle);
 	}
 
-	m8r::StateMachine<State, Input> _stateMachine;
-	m8r::Max7219Display _clockDisplay;
-	m8r::ButtonManager _buttonManager;
-	m8r::LocalTimeServer _localTimeServer;
-	m8r::WeatherServer _weatherServer;
-	m8r::BrightnessManager _brightnessManager;
-	m8r::Blinker _blinker;
+	mil::StateMachine<State, Input> _stateMachine;
+	mil::Max7219Display _clockDisplay;
+	mil::ButtonManager _buttonManager;
+	mil::LocalTimeServer _localTimeServer;
+	mil::WeatherServer _weatherServer;
+	mil::BrightnessManager _brightnessManager;
+	mil::Blinker _blinker;
 	Ticker _secondTimer;
 	uint32_t _currentTime = 0;
 	bool _needsUpdateTime = false;
