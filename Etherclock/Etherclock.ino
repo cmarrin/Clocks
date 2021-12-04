@@ -77,65 +77,25 @@ POSSIBILITY OF SUCH DAMAGE.
 // Missing letters: kmqvwxyz
 
 #include <mil.h>
-#include <mil/Blinker.h>
-#include <mil/BrightnessManager.h>
-#include <mil/ButtonManager.h>
+#include <mil/Clock.h>
 #include "DSP7S04B.h"
-#include <mil/StateMachine.h>
-#include <mil/LocalTimeServer.h>
-#include <WiFiManager.h>
-#include <Ticker.h>
-#include <assert.h>
-#include <time.h>
 
 // All rates in ms
-
-// Number of ms LED stays off in each mode
-static constexpr uint32_t ConnectingRate = 400;
-static constexpr uint32_t ConfigRate = 100;
-static constexpr uint32_t ConnectedRate = 1900;
-static constexpr uint32_t BlinkSampleRate = 10;
-
-// BrightnessManager settings
-static constexpr uint32_t LightSensor = A0;
-static constexpr bool InvertAmbientLightLevel = false;
-static constexpr uint32_t MaxAmbientLightLevel = 800;
-static constexpr uint32_t MinAmbientLightLevel = 0;
-static constexpr uint32_t NumberOfBrightnessLevels = 255;
-static constexpr int32_t MinBrightness = 0;
-static constexpr int32_t MaxBrightness = 64;
 
 static constexpr uint32_t CountdownTimerSeconds = 20 * 60;
 static constexpr uint32_t ShowInfoSeconds = 5;
 
 static constexpr const char* ConfigPortalName = "MT Etherclock";
 
-// Display related
-MakeROMString(startupMessage, "EC-4");
-
-// Time related
 static constexpr char* TimeCity = "America/Los_Angeles";
-
-// Buttons
+static constexpr char* WeatherCity = "93405";
 static constexpr uint8_t SelectButton = D3;
 
-enum class State {
-	Connecting, ShowInfo, ShowTime, CountdownTimerAsk, CountdownTimerStart, CountdownTimerCount, CountdownTimerDone,
-};
-
-enum class Input { Connected, ShowTime, SelectClick, SelectLongPress, CountdownTimerCount, CountdownTimerDone, ShowInfoDone };
-
-class Etherclock
+class Etherclock : public mil::Clock
 {
 public:
 	Etherclock()
-		: _stateMachine([this](const String s) { _clockDisplay.print(s.c_str()); })
-		, _buttonManager([this](const mil::Button& b, mil::ButtonManager::Event e) { handleButtonEvent(b, e); })
-		, _localTimeServer(TimeCity, [this]() { _needsUpdateInfo = true; })
-		, _brightnessManager([this](uint32_t b) { handleBrightnessChange(b); }, 
-							 LightSensor, InvertAmbientLightLevel, MinAmbientLightLevel, MaxAmbientLightLevel,
-							 NumberOfBrightnessLevels, MinBrightness, MaxBrightness)
-		, _blinker(BUILTIN_LED, BlinkSampleRate)
+		: mil::Clock("EC-4", "Conn", TimeCity, WeatherCity, SelectButton, ConfigPortalName)
 	{
 	}
 	
@@ -144,137 +104,25 @@ public:
 	    Wire.begin();
 		Serial.begin(115200);
 		delay(500);
-  
-		mil::cout << "\n\nStarting " << startupMessage << "...\n\n";
-		_clockDisplay.print(String(startupMessage).c_str());
-	    _clockDisplay.setBrightness(50);
-		
-		_brightnessManager.start();
-		
-		_buttonManager.addButton(mil::Button(SelectButton, SelectButton));
-		startStateMachine();
-		
-		_secondTimer.attach_ms(1000, [this]()
-		{
-			_currentTime++;
-			if (_showInfoTimeout > 0) {
-				if (--_showInfoTimeout == 0) {
-					_stateMachine.sendInput(Input::ShowInfoDone);
-					return;
-				}
-			} else if (_countdownSecondsRemaining > 0) {
-				if (--_countdownSecondsRemaining == 0) {
-					_stateMachine.sendInput(Input::CountdownTimerDone);
-				} else {
-					showCountdown();
-				}
-			}
-			_stateMachine.sendInput(Input::ShowTime);
-		});
-	}
+		setBrightness(50);
+		mil::Clock::setup();
+  	}
 	
 	void loop()
 	{
-		if (_needsUpdateInfo) {
-			_needsUpdateInfo = false;
-			
-			if (_localTimeServer.update()) {
-				_currentTime = _localTimeServer.currentTime();
-				_stateMachine.sendInput(Input::ShowTime);
-			}
-		}
+		mil::Clock::loop();
 	}
 	
 private:
-	void startNetwork()
-	{
-		_blinker.setRate(ConnectingRate);
-		
-		WiFiManager wifiManager;
-
-		//wifiManager.resetSettings();			
-		
-		wifiManager.setAPCallback([this](WiFiManager* wifiManager) {
-			mil::cout << L_F("Entered config mode:ip=") << WiFi.softAPIP() << L_F(", ssid='") << wifiManager->getConfigPortalSSID() << L_F("'\n");
-			_blinker.setRate(ConfigRate);
-		});
-
-		if (!wifiManager.autoConnect(ConfigPortalName)) {
-			mil::cout << L_F("*** Failed to connect and hit timeout\n");
-			ESP.reset();
-			delay(1000);
-		}
-		
-        WiFiMode_t currentMode = WiFi.getMode();
-		mil::cout << L_F("Wifi connected, Mode=") << wifiManager.getModeString(currentMode) << L_F(", IP=") << WiFi.localIP() << mil::endl;
-	
-		_blinker.setRate(ConnectedRate);
-
-		delay(500);
-		_needsUpdateInfo = true;
-	}
-	
-	void startStateMachine()
-	{
-		_stateMachine.addState(State::Connecting, [this] { startNetwork(); },
-			{
-				  { Input::ShowTime, State::ShowTime }
-			}
-		);
-
-		_stateMachine.addState(State::ShowTime, [this] { showTime(); },
-			{
-			  	  { Input::SelectClick, State::ShowInfo }
-			  	, { Input::SelectLongPress, State::CountdownTimerAsk }
-				, { Input::ShowTime, State::ShowTime }
-			}
-		);
-		
-		_stateMachine.addState(State::ShowInfo, [this] { showInfo(); _showInfoTimeout = ShowInfoSeconds; },
-			{
-				  { Input::ShowInfoDone, State::ShowTime }
-				, { Input::SelectClick, State::ShowTime }
-			}
-		);
-		
-		// Countdown
-		_stateMachine.addState(State::CountdownTimerAsk, L_F("cnt7"),
-			{
-  				  { Input::SelectClick, State::ShowTime }
-  				, { Input::SelectLongPress, State::CountdownTimerStart }
-			}
-		);
-		
-		_stateMachine.addState(State::CountdownTimerStart, [this] { _countdownSecondsRemaining = CountdownTimerSeconds; }, State::CountdownTimerCount);
-		
-		_stateMachine.addState(State::CountdownTimerCount, [this] {
-			showCountdown();
-		},
-			{
-			      { Input::CountdownTimerCount, State::CountdownTimerCount }
-			    , { Input::CountdownTimerDone, State::CountdownTimerDone }
-				, { Input::SelectClick, State::ShowTime }
-			}
-		);
-		
-		_stateMachine.addState(State::CountdownTimerDone, L_F("donE"),
-			{
-  				  { Input::SelectClick, State::ShowTime }
-			}
-		);
-
-		_stateMachine.gotoState(State::Connecting);
-	}
-	
 	void showChars(const String& string, uint8_t dps, bool colon)
 	{
-		static String lastStringSent;
-		if (string == lastStringSent) {
+		if (string.length() != 4)
+		{
+			showChars("Err1", 0, false);
+			mil::cout << "***** Invalid string display: '" << string << "'\n";
 			return;
 		}
-		lastStringSent = string;
-	
-		assert(string.length() == 4);
+		
 	    _clockDisplay.clearDisplay();
 	    _clockDisplay.print(const_cast<char*>(string.c_str()));
 	
@@ -288,11 +136,12 @@ private:
 		}
 	}
 
-	void showTime()
+	virtual void showTime() override
 	{
 	    String string = "EEEE";
 	    uint8_t dps = 0;
-		struct tm* timeinfo = localtime(reinterpret_cast<time_t*>(&_currentTime));
+		uint32_t t = currentTime();
+		struct tm* timeinfo = localtime(reinterpret_cast<time_t*>(&t));
 		uint8_t hour = timeinfo->tm_hour;
 		if (hour == 0) {
 			hour = 12;
@@ -318,11 +167,12 @@ private:
 	    showChars(string, dps, true);
 	}
 
-	void showInfo()
+	virtual void showInfo() override
 	{
 	    String string = "EEEE";
     
-		struct tm* timeinfo = localtime(reinterpret_cast<time_t*>(&_currentTime));
+		uint32_t t = currentTime();
+		struct tm* timeinfo = localtime(reinterpret_cast<time_t*>(&t));
 		uint8_t month = timeinfo->tm_mon + 1;
 		uint8_t date = timeinfo->tm_mday;
 		if (month < 10) {
@@ -336,6 +186,17 @@ private:
 		}
 		string += String(date);
 	    showChars(string, 0, false);
+	}
+	
+	virtual void showString(const String& s) override
+	{
+		showChars(s, 0, false);
+		startShowDoneTimer(2000);
+	}
+	
+	virtual void setBrightness(uint32_t b) override
+	{
+	    _clockDisplay.setBrightness(b);
 	}
 
 	void showCountdown()
@@ -359,34 +220,7 @@ private:
 	    showChars(s, 0, true);
 	}
 
-	void handleButtonEvent(const mil::Button& button, mil::ButtonManager::Event event)
-	{
-		switch(button.id()) {
-			case SelectButton:
-			if (event == mil::ButtonManager::Event::Click) {
-				_stateMachine.sendInput(Input::SelectClick);
-			} else if (event == mil::ButtonManager::Event::LongPress) {
-				_stateMachine.sendInput(Input::SelectLongPress);
-			}
-			break;
-		}
-	}
-
-	void handleBrightnessChange(uint32_t brightness)
-	{
-		_clockDisplay.setBrightness(brightness);
-		mil::cout << "setting brightness to " << brightness << "\n";
-	}
-	
-	mil::StateMachine<State, Input> _stateMachine;
 	DSP7S04B _clockDisplay;
-	mil::ButtonManager _buttonManager;
-	mil::LocalTimeServer _localTimeServer;
-	mil::BrightnessManager _brightnessManager;
-	mil::Blinker _blinker;
-	Ticker _secondTimer;
-	uint32_t _currentTime = 0;
-	bool _needsUpdateInfo = false;
 	uint16_t _countdownSecondsRemaining = 0;
 	uint8_t _showInfoTimeout = 0;
 };
