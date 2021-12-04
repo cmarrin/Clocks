@@ -60,7 +60,6 @@ void DSP7S04B::setColon(bool on) {
 
 void DSP7S04B::print(const char* str)
 {
-	mil::cout << "*** print '" << str << "', addr=" << _addr << "\n";
 	uint8_t count;
 
     Wire.beginTransmission(_addr);
