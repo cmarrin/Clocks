@@ -78,7 +78,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include <mil.h>
 #include <mil/Clock.h>
-#include "DSP7S04B.h"
+#include <mil/DSP7S04B.h>
 
 // All rates in ms
 
