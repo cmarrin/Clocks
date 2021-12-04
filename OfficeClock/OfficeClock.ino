@@ -100,340 +100,74 @@ POSSIBILITY OF SUCH DAMAGE.
 //		Connect: Wemos GND, 74HCT367 (pins 1, 8, 10, 12, 14, 15), Light sensor (shorter lead), Max7219 GND, One end of Button
 
 #include <mil.h>
-#include <mil/Blinker.h>
-#include <mil/BrightnessManager.h>
-#include <mil/ButtonManager.h>
+#include <mil/Clock.h>
 #include <mil/Max7219Display.h>
-#include <mil/StateMachine.h>
-#include <mil/LocalTimeServer.h>
-#include <mil/WeatherServer.h>
-#include <WiFiManager.h>
-#include <Ticker.h>
-#include <assert.h>
-#include <time.h>
 
 // All rates in ms
 
-// Number of ms LED stays off in each mode
-static constexpr uint32_t ConnectingRate = 400;
-static constexpr uint32_t ConfigRate = 100;
-static constexpr uint32_t ConnectedRate = 1900;
-static constexpr uint32_t BlinkSampleRate = 10;
-
-// BrightnessManager settings
-static constexpr uint32_t LightSensor = A0;
-static constexpr bool InvertAmbientLightLevel = true;
-static constexpr uint32_t MaxAmbientLightLevel = 900;
-static constexpr uint32_t MinAmbientLightLevel = 100;
-static constexpr uint32_t NumberOfBrightnessLevels = 31;
-
 // Display related
-MakeROMString(startupMessage, "\vOffice Clock v1.0");
 static constexpr uint32_t StartupScrollRate = 50;
 static constexpr uint32_t DateScrollRate = 50;
 static constexpr const char* ConfigPortalName = "MT Galileo Clock";
 static constexpr const char* ConfigPortalPassword = "";
 
-// Time and weather related
-MakeROMString(TimeCity, "America/Los_Angeles");
-MakeROMString(WeatherCity, "93405");
-
-
-// Buttons
+static constexpr char* TimeCity = "America/Los_Angeles";
+static constexpr char* WeatherCity = "93405";
 static constexpr uint8_t SelectButton = D1;
 
-enum class State {
-	Connecting, NetConfig, NetFail, UpdateFail, 
-	Startup, ShowInfo, ShowTime, Idle,
-	AskResetNetwork, VerifyResetNetwork, ResetNetwork,
-	AskRestart, Restart
-};
-
-enum class Input { Idle, SelectClick, SelectLongPress, ScrollDone, Connected, NetConfig, NetFail, UpdateFail };
-
-class OfficeClock
+class OfficeClock : public mil::Clock
 {
 public:
 	OfficeClock()
-		: _stateMachine([this](const String s) { _clockDisplay.showString(s); }, { { Input::SelectLongPress, State::AskRestart } })
-		, _clockDisplay([this]() { scrollComplete(); })
-		, _buttonManager([this](const mil::Button& b, mil::ButtonManager::Event e) { handleButtonEvent(b, e); })
-		, _localTimeServer(TimeCity, [this]() { _needsUpdateTime = true; })
-		, _weatherServer(WeatherCity, [this]() { _needsUpdateWeather = true; })
-		, _brightnessManager([this](uint32_t b) { handleBrightnessChange(b); }, 
-							 LightSensor, InvertAmbientLightLevel, MinAmbientLightLevel, 
-							 MaxAmbientLightLevel, NumberOfBrightnessLevels)
-		, _blinker(BUILTIN_LED, BlinkSampleRate)
+		: mil::Clock("\vOffice Clock v1.0", "\aConnecting...", TimeCity, WeatherCity, SelectButton, ConfigPortalName)
+		, _clockDisplay([this]() { startShowDoneTimer(100); })
 	{
-		memset(&_settingTime, 0, sizeof(_settingTime));
-		_settingTime.tm_mday = 1;
-		_settingTime.tm_year = 100;
 	}
 	
 	void setup()
 	{
 		Serial.begin(115200);
 		delay(500);
-  
-		mil::cout << "\n\n" << startupMessage << "\n\n";
-      
-		_brightnessManager.start();
-
-		_buttonManager.addButton(mil::Button(SelectButton, SelectButton, false, mil::Button::PinMode::Pullup));
-		
-		startStateMachine();
-
-		_secondTimer.attach_ms(1000, secondTick, this);
+		mil::Clock::setup();
 	}
 	
 	void loop()
 	{
-		if (_needsUpdateTime) {
-			_needsUpdateTime = false;
-			
-			if (_enableNetwork) {
-				if (_localTimeServer.update()) {
-					_currentTime = _localTimeServer.currentTime();
-					_stateMachine.sendInput(Input::Idle);
-				} else {
-					_stateMachine.sendInput(Input::UpdateFail);
-				}
-			}
-		}
-		if (_needsUpdateWeather) {
-			_needsUpdateWeather = false;
-			
-			if (_enableNetwork) {
-				if (_weatherServer.update()) {
-					_stateMachine.sendInput(Input::Idle);
-				} else {
-					_stateMachine.sendInput(Input::UpdateFail);
-				}
-			}
-		}
-		if (_needsNetworkReset) {
-			startNetwork();
-		}
+		mil::Clock::loop();
 	}
 	
-private:
-	void startNetwork()
+private:	
+	virtual void showTime() override
 	{
-		_blinker.setRate(ConnectingRate);
-		
-		WiFiManager wifiManager;
-
-		if (_needsNetworkReset) {
-			_needsNetworkReset = false;
-			wifiManager.resetSettings();			
-		}
-		
-		wifiManager.setAPCallback([this](WiFiManager* wifiManager) {
-			mil::cout << L_F("Entered config mode:ip=") << WiFi.softAPIP() << L_F(", ssid='") << wifiManager->getConfigPortalSSID() << L_F("'\n");
-			_blinker.setRate(ConfigRate);
-			_stateMachine.sendInput(Input::NetConfig);
-			_enteredConfigMode = true;
-		});
-
-		if (!wifiManager.autoConnect(ConfigPortalName)) {
-			mil::cout << L_F("*** Failed to connect and hit timeout\n");
-			ESP.reset();
-			delay(1000);
-		}
-		
-		if (_enteredConfigMode) {
-			// If we've been in config mode, the network doesn't startup correctly, let's reboot
-			ESP.reset();
-			delay(1000);
-		}
-
-        WiFiMode_t currentMode = WiFi.getMode();
-		mil::cout << L_F("Wifi connected, Mode=") << wifiManager.getModeString(currentMode) << L_F(", IP=") << WiFi.localIP() << mil::endl;
-	
-		_enableNetwork = true;
-		_blinker.setRate(ConnectedRate);
-
-		delay(500);
-		_needsUpdateTime = true;
-		_needsUpdateWeather = true;
-		_stateMachine.sendInput(Input::Connected);
-	}
-	
-	void showSettingTime(bool hour)
-	{
-		String s = _localTimeServer.strftime("\a%I:%M", _settingTime);
-		if (s[1] == '0') {
-			s[1] = ' ';
-		}
-		_clockDisplay.showString(s, hour ? 0 : 3, 2);
-		
+		_clockDisplay.showTime(currentTime());
 	}
 
-	void showSettingAMPM()
-	{
-		bool pm = _settingTime.tm_hour >= 11;
-		_clockDisplay.showString("\aAM/PM", pm ? 3 : 0, 2);
-		
-	}
-
-	void showSettingDate(bool month)
-	{
-		String s = _localTimeServer.strftime("\a%b %e", _settingTime);
-		if (month) {
-			_clockDisplay.showString(s, 0, 3);
-		} else {
-			_clockDisplay.showString(s, 4, 2);
-		}
-	}
-
-	void startStateMachine()
-	{
-		_stateMachine.addState(State::Connecting, L_F("\aConnecting..."), [this] { startNetwork(); },
-			{
-				  { Input::ScrollDone, State::Connecting }
-				, { Input::Connected, State::Startup }
-				, { Input::NetFail, State::NetFail }
-				, { Input::NetConfig, State::NetConfig }
-			}
-		);
-		_stateMachine.addState(State::NetConfig, [this] {
-			String s = "\vConfigure WiFi. Connect to the '";
-			s += ConfigPortalName;
-			s += "' wifi network from your computer or mobile device, or press [select] to retry.";
-			_clockDisplay.showString(s);
-		},
-			{
-			      { Input::ScrollDone, State::NetConfig }
-			    , { Input::SelectClick, State::Connecting }
-			    , { Input::Connected, State::Startup }
-			    , { Input::NetFail, State::NetFail }
-			}
-		);
-		_stateMachine.addState(State::NetFail, L_F("\vNetwork failed, press [select] to retry."),
-			{
-				  { Input::ScrollDone, State::NetFail }
-  				, { Input::SelectClick, State::Connecting }
-			}
-		);
-		_stateMachine.addState(State::UpdateFail, L_F("\vTime or weather update failed, press [select] to retry."),
-			{
-			      { Input::ScrollDone, State::UpdateFail }
-				, { Input::SelectClick, State::Connecting }
-			}
-		);
-		_stateMachine.addState(State::Startup, [this] { _clockDisplay.showString(startupMessage); },
-			{
-				  { Input::ScrollDone, State::ShowTime }
-    			, { Input::SelectClick, State::ShowTime }
-			}
-		);
-		_stateMachine.addState(State::ShowInfo, [this] { showInfo(); },
-			{
-				  { Input::ScrollDone, State::ShowTime }
-				, { Input::SelectClick, State::ShowTime }
-			}
-		);
-		
-		_stateMachine.addState(State::ShowTime, [this] { _clockDisplay.showTime(_currentTime, true); }, State::Idle);
-		
-		_stateMachine.addState(State::Idle, [this] { _clockDisplay.showTime(_currentTime); },
-			{
-				  { Input::SelectClick, State::ShowInfo }
-				, { Input::Idle, State::Idle }
-			}
-		);
-		
-		// Restart
-		_stateMachine.addState(State::AskRestart, L_F("\vRestart? (long press for yes)"),
-			{
-			  	  { Input::ScrollDone, State::AskRestart }
-				, { Input::SelectClick, State::AskResetNetwork }
-				, { Input::SelectLongPress, State::Restart }
-			}
-		);
-		_stateMachine.addState(State::Restart, [] { ESP.reset(); delay(1000); }, State::Connecting);
-		
-		// Network reset
-		_stateMachine.addState(State::AskResetNetwork, L_F("\vReset network? (long press for yes)"),
-			{
-		  	  	  { Input::ScrollDone, State::AskResetNetwork }
-				, { Input::SelectClick, State::ShowTime }
-				, { Input::SelectLongPress, State::VerifyResetNetwork }
-			}
-		);
-		_stateMachine.addState(State::VerifyResetNetwork, L_F("\vAre you sure? (long press for yes)"),
-			{
-		  	  	  { Input::ScrollDone, State::VerifyResetNetwork }
-				, { Input::SelectClick, State::ShowTime }
-				, { Input::SelectLongPress, State::ResetNetwork }
-			}
-		);
-		_stateMachine.addState(State::ResetNetwork, [this] { _needsNetworkReset = true; }, State::NetConfig);
-		
-		// Start the state machine
-		_stateMachine.gotoState(State::Connecting);
-	}
-	
-	void showInfo()
+	virtual void showInfo() override
 	{
 		String time = "\v";
-		time += _localTimeServer.strftime("%a %b ", _currentTime);
-		String day = _localTimeServer.prettyDay(_currentTime);
+		time += Clock::strftime("%a %b ", currentTime());
+		String day = prettyDay(currentTime());
 		day.trim();
 		time += day;
-		if (_enableNetwork) {
-			time = time + L_F("  Weather:") + _weatherServer.conditions() +
-						  L_F("  Cur:") + _weatherServer.currentTemp() +
-						  L_F("`  Hi:") + _weatherServer.highTemp() +
-						  L_F("`  Lo:") + _weatherServer.lowTemp() + L_F("`");
-		}
-		_clockDisplay.showString(time);
+		time = time + L_F("  Weather:") + weatherConditions() +
+					  L_F("  Cur:") + currentTemp() +
+					  L_F("`  Hi:") + highTemp() +
+					  L_F("`  Lo:") + lowTemp() + L_F("`");
+		
+		showString(time);
 	}
 	
-	void scrollComplete() { _stateMachine.sendInput(Input::ScrollDone); }
-
-	void handleButtonEvent(const mil::Button& button, mil::ButtonManager::Event event)
+	virtual void showString(const String& s) override
 	{
-		switch(button.id()) {
-			case SelectButton:
-			if (event == mil::ButtonManager::Event::Click) {
-				_stateMachine.sendInput(Input::SelectClick);
-			} else if (event == mil::ButtonManager::Event::LongPress) {
-				_stateMachine.sendInput(Input::SelectLongPress);
-			}
-			break;
-		}
-	}
-
-	void handleBrightnessChange(uint32_t brightness)
-	{
-		_clockDisplay.setBrightness(brightness);
-		mil::cout << "setting brightness to " << brightness << "\n";
+		_clockDisplay.showString(s);
 	}
 	
-	static void secondTick(OfficeClock* self)
+	virtual void setBrightness(uint32_t b) override
 	{
-		self->_currentTime++;
-		self->_stateMachine.sendInput(Input::Idle);
+	    _clockDisplay.setBrightness(b);
 	}
-
-	mil::StateMachine<State, Input> _stateMachine;
+	
 	mil::Max7219Display _clockDisplay;
-	mil::ButtonManager _buttonManager;
-	mil::LocalTimeServer _localTimeServer;
-	mil::WeatherServer _weatherServer;
-	mil::BrightnessManager _brightnessManager;
-	mil::Blinker _blinker;
-	Ticker _secondTimer;
-	uint32_t _currentTime = 0;
-	bool _needsUpdateTime = false;
-	bool _needsUpdateWeather = false;
-	bool _needsNetworkReset = false;
-	bool _enteredConfigMode = false;
-	
-	struct tm  _settingTime;
-	bool _settingTimeChanged = false;
-	bool _enableNetwork = false;
 };
 
 OfficeClock officeClock;
