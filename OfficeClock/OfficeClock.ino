@@ -149,10 +149,10 @@ private:
 		String day = prettyDay(currentTime());
 		day.trim();
 		time += day;
-		time = time + L_F("  Weather:") + weatherConditions() +
-					  L_F("  Cur:") + currentTemp() +
-					  L_F("`  Hi:") + highTemp() +
-					  L_F("`  Lo:") + lowTemp() + L_F("`");
+		time = time + F("  Weather:") + weatherConditions() +
+					  F("  Cur:") + currentTemp() +
+					  F("`  Hi:") + highTemp() +
+					  F("`  Lo:") + lowTemp() + F("`");
 		
 		showString(time);
 	}
