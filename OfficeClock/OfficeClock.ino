@@ -127,7 +127,8 @@ public:
 	void setup()
 	{
 		Serial.begin(115200);
-		delay(500);
+		delay(1000);
+		Serial.print("\n\n");
 		mil::Clock::setup();
 	}
 	
