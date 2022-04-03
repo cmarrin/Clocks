@@ -138,9 +138,9 @@ public:
 	}
 	
 private:	
-	virtual void showTime() override
+	virtual void showTime(bool force) override
 	{
-		_clockDisplay.showTime(currentTime());
+		_clockDisplay.showTime(currentTime(), force);
 	}
 
 	virtual void showInfo() override
