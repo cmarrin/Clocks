@@ -111,8 +111,8 @@ static constexpr uint32_t DateScrollRate = 50;
 static constexpr const char* ConfigPortalName = "MT Galileo Clock";
 static constexpr const char* ConfigPortalPassword = "";
 
-static constexpr char* TimeCity = "America/Los_Angeles";
-static constexpr char* WeatherCity = "93405";
+static constexpr const char* TimeCity = "America/Los_Angeles";
+static constexpr const char* WeatherCity = "93405";
 static constexpr uint8_t SelectButton = D1;
 
 class OfficeClock : public mil::Clock
