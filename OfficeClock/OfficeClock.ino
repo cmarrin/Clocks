@@ -111,8 +111,8 @@ static constexpr uint32_t DateScrollRate = 50;
 static constexpr const char* ConfigPortalName = "MT Galileo Clock";
 static constexpr const char* ConfigPortalPassword = "";
 
-static constexpr char* TimeCity = "America/Los_Angeles";
-static constexpr char* WeatherCity = "93405";
+static constexpr const char* TimeCity = "America/Los_Angeles";
+static constexpr const char* WeatherCity = "93405";
 static constexpr uint8_t SelectButton = D1;
 
 class OfficeClock : public mil::Clock
@@ -127,7 +127,8 @@ public:
 	void setup()
 	{
 		Serial.begin(115200);
-		delay(500);
+		delay(1000);
+		Serial.print("\n\n");
 		mil::Clock::setup();
 	}
 	
@@ -137,9 +138,9 @@ public:
 	}
 	
 private:	
-	virtual void showTime() override
+	virtual void showTime(bool force) override
 	{
-		_clockDisplay.showTime(currentTime());
+		_clockDisplay.showTime(currentTime(), force);
 	}
 
 	virtual void showInfo() override
@@ -149,10 +150,10 @@ private:
 		String day = prettyDay(currentTime());
 		day.trim();
 		time += day;
-		time = time + L_F("  Weather:") + weatherConditions() +
-					  L_F("  Cur:") + currentTemp() +
-					  L_F("`  Hi:") + highTemp() +
-					  L_F("`  Lo:") + lowTemp() + L_F("`");
+		time = time + F("  Weather:") + weatherConditions() +
+					  F("  Cur:") + currentTemp() +
+					  F("`  Hi:") + highTemp() +
+					  F("`  Lo:") + lowTemp() + F("`");
 		
 		showString(time);
 	}
