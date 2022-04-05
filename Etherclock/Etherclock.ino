@@ -87,15 +87,19 @@ static constexpr uint32_t ShowInfoSeconds = 5;
 
 static constexpr const char* ConfigPortalName = "MT Etherclock";
 
-static constexpr char* TimeCity = "America/Los_Angeles";
-static constexpr char* WeatherCity = "93405";
+static constexpr const char* TimeCity = "America/Los_Angeles";
+static constexpr const char* WeatherCity = "93405";
 static constexpr uint8_t SelectButton = D3;
+static constexpr bool InvertAmbientLightLevel = false;
+static constexpr uint32_t NumberOfBrightnessLevels = 250;
 
 class Etherclock : public mil::Clock
 {
 public:
 	Etherclock()
-		: mil::Clock("EC-4", "Conn", TimeCity, WeatherCity, SelectButton, ConfigPortalName)
+		: mil::Clock("EC-4", "Conn", TimeCity, WeatherCity, 
+					 InvertAmbientLightLevel, NumberOfBrightnessLevels,
+					 SelectButton, ConfigPortalName)
 	{
 	}
 	

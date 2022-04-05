@@ -114,12 +114,16 @@ static constexpr const char* ConfigPortalPassword = "";
 static constexpr const char* TimeCity = "America/Los_Angeles";
 static constexpr const char* WeatherCity = "93405";
 static constexpr uint8_t SelectButton = D1;
+static constexpr bool InvertAmbientLightLevel = true;
+static constexpr uint32_t NumberOfBrightnessLevels = 31;
 
 class OfficeClock : public mil::Clock
 {
 public:
 	OfficeClock()
-		: mil::Clock("\vOffice Clock v1.0", "\aConnecting...", TimeCity, WeatherCity, SelectButton, ConfigPortalName)
+		: mil::Clock("\vOffice Clock v1.0", "\aConnecting...", TimeCity, WeatherCity, 
+					 InvertAmbientLightLevel, NumberOfBrightnessLevels, 
+					 SelectButton, ConfigPortalName)
 		, _clockDisplay([this]() { startShowDoneTimer(100); })
 	{
 	}
