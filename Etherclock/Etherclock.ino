@@ -136,7 +136,7 @@ private:
 		}
 	}
 
-	virtual void showTime() override
+	virtual void showTime(bool force) override
 	{
 	    String string = "EEEE";
 	    uint8_t dps = 0;
@@ -186,6 +186,7 @@ private:
 		}
 		string += String(date);
 	    showChars(string, 0, false);
+		startShowDoneTimer(2000);
 	}
 	
 	virtual void showString(const String& s) override
