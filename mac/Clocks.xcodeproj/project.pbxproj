@@ -22,6 +22,7 @@
 		4995550E27FF535C00D04E66 /* tigr_bitmaps.c in Sources */ = {isa = PBXBuildFile; fileRef = 4995550027FF535C00D04E66 /* tigr_bitmaps.c */; };
 		4995551127FF6BBF00D04E66 /* tigr_inflate.c in Sources */ = {isa = PBXBuildFile; fileRef = 499554FE27FF535C00D04E66 /* tigr_inflate.c */; };
 		4995551527FF96E500D04E66 /* WordClock-Wawati-800.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4995551427FF96CC00D04E66 /* WordClock-Wawati-800.png */; };
+		49B0FBCF2804AACA00F07F3E /* WordClock-Hoefler-800.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 49B0FBCD2804AAC200F07F3E /* WordClock-Hoefler-800.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -40,6 +41,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 16;
 			files = (
+				49B0FBCF2804AACA00F07F3E /* WordClock-Hoefler-800.png in CopyFiles */,
 				4995551527FF96E500D04E66 /* WordClock-Wawati-800.png in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -93,6 +95,8 @@
 		4995551227FF6C7200D04E66 /* tigr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tigr.h; path = tigr/tigr.h; sourceTree = "<group>"; };
 		4995551327FF96CC00D04E66 /* WordClock-Wawati-1600.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "WordClock-Wawati-1600.png"; path = "../../WordClock/WordClock-Wawati-1600.png"; sourceTree = "<group>"; };
 		4995551427FF96CC00D04E66 /* WordClock-Wawati-800.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "WordClock-Wawati-800.png"; path = "../../WordClock/WordClock-Wawati-800.png"; sourceTree = "<group>"; };
+		49B0FBCD2804AAC200F07F3E /* WordClock-Hoefler-800.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "WordClock-Hoefler-800.png"; path = "../../WordClock/WordClock-Hoefler-800.png"; sourceTree = "<group>"; };
+		49B0FBCE2804AAC200F07F3E /* WordClock-Hoefler-1600.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "WordClock-Hoefler-1600.png"; path = "../../WordClock/WordClock-Hoefler-1600.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -195,6 +199,8 @@
 		499554C827FF355500D04E66 /* WordClock */ = {
 			isa = PBXGroup;
 			children = (
+				49B0FBCD2804AAC200F07F3E /* WordClock-Hoefler-800.png */,
+				49B0FBCE2804AAC200F07F3E /* WordClock-Hoefler-1600.png */,
 				4995551427FF96CC00D04E66 /* WordClock-Wawati-800.png */,
 				4995551327FF96CC00D04E66 /* WordClock-Wawati-1600.png */,
 				499554C927FF355500D04E66 /* main.cpp */,
