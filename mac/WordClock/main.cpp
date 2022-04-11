@@ -131,10 +131,10 @@ public:
         switch(time % 5) {
             default:
             case 0: break;
+            case 4: setWord(WordBoard::Word::LLDot);
+            case 3: setWord(WordBoard::Word::LRDot);
+            case 2: setWord(WordBoard::Word::URDot);
             case 1: setWord(WordBoard::Word::ULDot); break;
-            case 2: setWord(WordBoard::Word::URDot); break;
-            case 3: setWord(WordBoard::Word::LLDot); break;
-            case 4: setWord(WordBoard::Word::LRDot); break;
         }
         
         // Split out hours and minutes
@@ -142,19 +142,24 @@ public:
         int minute = (time % 60) / 5;
         
         // We don't display some things at noon and midnight
-        bool isTwelve = (hour == 0 || hour == 12) && minute <= 6;
+        int hourToDisplay = hour;
+        if (minute > 6) {
+            hourToDisplay++;
+        }
+        
+        bool isTwelve = hourToDisplay == 0 || hourToDisplay == 12 || hourToDisplay == 24;
         
         // Do time of day
         if (!isTwelve) {
-            if (hour >= 8) {
+            if (hourToDisplay >= 20) {
                 setWord(WordBoard::Word::At);
                 setWord(WordBoard::Word::Night);
             } else {
                 setWord(WordBoard::Word::In);
                 setWord(WordBoard::Word::The);
-                if (hour <= 11) {
+                if (hourToDisplay <= 11) {
                     setWord(WordBoard::Word::Morning);
-                } else if (hour <= 4) {
+                } else if (hourToDisplay <= 16) {
                     setWord(WordBoard::Word::Afternoon);
                 } else {
                     setWord(WordBoard::Word::Evening);
@@ -163,12 +168,7 @@ public:
         }
         
         // Do hour
-        int hourToDisplay = hour % 12;
-        if (minute > 6) {
-            hourToDisplay++;
-        }
-        
-        switch(hourToDisplay) {
+        switch(hourToDisplay % 12) {
             case 1: setWord(WordBoard::Word::OneHour); break;
             case 2: setWord(WordBoard::Word::TwoHour); break;
             case 3: setWord(WordBoard::Word::ThreeHour); break;
@@ -180,7 +180,8 @@ public:
             case 9: setWord(WordBoard::Word::NineHour); break;
             case 10: setWord(WordBoard::Word::TenHour); break;
             case 11: setWord(WordBoard::Word::ElevenHour); break;
-            case 0: setWord((hour == 0) ? WordBoard::Word::Midnight : WordBoard::Word::Noon); break;
+            case 12:
+            case 0: setWord((hourToDisplay == 0 || hourToDisplay == 24) ? WordBoard::Word::Midnight : WordBoard::Word::Noon); break;
         }
         
         // Do minutes
@@ -291,7 +292,7 @@ int main(int argc, const char * argv[])
 {
     WordBoard board;
     
-    int minute = 0;
+    int minute = 60 * 22;
     
     float rate = 0.125;
     
