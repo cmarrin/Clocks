@@ -91,14 +91,15 @@ static constexpr const char* TimeCity = "America/Los_Angeles";
 static constexpr const char* WeatherCity = "93405";
 static constexpr uint8_t SelectButton = D3;
 static constexpr bool InvertAmbientLightLevel = false;
-static constexpr uint32_t NumberOfBrightnessLevels = 250;
+static constexpr uint32_t MinLightSensorLevel = 20;
+static constexpr uint32_t MaxLightSensorLevel = 500;
 
 class Etherclock : public mil::Clock
 {
 public:
 	Etherclock()
 		: mil::Clock("EC-4", "Conn", TimeCity, WeatherCity, 
-					 InvertAmbientLightLevel, NumberOfBrightnessLevels,
+					 InvertAmbientLightLevel, MinLightSensorLevel, MaxLightSensorLevel, 
 					 SelectButton, ConfigPortalName)
 	{
 	}
