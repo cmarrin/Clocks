@@ -119,6 +119,8 @@ public:
 	}
 	
 private:
+  enum class Info { Date, CurTemp, LowTemp, HighTemp, Done };
+
 	void showChars(const String& string, uint8_t dps, bool colon)
 	{
 		if (string.length() != 4)
@@ -174,24 +176,78 @@ private:
 
 	virtual void showInfo() override
 	{
+		_info = Info::Date;
+		showInfoSequence();
+		startShowDoneTimer(8000);
+	}
+	
+	static void showInfoSequenceTick(Etherclock* self)
+	{
+		self->showInfoSequence();
+	}
+
+	void showInfoSequence()
+	{
+		if (_info == Info::Done) {
+			return;
+		}
+		
 	    String string = "EEEE";
     
-		uint32_t t = currentTime();
-		struct tm* timeinfo = localtime(reinterpret_cast<time_t*>(&t));
-		uint8_t month = timeinfo->tm_mon + 1;
-		uint8_t date = timeinfo->tm_mday;
-		if (month < 10) {
-			string = " ";
-		} else {
-			string = "";
+		switch(_info) {
+			case Info::Date: {
+				uint32_t t = currentTime();
+				struct tm* timeinfo = localtime(reinterpret_cast<time_t*>(&t));
+				uint8_t month = timeinfo->tm_mon + 1;
+				uint8_t date = timeinfo->tm_mday;
+
+				if (month < 10) {
+					string = " ";
+				} else {
+					string = "";
+				}
+				string += String(month);
+				if (date < 10) {
+					string += " ";
+				}
+				string += String(date);
+				_info = Info::CurTemp;
+				break;
+			}
+			case Info::CurTemp: {
+				uint32_t temp = currentTemp();
+				string = "C";
+				if (temp > 0 && temp < 100) {
+					string += " ";
+				}
+				string += temp;
+				_info = Info::LowTemp;
+				break;
+			}
+			case Info::LowTemp: {
+				uint32_t temp = lowTemp();
+				string = "L";
+				if (temp > 0 && temp < 100) {
+					string += " ";
+				}
+				string += temp;
+				_info = Info::HighTemp;
+				break;
+			}
+			case Info::HighTemp: {
+				uint32_t temp = highTemp();
+				string = "h";
+				if (temp > 0 && temp < 100) {
+					string += " ";
+				}
+				string += temp;
+				_info = Info::Done;
+				break;
+			}
 		}
-		string += String(month);
-		if (date < 10) {
-			string += " ";
-		}
-		string += String(date);
+		
 	    showChars(string, 0, false);
-		startShowDoneTimer(2000);
+		_showInfoTimer.once_ms(2000, showInfoSequenceTick, this);
 	}
 	
 	virtual void showString(const String& s) override
@@ -229,6 +285,9 @@ private:
 	DSP7S04B _clockDisplay;
 	uint16_t _countdownSecondsRemaining = 0;
 	uint8_t _showInfoTimeout = 0;
+	
+	Ticker _showInfoTimer;
+	Info _info = Info::Done;
 };
 
 Etherclock etherclock;
