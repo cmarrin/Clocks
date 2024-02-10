@@ -115,14 +115,15 @@ static constexpr const char* TimeCity = "America/Los_Angeles";
 static constexpr const char* WeatherCity = "93405";
 static constexpr uint8_t SelectButton = D3;
 static constexpr bool InvertAmbientLightLevel = true;
-static constexpr uint32_t NumberOfBrightnessLevels = 31;
+static constexpr uint32_t MinLightSensorLevel = 60;
+static constexpr uint32_t MaxLightSensorLevel = 900;
 
 class OfficeClock : public mil::Clock
 {
 public:
 	OfficeClock()
-		: mil::Clock("\vOffice Clock v1.0", "\aConnecting...", TimeCity, WeatherCity, 
-					 InvertAmbientLightLevel, NumberOfBrightnessLevels, 
+		: mil::Clock("\vOffice Clock v2.0", "\aConnecting...", TimeCity, WeatherCity, 
+					 InvertAmbientLightLevel, MinLightSensorLevel, MaxLightSensorLevel, 
 					 SelectButton, ConfigPortalName)
 		, _clockDisplay([this]() { startShowDoneTimer(100); })
 	{
@@ -131,8 +132,8 @@ public:
 	void setup()
 	{
 		Serial.begin(115200);
-		delay(1000);
-		Serial.print("\n\n");
+		delay(500);
+		setBrightness(50);
 		mil::Clock::setup();
 	}
 	
@@ -169,6 +170,13 @@ private:
 	
 	virtual void setBrightness(uint32_t b) override
 	{
+        // Brightness comes in as 0-255. We need it to be 0-31
+        b /= 8;
+        if (b <= 3) {
+            b = 0;
+        } else {
+            b -= 3;
+        }
 	    _clockDisplay.setBrightness(b);
 	}
 	
