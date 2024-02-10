@@ -113,7 +113,7 @@ static constexpr const char* ConfigPortalPassword = "";
 
 static constexpr const char* TimeCity = "America/Los_Angeles";
 static constexpr const char* WeatherCity = "93405";
-static constexpr uint8_t SelectButton = D1;
+static constexpr uint8_t SelectButton = D3;
 static constexpr bool InvertAmbientLightLevel = true;
 static constexpr uint32_t NumberOfBrightnessLevels = 31;
 
