@@ -64,9 +64,9 @@
 		491958BC2807A8490012F306 /* WordClock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = WordClock.h; path = ../ESPLib/WordClock.h; sourceTree = "<group>"; };
 		491958C42808709A0012F306 /* OfficeClock */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = OfficeClock; sourceTree = BUILT_PRODUCTS_DIR; };
 		491958C62808709A0012F306 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		491958CD280877530012F306 /* OfficeClock.ino */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = OfficeClock.ino; path = ../OfficeClock/OfficeClock.ino; sourceTree = "<group>"; };
-		491958CF280890790012F306 /* WordClock.ino */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = WordClock.ino; path = ../../WordClock/WordClock.ino; sourceTree = "<group>"; };
-		491958D2280890BA0012F306 /* Etherclock.ino */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Etherclock.ino; path = ../Etherclock/Etherclock.ino; sourceTree = "<group>"; };
+		491958CD280877530012F306 /* OfficeClock.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = OfficeClock.ino; path = ../OfficeClock/OfficeClock.ino; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
+		491958CF280890790012F306 /* WordClock.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = WordClock.ino; path = ../../WordClock/WordClock.ino; sourceTree = "<group>"; };
+		491958D2280890BA0012F306 /* Etherclock.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Etherclock.ino; path = ../Etherclock/Etherclock.ino; sourceTree = "<group>"; };
 		4995547D27FCFD5400D04E66 /* EtherClock */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EtherClock; sourceTree = BUILT_PRODUCTS_DIR; };
 		4995548727FD048400D04E66 /* ButtonManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ButtonManager.cpp; path = ../ESPLib/ButtonManager.cpp; sourceTree = "<group>"; };
 		4995548827FD048400D04E66 /* DSP7S04B.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = DSP7S04B.cpp; path = ../ESPLib/DSP7S04B.cpp; sourceTree = "<group>"; };
