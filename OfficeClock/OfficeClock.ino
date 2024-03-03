@@ -122,7 +122,7 @@ class OfficeClock : public mil::Clock
 {
 public:
 	OfficeClock()
-		: mil::Clock("\vOffice Clock v2.0", "\aConnecting...", TimeCity, WeatherCity, 
+		: mil::Clock(TimeCity, WeatherCity, 
 					 InvertAmbientLightLevel, MinLightSensorLevel, MaxLightSensorLevel, 
 					 SelectButton, ConfigPortalName)
 		, _clockDisplay([this]() { startShowDoneTimer(100); })
@@ -155,16 +155,49 @@ private:
 		String day = prettyDay(currentTime());
 		day.trim();
 		time += day;
-		time = time + F("  Weather:") + weatherConditions() +
+		time = time + F("  ") + weatherConditions() +
 					  F("  Cur:") + currentTemp() +
 					  F("`  Hi:") + highTemp() +
 					  F("`  Lo:") + lowTemp() + F("`");
 		
-		showString(time);
+		_clockDisplay.showString(time);
 	}
 	
-	virtual void showString(const String& s) override
+	virtual void showString(mil::Message m) override
 	{
+        String s;
+        switch(m) {
+            case mil::Message::NetConfig:
+                s = F("\vConfigure WiFi. Connect to the '");
+                s += ConfigPortalName;
+                s += F("' wifi network from your computer or mobile device, or press [select] to retry.");
+                break;
+            case mil::Message::Startup:
+                s = F("\vOffice Clock v2.0");
+                break;
+            case mil::Message::Connecting:
+                s = F("\aConnecting...");
+                break;
+            case mil::Message::NetFail:
+                s = F("\vNetwork failed, press [select] to retry.");
+                break;
+            case mil::Message::UpdateFail:
+                s = F("\vTime or weather update failed, press [select] to retry.");
+                break;
+            case mil::Message::AskRestart:
+                s = F("\vRestart? (long press for yes)");
+                break;
+            case mil::Message::AskResetNetwork:
+                s = F("\vReset network? (long press for yes)");
+                break;
+            case mil::Message::VerifyResetNetwork:
+                s = F("\vAre you sure? (long press for yes)");
+                break;
+            default:
+                s = F("\vUnknown string error");
+                break;
+        }
+
 		_clockDisplay.showString(s);
 	}
 	

@@ -71,7 +71,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 // DSP7S04B Valid characters:
 //
-//		 bcd   h     no  r tu -
+//		 bcd   h     no  r tu - ?
 //		A C EFGHIJ L NOP  S U
 //
 // Missing letters: kmqvwxyz
@@ -98,7 +98,7 @@ class Etherclock : public mil::Clock
 {
 public:
 	Etherclock()
-		: mil::Clock("EC-4", "Conn", TimeCity, WeatherCity, 
+		: mil::Clock(TimeCity, WeatherCity, 
 					 InvertAmbientLightLevel, MinLightSensorLevel, MaxLightSensorLevel, 
 					 SelectButton, ConfigPortalName)
 	{
@@ -249,9 +249,47 @@ private:
 	    showChars(string, 0, false);
 		_showInfoTimer.once_ms(2000, showInfoSequenceTick, this);
 	}
-	
-	virtual void showString(const String& s) override
+
+	virtual void showString(mil::Message m) override
 	{
+        String s;
+        switch(m) {
+            case mil::Message::NetConfig:
+                s = F("CNFG");
+                break;
+            case mil::Message::Startup:
+                s = F("EC-4");
+                break;
+            case mil::Message::Connecting:
+                s = F("Conn");
+                break;
+            case mil::Message::NetFail:
+                s = F("NtFL");
+                break;
+            case mil::Message::UpdateFail:
+                s = F("UPFL");
+                break;
+            case mil::Message::AskRestart:
+                s = F("Str?");
+                break;
+            case mil::Message::AskResetNetwork:
+                s = F("rSt?");
+                break;
+            case mil::Message::VerifyResetNetwork:
+                s = F("Sur?");
+                break;
+            default:
+                s = F("Err ");
+                break;
+        }
+
+
+
+
+			mil::cout << "***** Displaying: '" << s << "'\n";
+
+
+
 		showChars(s, 0, false);
 		startShowDoneTimer(2000);
 	}
