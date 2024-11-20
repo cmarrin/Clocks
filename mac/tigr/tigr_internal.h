@@ -28,7 +28,6 @@ void tigrPosition(Tigr* bmp, int scale, int windowW, int windowH, int out[4]);
 #define __MACOS__ 1
 
 #ifdef TIGR_GAPI_GL
-#define GL_SILENCE_DEPRECATION
 #include <OpenGL/gl3.h>
 
 typedef struct {

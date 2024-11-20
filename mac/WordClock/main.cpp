@@ -5,8 +5,6 @@
 //  Created by Chris Marrin on 4/5/22.
 //
 
-#define GL_SILENCE_DEPRECATION
-
 #include <iostream>
 #include <unistd.h>
 #include <stdlib.h>
