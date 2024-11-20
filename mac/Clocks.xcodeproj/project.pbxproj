@@ -15,14 +15,6 @@
 		499554CA27FF355500D04E66 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 499554C927FF355500D04E66 /* main.cpp */; };
 		499554CE27FF355F00D04E66 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 499554BC27FE59D900D04E66 /* Cocoa.framework */; };
 		499554CF27FF356600D04E66 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 499554BE27FE59EC00D04E66 /* OpenGL.framework */; };
-		4995550327FF535C00D04E66 /* tigr_loadpng.c in Sources */ = {isa = PBXBuildFile; fileRef = 499554EA27FF535C00D04E66 /* tigr_loadpng.c */; };
-		4995550427FF535C00D04E66 /* tigr_osx.c in Sources */ = {isa = PBXBuildFile; fileRef = 499554EB27FF535C00D04E66 /* tigr_osx.c */; };
-		4995550727FF535C00D04E66 /* tigr_savepng.c in Sources */ = {isa = PBXBuildFile; fileRef = 499554F227FF535C00D04E66 /* tigr_savepng.c */; };
-		4995550827FF535C00D04E66 /* tigr_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 499554F627FF535C00D04E66 /* tigr_utils.c */; };
-		4995550927FF535C00D04E66 /* tigr_gl.c in Sources */ = {isa = PBXBuildFile; fileRef = 499554F727FF535C00D04E66 /* tigr_gl.c */; };
-		4995550B27FF535C00D04E66 /* tigr_print.c in Sources */ = {isa = PBXBuildFile; fileRef = 499554F927FF535C00D04E66 /* tigr_print.c */; };
-		4995550E27FF535C00D04E66 /* tigr_bitmaps.c in Sources */ = {isa = PBXBuildFile; fileRef = 4995550027FF535C00D04E66 /* tigr_bitmaps.c */; };
-		4995551127FF6BBF00D04E66 /* tigr_inflate.c in Sources */ = {isa = PBXBuildFile; fileRef = 499554FE27FF535C00D04E66 /* tigr_inflate.c */; };
 		4995551527FF96E500D04E66 /* WordClock-Wawati-800.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4995551427FF96CC00D04E66 /* WordClock-Wawati-800.png */; };
 		49B0FBCF2804AACA00F07F3E /* WordClock-Hoefler-800.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 49B0FBCD2804AAC200F07F3E /* WordClock-Hoefler-800.png */; };
 /* End PBXBuildFile section */
@@ -95,22 +87,6 @@
 		499554BE27FE59EC00D04E66 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		499554C727FF355500D04E66 /* WordClock */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = WordClock; sourceTree = BUILT_PRODUCTS_DIR; };
 		499554C927FF355500D04E66 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		499554EA27FF535C00D04E66 /* tigr_loadpng.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tigr_loadpng.c; path = tigr/tigr_loadpng.c; sourceTree = "<group>"; };
-		499554EB27FF535C00D04E66 /* tigr_osx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tigr_osx.c; path = tigr/tigr_osx.c; sourceTree = "<group>"; };
-		499554ED27FF535C00D04E66 /* tigr_upscale_gl_fs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tigr_upscale_gl_fs.h; path = tigr/tigr_upscale_gl_fs.h; sourceTree = "<group>"; };
-		499554F227FF535C00D04E66 /* tigr_savepng.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tigr_savepng.c; path = tigr/tigr_savepng.c; sourceTree = "<group>"; };
-		499554F327FF535C00D04E66 /* tigr_glsl_hdr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tigr_glsl_hdr.h; path = tigr/tigr_glsl_hdr.h; sourceTree = "<group>"; };
-		499554F427FF535C00D04E66 /* font.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = font.png; path = tigr/font.png; sourceTree = "<group>"; };
-		499554F527FF535C00D04E66 /* tigr_objc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tigr_objc.h; path = tigr/tigr_objc.h; sourceTree = "<group>"; };
-		499554F627FF535C00D04E66 /* tigr_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tigr_utils.c; path = tigr/tigr_utils.c; sourceTree = "<group>"; };
-		499554F727FF535C00D04E66 /* tigr_gl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tigr_gl.c; path = tigr/tigr_gl.c; sourceTree = "<group>"; };
-		499554F927FF535C00D04E66 /* tigr_print.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tigr_print.c; path = tigr/tigr_print.c; sourceTree = "<group>"; };
-		499554FA27FF535C00D04E66 /* tigr_upscale_gl_vs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tigr_upscale_gl_vs.h; path = tigr/tigr_upscale_gl_vs.h; sourceTree = "<group>"; };
-		499554FC27FF535C00D04E66 /* tigr_font.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tigr_font.h; path = tigr/tigr_font.h; sourceTree = "<group>"; };
-		499554FE27FF535C00D04E66 /* tigr_inflate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tigr_inflate.c; path = tigr/tigr_inflate.c; sourceTree = "<group>"; };
-		499554FF27FF535C00D04E66 /* tigr_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tigr_internal.h; path = tigr/tigr_internal.h; sourceTree = "<group>"; };
-		4995550027FF535C00D04E66 /* tigr_bitmaps.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tigr_bitmaps.c; path = tigr/tigr_bitmaps.c; sourceTree = "<group>"; };
-		4995551227FF6C7200D04E66 /* tigr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tigr.h; path = tigr/tigr.h; sourceTree = "<group>"; };
 		4995551327FF96CC00D04E66 /* WordClock-Wawati-1600.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "WordClock-Wawati-1600.png"; path = "../../WordClock/WordClock-Wawati-1600.png"; sourceTree = "<group>"; };
 		4995551427FF96CC00D04E66 /* WordClock-Wawati-800.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "WordClock-Wawati-800.png"; path = "../../WordClock/WordClock-Wawati-800.png"; sourceTree = "<group>"; };
 		49B0FBCD2804AAC200F07F3E /* WordClock-Hoefler-800.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "WordClock-Hoefler-800.png"; path = "../../WordClock/WordClock-Hoefler-800.png"; sourceTree = "<group>"; };
@@ -207,7 +183,6 @@
 		4995545627FB42FC00D04E66 = {
 			isa = PBXGroup;
 			children = (
-				499554D327FF526E00D04E66 /* tigr */,
 				4995548627FD045B00D04E66 /* ESPLib */,
 				4995547827FCFC4500D04E66 /* EtherClock */,
 				499554C827FF355500D04E66 /* WordClock */,
@@ -287,29 +262,6 @@
 				4995551327FF96CC00D04E66 /* WordClock-Wawati-1600.png */,
 			);
 			path = WordClock;
-			sourceTree = "<group>";
-		};
-		499554D327FF526E00D04E66 /* tigr */ = {
-			isa = PBXGroup;
-			children = (
-				4995551227FF6C7200D04E66 /* tigr.h */,
-				499554F427FF535C00D04E66 /* font.png */,
-				4995550027FF535C00D04E66 /* tigr_bitmaps.c */,
-				499554FC27FF535C00D04E66 /* tigr_font.h */,
-				499554F727FF535C00D04E66 /* tigr_gl.c */,
-				499554F327FF535C00D04E66 /* tigr_glsl_hdr.h */,
-				499554FE27FF535C00D04E66 /* tigr_inflate.c */,
-				499554FF27FF535C00D04E66 /* tigr_internal.h */,
-				499554EA27FF535C00D04E66 /* tigr_loadpng.c */,
-				499554F527FF535C00D04E66 /* tigr_objc.h */,
-				499554EB27FF535C00D04E66 /* tigr_osx.c */,
-				499554F927FF535C00D04E66 /* tigr_print.c */,
-				499554F227FF535C00D04E66 /* tigr_savepng.c */,
-				499554ED27FF535C00D04E66 /* tigr_upscale_gl_fs.h */,
-				499554FA27FF535C00D04E66 /* tigr_upscale_gl_vs.h */,
-				499554F627FF535C00D04E66 /* tigr_utils.c */,
-			);
-			name = tigr;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -427,16 +379,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4995550E27FF535C00D04E66 /* tigr_bitmaps.c in Sources */,
-				4995550427FF535C00D04E66 /* tigr_osx.c in Sources */,
 				499554CA27FF355500D04E66 /* main.cpp in Sources */,
-				4995550927FF535C00D04E66 /* tigr_gl.c in Sources */,
-				4995551127FF6BBF00D04E66 /* tigr_inflate.c in Sources */,
-				4995550B27FF535C00D04E66 /* tigr_print.c in Sources */,
-				4995550727FF535C00D04E66 /* tigr_savepng.c in Sources */,
-				4995550827FF535C00D04E66 /* tigr_utils.c in Sources */,
 				491958BD2807ABFE0012F306 /* WordClock.cpp in Sources */,
-				4995550327FF535C00D04E66 /* tigr_loadpng.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
