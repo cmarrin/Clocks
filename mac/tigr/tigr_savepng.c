@@ -182,7 +182,7 @@ int tigrSaveImage(const char* fileName, Tigr* bmp) {
 
     // Write back payload size.
     fseek(out, dataPos, SEEK_SET);
-    put32(&s, dataSize);
+    put32(&s, (uint32_t) dataSize);
 
     err = ferror(out);
     fclose(out);

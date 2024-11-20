@@ -55,7 +55,7 @@ TigrInternal* tigrInternal(Tigr* bmp) {
     return (TigrInternal*)(bmp + 1);
 }
 
-static void _tigrResetTime() {
+static void _tigrResetTime(void) {
     tigrTimestamp = mach_absolute_time();
 }
 
@@ -156,7 +156,7 @@ bool _tigrIsWindowVisible(id window) {
 static bool tigrOSXInited = false;
 static id autoreleasePool = NULL;
 
-static id pushPool() {
+static id pushPool(void) {
     id pool = objc_msgSend_id(class("NSAutoreleasePool"), sel("alloc"));
     return objc_msgSend_id(pool, sel("init"));
 }
@@ -165,11 +165,11 @@ static void popPool(id pool) {
     objc_msgSend_void(pool, sel("drain"));
 }
 
-void _tigrCleanupOSX() {
+void _tigrCleanupOSX(void) {
     popPool(autoreleasePool);
 }
 
-void tigrInitOSX() {
+void tigrInitOSX(void) {
     if (tigrOSXInited)
         return;
 
@@ -897,7 +897,7 @@ void tigrUpdate(Tigr* bmp) {
 
     id distantPast = objc_msgSend_id(class("NSDate"), sel("distantPast"));
     id event = 0;
-    int processedEvents;
+    int processedEvents = 0;
     BOOL visible = 0;
 
     do {
@@ -1024,7 +1024,7 @@ int tigrReadChar(Tigr* bmp) {
     return c;
 }
 
-float tigrTime() {
+float tigrTime(void) {
     static mach_timebase_info_data_t timebaseInfo;
 
     if (timebaseInfo.denom == 0) {

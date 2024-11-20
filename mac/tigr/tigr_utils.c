@@ -36,7 +36,7 @@ void* tigrReadFile(const char* fileName, int* length) {
     fclose(file);
 
     if (length)
-        *length = len;
+        *length = (int) len;
 
     return data;
 }
