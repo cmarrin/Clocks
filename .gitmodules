@@ -1,3 +1,6 @@
 [submodule "ESPLib"]
 	path = ESPLib
 	url = git@github.com:cmarrin/ESPlib.git
+[submodule "tigr"]
+	path = tigr
+	url = https://github.com/erkkah/tigr.git
