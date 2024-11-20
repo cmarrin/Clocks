@@ -113,7 +113,7 @@ static constexpr const char* ConfigPortalPassword = "";
 
 static constexpr const char* TimeCity = "America/Los_Angeles";
 static constexpr const char* WeatherCity = "93405";
-static constexpr uint8_t SelectButton = D3;
+static constexpr uint8_t SelectButton = 3;
 static constexpr bool InvertAmbientLightLevel = true;
 static constexpr uint32_t MinLightSensorLevel = 60;
 static constexpr uint32_t MaxLightSensorLevel = 900;
@@ -132,7 +132,9 @@ public:
 	void setup()
 	{
 		Serial.begin(115200);
-		delay(500);
+		delay(2000);
+        mil::cout << "mil::cout - STARTING UP!!!\n";
+        Serial.print("Serial - STARTING UP!!!\n");
 		setBrightness(50);
 		mil::Clock::setup();
 	}
