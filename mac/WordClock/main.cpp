@@ -50,7 +50,7 @@ int main(int argc, const char * argv[])
     
     int minute = 60 * 22;
     
-    float rate = 6;
+    float rate = 1;
     
     float lastUpdateTime = now();
     bool needUpdate = true;
