@@ -3,12 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		491958BD2807ABFE0012F306 /* WordClock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 491958BB2807A8490012F306 /* WordClock.cpp */; };
 		491958C72808709A0012F306 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 491958C62808709A0012F306 /* main.cpp */; };
+		497E4DD22CEEC3030079D258 /* WordClock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 497E4DD12CEEC3030079D258 /* WordClock.cpp */; };
 		499554A127FDD84600D04E66 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 499554A027FDD84600D04E66 /* main.cpp */; };
 		499554BD27FE59D900D04E66 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 499554BC27FE59D900D04E66 /* Cocoa.framework */; };
 		499554BF27FE59EC00D04E66 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 499554BE27FE59EC00D04E66 /* OpenGL.framework */; };
@@ -52,13 +52,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		491958BB2807A8490012F306 /* WordClock.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = WordClock.cpp; path = ../ESPLib/WordClock.cpp; sourceTree = "<group>"; };
-		491958BC2807A8490012F306 /* WordClock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = WordClock.h; path = ../ESPLib/WordClock.h; sourceTree = "<group>"; };
 		491958C42808709A0012F306 /* OfficeClock */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = OfficeClock; sourceTree = BUILT_PRODUCTS_DIR; };
 		491958C62808709A0012F306 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		491958CD280877530012F306 /* OfficeClock.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = OfficeClock.ino; path = ../OfficeClock/OfficeClock.ino; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		491958CF280890790012F306 /* WordClock.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = WordClock.ino; path = ../../WordClock/WordClock.ino; sourceTree = "<group>"; };
 		491958D2280890BA0012F306 /* Etherclock.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Etherclock.ino; path = ../Etherclock/Etherclock.ino; sourceTree = "<group>"; };
+		497E4DD02CEEC3030079D258 /* WordClock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WordClock.h; sourceTree = "<group>"; };
+		497E4DD12CEEC3030079D258 /* WordClock.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WordClock.cpp; sourceTree = "<group>"; };
 		4995547D27FCFD5400D04E66 /* EtherClock */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EtherClock; sourceTree = BUILT_PRODUCTS_DIR; };
 		4995548727FD048400D04E66 /* ButtonManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ButtonManager.cpp; path = ../ESPLib/ButtonManager.cpp; sourceTree = "<group>"; };
 		4995548827FD048400D04E66 /* DSP7S04B.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = DSP7S04B.cpp; path = ../ESPLib/DSP7S04B.cpp; sourceTree = "<group>"; };
@@ -92,6 +92,10 @@
 		49B0FBCD2804AAC200F07F3E /* WordClock-Hoefler-800.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "WordClock-Hoefler-800.png"; path = "../../WordClock/WordClock-Hoefler-800.png"; sourceTree = "<group>"; };
 		49B0FBCE2804AAC200F07F3E /* WordClock-Hoefler-1600.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "WordClock-Hoefler-1600.png"; path = "../../WordClock/WordClock-Hoefler-1600.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		497E4DC72CEE9F650079D258 /* tigr */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = tigr; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		491958C12808709A0012F306 /* Frameworks */ = {
@@ -169,7 +173,8 @@
 			children = (
 				499554A027FDD84600D04E66 /* main.cpp */,
 			);
-			path = mac;
+			name = mac;
+			path = EtherClock;
 			sourceTree = "<group>";
 		};
 		491958D12808909B0012F306 /* esp */ = {
@@ -183,6 +188,7 @@
 		4995545627FB42FC00D04E66 = {
 			isa = PBXGroup;
 			children = (
+				497E4DC72CEE9F650079D258 /* tigr */,
 				4995548627FD045B00D04E66 /* ESPLib */,
 				4995547827FCFC4500D04E66 /* EtherClock */,
 				499554C827FF355500D04E66 /* WordClock */,
@@ -232,8 +238,6 @@
 				4995549B27FD049B00D04E66 /* StateMachine.h */,
 				4995549027FD048500D04E66 /* WeatherServer.cpp */,
 				4995549827FD049B00D04E66 /* WeatherServer.h */,
-				491958BB2807A8490012F306 /* WordClock.cpp */,
-				491958BC2807A8490012F306 /* WordClock.h */,
 				4995549127FD048500D04E66 /* Font_8x8_8pt.h */,
 				4995548927FD048400D04E66 /* Font_Compact_5pt.h */,
 				4995548E27FD048400D04E66 /* mil.h */,
@@ -254,6 +258,8 @@
 		499554C827FF355500D04E66 /* WordClock */ = {
 			isa = PBXGroup;
 			children = (
+				497E4DD02CEEC3030079D258 /* WordClock.h */,
+				497E4DD12CEEC3030079D258 /* WordClock.cpp */,
 				491958BF28086F420012F306 /* esp */,
 				491958BE28086EFD0012F306 /* mac */,
 				49B0FBCD2804AAC200F07F3E /* WordClock-Hoefler-800.png */,
@@ -379,8 +385,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				497E4DD22CEEC3030079D258 /* WordClock.cpp in Sources */,
 				499554CA27FF355500D04E66 /* main.cpp in Sources */,
-				491958BD2807ABFE0012F306 /* WordClock.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -450,7 +456,7 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"GL_SILENCE_DEPRECATION=1",
+					GL_SILENCE_DEPRECATION,
 					"DEBUG=1",
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -508,7 +514,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = " GL_SILENCE_DEPRECATION=1";
+				GCC_PREPROCESSOR_DEFINITIONS = GL_SILENCE_DEPRECATION;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
