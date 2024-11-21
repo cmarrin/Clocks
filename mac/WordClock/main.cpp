@@ -5,11 +5,6 @@
 //  Created by Chris Marrin on 4/5/22.
 //
 
-#include <iostream>
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <OpenGL/gl.h>
 #include <chrono>
 
 #include "WordClock.h"
@@ -55,7 +50,7 @@ int main(int argc, const char * argv[])
     
     int minute = 60 * 22;
     
-    float rate = 0.125;
+    float rate = 6;
     
     float lastUpdateTime = now();
     bool needUpdate = true;
