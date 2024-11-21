@@ -3,4 +3,4 @@
 	url = git@github.com:cmarrin/ESPlib.git
 [submodule "tigr"]
 	path = tigr
-	url = https://github.com/erkkah/tigr.git
+url=git@github.com:cmarrin/tigr.git
