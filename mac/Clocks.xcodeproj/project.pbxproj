@@ -12,6 +12,8 @@
 		497E4DE22CEECB090079D258 /* tigr.c in Sources */ = {isa = PBXBuildFile; fileRef = 497E4DE02CEECB090079D258 /* tigr.c */; };
 		497E4DE32CEECB090079D258 /* tigr.c in Sources */ = {isa = PBXBuildFile; fileRef = 497E4DE02CEECB090079D258 /* tigr.c */; };
 		497E4DE62CEECBF60079D258 /* WordClock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 497E4DE52CEECBF60079D258 /* WordClock.cpp */; };
+		497E4DF32CF019EA0079D258 /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 497E4DF22CF019EA0079D258 /* Application.cpp */; };
+		497E4DF42CF019EA0079D258 /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 497E4DF22CF019EA0079D258 /* Application.cpp */; };
 		499554A127FDD84600D04E66 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 499554A027FDD84600D04E66 /* main.cpp */; };
 		499554BD27FE59D900D04E66 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 499554BC27FE59D900D04E66 /* Cocoa.framework */; };
 		499554BF27FE59EC00D04E66 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 499554BE27FE59EC00D04E66 /* OpenGL.framework */; };
@@ -64,6 +66,8 @@
 		497E4DE02CEECB090079D258 /* tigr.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tigr.c; path = ../tigr/tigr.c; sourceTree = SOURCE_ROOT; };
 		497E4DE42CEECBF60079D258 /* WordClock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = WordClock.h; path = ../WordClock/WordClock.h; sourceTree = SOURCE_ROOT; };
 		497E4DE52CEECBF60079D258 /* WordClock.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = WordClock.cpp; path = ../WordClock/WordClock.cpp; sourceTree = SOURCE_ROOT; };
+		497E4DF22CF019EA0079D258 /* Application.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Application.cpp; sourceTree = "<group>"; };
+		497E4DF52CF019F80079D258 /* Application.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Application.h; sourceTree = "<group>"; };
 		4995547D27FCFD5400D04E66 /* EtherClock */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EtherClock; sourceTree = BUILT_PRODUCTS_DIR; };
 		4995548727FD048400D04E66 /* ButtonManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ButtonManager.cpp; path = ../ESPLib/ButtonManager.cpp; sourceTree = "<group>"; };
 		4995548827FD048400D04E66 /* DSP7S04B.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = DSP7S04B.cpp; path = ../ESPLib/DSP7S04B.cpp; sourceTree = "<group>"; };
@@ -231,6 +235,8 @@
 		4995548627FD045B00D04E66 /* ESPLib */ = {
 			isa = PBXGroup;
 			children = (
+				497E4DF22CF019EA0079D258 /* Application.cpp */,
+				497E4DF52CF019F80079D258 /* Application.h */,
 				4995549227FD049B00D04E66 /* Blinker.h */,
 				4995548D27FD048400D04E66 /* BrightnessManager.cpp */,
 				4995549327FD049B00D04E66 /* BrightnessManager.h */,
@@ -382,6 +388,7 @@
 			files = (
 				491958C72808709A0012F306 /* main.cpp in Sources */,
 				497E4DE22CEECB090079D258 /* tigr.c in Sources */,
+				497E4DF32CF019EA0079D258 /* Application.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -391,6 +398,7 @@
 			files = (
 				499554A127FDD84600D04E66 /* main.cpp in Sources */,
 				497E4DE32CEECB090079D258 /* tigr.c in Sources */,
+				497E4DF42CF019EA0079D258 /* Application.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
