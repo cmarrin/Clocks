@@ -133,8 +133,6 @@ public:
 	{
 		Serial.begin(115200);
 		delay(2000);
-        mil::cout << "mil::cout - STARTING UP!!!\n";
-        Serial.print("Serial - STARTING UP!!!\n");
 		setBrightness(50);
 		mil::Clock::setup();
 	}
