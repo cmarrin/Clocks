@@ -47,6 +47,14 @@ public:
                                              0, cb));
     }
 	
+	virtual void setup() override
+    {
+        Application::setup();
+        if (_clock) {
+            _clock->setup();
+        }
+    }   
+
 	virtual void loop() override
     {
         Application::loop();
@@ -65,22 +73,21 @@ private:
 
 	void showChars(const std::string& string, uint8_t dps, bool colon)
 	{
-		if (string.length() != 4)
-		{
+		if (string.length() != 4) {
 			showChars("Err1", 0, false);
 			cout << "***** Invalid string display: '" << string << "'\n";
 			return;
 		}
   
-        cout << string.c_str() << "\n";
+        if (colon) {
+            cout << string[0] << string[1] << ":" << string[2] << string[3] << "\n";
+        } else {
+            cout << string << "\n";
+        }
 		
 		// FIXME: technically, we should be able to set any dot. For now we only ever set the rightmost
 		if (dps) {
             cout << "Dot set\n";
-		}
-	
-		if (colon) {
-            cout << "Colon set\n";
 		}
 	}
 
@@ -143,15 +150,22 @@ private:
 		} else {
 			string = "";
 		}
-		string += hour;
+		string += std::to_string(hour);
 
 		uint8_t minute = timeinfo->tm_min;
 		if (minute < 10) {
 			string += "0";
 		}
-		string += minute;
-    
-	    showChars(string, dps, true);
+		string += std::to_string(minute);
+  
+        // If we are forced or the time has changed, show it
+        if (force || _lastHour != hour || _lastMinute != minute || _lastDps != dps) {
+            showChars(string, dps, true);
+        }
+        
+        _lastHour = hour;
+        _lastMinute = minute;
+        _lastDps = dps;
     }
 	
     virtual void showSecondary() override
@@ -230,6 +244,10 @@ private:
 	Ticker _showInfoTimer;
     
     std::unique_ptr<mil::Clock> _clock;
+    
+    uint8_t _lastHour = 0;
+    uint8_t _lastMinute = 0;
+    uint8_t _lastDps = 0;
 };
 
 int main(int argc, const char * argv[])
