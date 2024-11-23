@@ -14,6 +14,9 @@
 		497E4DE62CEECBF60079D258 /* WordClock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 497E4DE52CEECBF60079D258 /* WordClock.cpp */; };
 		497E4DF72CF01E930079D258 /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 497E4DF62CF01E930079D258 /* Application.cpp */; };
 		497E4DF82CF01E930079D258 /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 497E4DF62CF01E930079D258 /* Application.cpp */; };
+		497E4E012CF16C5B0079D258 /* JsonStreamingParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 497E4E002CF16C5B0079D258 /* JsonStreamingParser.cpp */; };
+		497E4E022CF16C5B0079D258 /* JsonStreamingParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 497E4E002CF16C5B0079D258 /* JsonStreamingParser.cpp */; };
+		497E4E032CF16C5B0079D258 /* JsonStreamingParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 497E4E002CF16C5B0079D258 /* JsonStreamingParser.cpp */; };
 		499554A127FDD84600D04E66 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 499554A027FDD84600D04E66 /* main.cpp */; };
 		499554BD27FE59D900D04E66 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 499554BC27FE59D900D04E66 /* Cocoa.framework */; };
 		499554BF27FE59EC00D04E66 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 499554BE27FE59EC00D04E66 /* OpenGL.framework */; };
@@ -68,6 +71,9 @@
 		497E4DE52CEECBF60079D258 /* WordClock.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = WordClock.cpp; path = ../WordClock/WordClock.cpp; sourceTree = SOURCE_ROOT; };
 		497E4DF62CF01E930079D258 /* Application.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Application.cpp; path = ../ESPLib/Application.cpp; sourceTree = SOURCE_ROOT; };
 		497E4DF92CF01EA50079D258 /* Application.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Application.h; path = ../ESPLib/mil/Application.h; sourceTree = SOURCE_ROOT; };
+		497E4DFE2CF16C5B0079D258 /* JsonListener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JsonListener.h; path = ../ESPLib/JsonListener.h; sourceTree = SOURCE_ROOT; };
+		497E4DFF2CF16C5B0079D258 /* JsonStreamingParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JsonStreamingParser.h; path = ../ESPLib/JsonStreamingParser.h; sourceTree = SOURCE_ROOT; };
+		497E4E002CF16C5B0079D258 /* JsonStreamingParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = JsonStreamingParser.cpp; path = ../ESPLib/JsonStreamingParser.cpp; sourceTree = SOURCE_ROOT; };
 		4995547D27FCFD5400D04E66 /* EtherClock */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EtherClock; sourceTree = BUILT_PRODUCTS_DIR; };
 		4995548727FD048400D04E66 /* ButtonManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ButtonManager.cpp; path = ../ESPLib/ButtonManager.cpp; sourceTree = "<group>"; };
 		4995548827FD048400D04E66 /* DSP7S04B.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = DSP7S04B.cpp; path = ../ESPLib/DSP7S04B.cpp; sourceTree = "<group>"; };
@@ -78,7 +84,7 @@
 		4995548D27FD048400D04E66 /* BrightnessManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BrightnessManager.cpp; path = ../ESPLib/BrightnessManager.cpp; sourceTree = "<group>"; };
 		4995548E27FD048400D04E66 /* mil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = mil.h; path = ../ESPLib/mil.h; sourceTree = "<group>"; };
 		4995548F27FD048500D04E66 /* Max7219Display.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Max7219Display.cpp; path = ../ESPLib/Max7219Display.cpp; sourceTree = "<group>"; };
-		4995549027FD048500D04E66 /* WeatherServer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = WeatherServer.cpp; path = ../ESPLib/WeatherServer.cpp; sourceTree = "<group>"; };
+		4995549027FD048500D04E66 /* TimeWeatherServer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = TimeWeatherServer.cpp; path = ../ESPLib/TimeWeatherServer.cpp; sourceTree = "<group>"; };
 		4995549127FD048500D04E66 /* Font_8x8_8pt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Font_8x8_8pt.h; path = ../ESPLib/Font_8x8_8pt.h; sourceTree = "<group>"; };
 		4995549227FD049B00D04E66 /* Blinker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Blinker.h; path = ../ESPLib/mil/Blinker.h; sourceTree = "<group>"; };
 		4995549327FD049B00D04E66 /* BrightnessManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BrightnessManager.h; path = ../ESPLib/mil/BrightnessManager.h; sourceTree = "<group>"; };
@@ -86,7 +92,7 @@
 		4995549527FD049B00D04E66 /* DSP7S04B.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DSP7S04B.h; path = ../ESPLib/mil/DSP7S04B.h; sourceTree = "<group>"; };
 		4995549627FD049B00D04E66 /* Max7219Display.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Max7219Display.h; path = ../ESPLib/mil/Max7219Display.h; sourceTree = "<group>"; };
 		4995549727FD049B00D04E66 /* Clock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Clock.h; path = ../ESPLib/mil/Clock.h; sourceTree = "<group>"; };
-		4995549827FD049B00D04E66 /* WeatherServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WeatherServer.h; path = ../ESPLib/mil/WeatherServer.h; sourceTree = "<group>"; };
+		4995549827FD049B00D04E66 /* TimeWeatherServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TimeWeatherServer.h; path = ../ESPLib/mil/TimeWeatherServer.h; sourceTree = "<group>"; };
 		4995549927FD049B00D04E66 /* ButtonManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ButtonManager.h; path = ../ESPLib/mil/ButtonManager.h; sourceTree = "<group>"; };
 		4995549A27FD049B00D04E66 /* MenuSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MenuSystem.h; path = ../ESPLib/mil/MenuSystem.h; sourceTree = "<group>"; };
 		4995549B27FD049B00D04E66 /* StateMachine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StateMachine.h; path = ../ESPLib/mil/StateMachine.h; sourceTree = "<group>"; };
@@ -235,6 +241,9 @@
 		4995548627FD045B00D04E66 /* ESPLib */ = {
 			isa = PBXGroup;
 			children = (
+				497E4DFE2CF16C5B0079D258 /* JsonListener.h */,
+				497E4DFF2CF16C5B0079D258 /* JsonStreamingParser.h */,
+				497E4E002CF16C5B0079D258 /* JsonStreamingParser.cpp */,
 				497E4DF62CF01E930079D258 /* Application.cpp */,
 				497E4DF92CF01EA50079D258 /* Application.h */,
 				4995549227FD049B00D04E66 /* Blinker.h */,
@@ -253,8 +262,8 @@
 				4995548A27FD048400D04E66 /* MenuSystem.cpp */,
 				4995549A27FD049B00D04E66 /* MenuSystem.h */,
 				4995549B27FD049B00D04E66 /* StateMachine.h */,
-				4995549027FD048500D04E66 /* WeatherServer.cpp */,
-				4995549827FD049B00D04E66 /* WeatherServer.h */,
+				4995549027FD048500D04E66 /* TimeWeatherServer.cpp */,
+				4995549827FD049B00D04E66 /* TimeWeatherServer.h */,
 				4995549127FD048500D04E66 /* Font_8x8_8pt.h */,
 				4995548927FD048400D04E66 /* Font_Compact_5pt.h */,
 				4995548E27FD048400D04E66 /* mil.h */,
@@ -387,6 +396,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				491958C72808709A0012F306 /* main.cpp in Sources */,
+				497E4E022CF16C5B0079D258 /* JsonStreamingParser.cpp in Sources */,
 				497E4DE22CEECB090079D258 /* tigr.c in Sources */,
 				497E4DF82CF01E930079D258 /* Application.cpp in Sources */,
 			);
@@ -397,6 +407,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				499554A127FDD84600D04E66 /* main.cpp in Sources */,
+				497E4E012CF16C5B0079D258 /* JsonStreamingParser.cpp in Sources */,
 				497E4DE32CEECB090079D258 /* tigr.c in Sources */,
 				497E4DF72CF01E930079D258 /* Application.cpp in Sources */,
 			);
@@ -407,6 +418,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				497E4DE62CEECBF60079D258 /* WordClock.cpp in Sources */,
+				497E4E032CF16C5B0079D258 /* JsonStreamingParser.cpp in Sources */,
 				497E4DE12CEECB090079D258 /* tigr.c in Sources */,
 				499554CA27FF355500D04E66 /* main.cpp in Sources */,
 			);
