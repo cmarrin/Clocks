@@ -21,14 +21,39 @@
 
 #include "Etherclock.h"
 
+#include <sys/ioctl.h>
+
+static int getc()
+{
+    int bytes = 0;
+    if (ioctl(0, FIONREAD, &bytes) == -1) {
+        return -1;
+    }
+    if (bytes == 0) {
+        return 0;
+    }
+    return getchar();
+}
+
 int main(int argc, const char * argv[])
 {
+    system("stty raw");
+
     Etherclock etherclock;
     
     etherclock.setup();
     
     while (true) {
         etherclock.loop();
+
+        int c = getc();
+        if (c == '1') {
+            cout << " Got Click\n";
+            etherclock.sendInput(mil::Input::Click);
+        } else if (c == '2') {
+            cout << " Got Long Press\n";
+            etherclock.sendInput(mil::Input::LongPress);
+        }
     }
     return 0;
 }
