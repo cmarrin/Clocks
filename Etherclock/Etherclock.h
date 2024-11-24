@@ -30,7 +30,8 @@
 static constexpr const char* ConfigPortalName = "MT Etherclock";
 
 static constexpr const char* ZipCode = "93405";
-static constexpr uint8_t SelectButton = 3;
+static constexpr uint8_t SelectButton = 0;
+static constexpr uint32_t LightSensor = 0;
 static constexpr bool InvertAmbientLightLevel = false;
 static constexpr uint32_t MinLightSensorLevel = 20;
 static constexpr uint32_t MaxLightSensorLevel = 500;
@@ -44,6 +45,7 @@ public:
         mil::BrightnessChangeCB cb = [this](uint32_t b) { _clockDisplay.setBrightness(b); };
     
         _clock = std::unique_ptr<mil::Clock>(new mil::Clock(this, ZipCode,
+                                             LightSensor,
                                              InvertAmbientLightLevel,
                                              MinLightSensorLevel,
                                              MaxLightSensorLevel,
