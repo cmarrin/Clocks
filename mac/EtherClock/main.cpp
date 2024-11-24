@@ -19,8 +19,6 @@
 //
 // Missing letters: kmqvwxyz
 
-// This is the Mac simulator. It displays the time using tigr.
-
 #include "Etherclock.h"
 
 int main(int argc, const char * argv[])

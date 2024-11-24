@@ -43,8 +43,6 @@ Etherclock::showString(mil::Message m)
             break;
     }
 
-    cout << "***** Displaying: '" << s << "'\n";
-
     showChars(s, 0, false);
     startShowDoneTimer(2000);
 }
@@ -172,14 +170,15 @@ Etherclock::showChars(const std::string& string, uint8_t dps, bool colon)
         return;
     }
 
-    if (colon) {
-        cout << string[0] << string[1] << ":" << string[2] << string[3] << "\n";
-    } else {
-        cout << string << "\n";
-    }
-    
     // FIXME: technically, we should be able to set any dot. For now we only ever set the rightmost
     if (dps) {
-        cout << "Dot set\n";
+        _clockDisplay.setDot(3, true);
     }
+
+    if (colon) {
+        _clockDisplay.setColon(true);
+    }
+
+    _clockDisplay.clearDisplay();
+    _clockDisplay.print(const_cast<char*>(string.c_str()));
 }

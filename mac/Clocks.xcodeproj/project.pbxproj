@@ -32,7 +32,7 @@
 		49EB4B5B2CF254510083A081 /* TimeWeatherServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4995549027FD048500D04E66 /* TimeWeatherServer.cpp */; };
 		49EB4B5C2CF254510083A081 /* TimeWeatherServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4995549027FD048500D04E66 /* TimeWeatherServer.cpp */; };
 		49EB4B5E2CF259A50083A081 /* libcurl.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 49EB4B5D2CF259A50083A081 /* libcurl.tbd */; };
-		49EB4B612CF380A00083A081 /* Etherclock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49EB4B602CF380990083A081 /* Etherclock.cpp */; };
+		49EB4B642CF389300083A081 /* Etherclock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49EB4B632CF389300083A081 /* Etherclock.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -113,8 +113,8 @@
 		49B0FBCD2804AAC200F07F3E /* WordClock-Hoefler-800.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "WordClock-Hoefler-800.png"; path = "../../WordClock/WordClock-Hoefler-800.png"; sourceTree = "<group>"; };
 		49B0FBCE2804AAC200F07F3E /* WordClock-Hoefler-1600.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "WordClock-Hoefler-1600.png"; path = "../../WordClock/WordClock-Hoefler-1600.png"; sourceTree = "<group>"; };
 		49EB4B5D2CF259A50083A081 /* libcurl.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcurl.tbd; path = usr/lib/libcurl.tbd; sourceTree = SDKROOT; };
-		49EB4B5F2CF380450083A081 /* Etherclock.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = Etherclock.h; sourceTree = "<group>"; };
-		49EB4B602CF380990083A081 /* Etherclock.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; path = Etherclock.cpp; sourceTree = "<group>"; };
+		49EB4B622CF389300083A081 /* Etherclock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Etherclock.h; path = ../Etherclock/Etherclock.h; sourceTree = SOURCE_ROOT; };
+		49EB4B632CF389300083A081 /* Etherclock.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Etherclock.cpp; path = ../Etherclock/Etherclock.cpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -242,8 +242,8 @@
 		4995547827FCFC4500D04E66 /* Etherclock */ = {
 			isa = PBXGroup;
 			children = (
-				49EB4B602CF380990083A081 /* Etherclock.cpp */,
-				49EB4B5F2CF380450083A081 /* Etherclock.h */,
+				49EB4B622CF389300083A081 /* Etherclock.h */,
+				49EB4B632CF389300083A081 /* Etherclock.cpp */,
 				491958D12808909B0012F306 /* esp */,
 				491958D0280890930012F306 /* mac */,
 			);
@@ -425,7 +425,7 @@
 				499554A127FDD84600D04E66 /* main.cpp in Sources */,
 				497E4E012CF16C5B0079D258 /* JsonStreamingParser.cpp in Sources */,
 				49EB4B572CF252860083A081 /* BrightnessManager.cpp in Sources */,
-				49EB4B612CF380A00083A081 /* Etherclock.cpp in Sources */,
+				49EB4B642CF389300083A081 /* Etherclock.cpp in Sources */,
 				49EB4B592CF2528F0083A081 /* ButtonManager.cpp in Sources */,
 				49EB4B5B2CF254510083A081 /* TimeWeatherServer.cpp in Sources */,
 				49EB4B552CF232E40083A081 /* Clock.cpp in Sources */,

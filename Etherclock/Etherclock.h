@@ -26,6 +26,7 @@
 static constexpr const char* ConfigPortalName = "MT Etherclock";
 
 static constexpr const char* ZipCode = "93405";
+static constexpr uint8_t SelectButton = 3;
 static constexpr bool InvertAmbientLightLevel = false;
 static constexpr uint32_t MinLightSensorLevel = 20;
 static constexpr uint32_t MaxLightSensorLevel = 500;
@@ -34,19 +35,21 @@ class Etherclock : public mil::Application
 {
 public:
 	Etherclock()
-		: mil::Application(0, ConfigPortalName)
+		: mil::Application(LED_BUILTIN, ConfigPortalName)
     {
-        mil::BrightnessChangeCB cb = [this](uint32_t brightness) { setBrightness(brightness); };
+        mil::BrightnessChangeCB cb = [this](uint32_t b) { _clockDisplay.setBrightness(b); };
     
         _clock = std::unique_ptr<mil::Clock>(new mil::Clock(this, ZipCode,
                                              InvertAmbientLightLevel,
                                              MinLightSensorLevel,
                                              MaxLightSensorLevel,
-                                             0, cb));
+                                             SelectButton, cb));
     }
 	
 	virtual void setup() override
     {
+		delay(500);
+		_clock->setBrightness(50);
         Application::setup();
         if (_clock) {
             _clock->setup();
@@ -61,11 +64,6 @@ public:
         }
     }   
 
-	void setBrightness(uint32_t b)
-	{
-	    cout << "*** Brightness set to " << b << "\n";
-	}
-
 private:
     enum class Info { Date, CurTemp, LowTemp, HighTemp, Done };
 
@@ -74,6 +72,8 @@ private:
     virtual void showSecondary() override;
 	void showInfoSequence();
 	void showChars(const std::string& string, uint8_t dps, bool colon);
+
+    DSP7S04B _clockDisplay;
 
 	Info _info = Info::Done;
 	Ticker _showInfoTimer;
