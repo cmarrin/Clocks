@@ -170,15 +170,11 @@ Etherclock::showChars(const std::string& string, uint8_t dps, bool colon)
         return;
     }
 
-    // FIXME: technically, we should be able to set any dot. For now we only ever set the rightmost
+    _clockDisplay.clearDisplay();
+    _clockDisplay.setColon(colon);
+    _clockDisplay.print(const_cast<char*>(string.c_str()));
+
     if (dps) {
         _clockDisplay.setDot(3, true);
     }
-
-    if (colon) {
-        _clockDisplay.setColon(true);
-    }
-
-    _clockDisplay.clearDisplay();
-    _clockDisplay.print(const_cast<char*>(string.c_str()));
 }
