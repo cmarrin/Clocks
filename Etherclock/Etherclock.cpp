@@ -117,11 +117,11 @@ Etherclock::showInfoSequence()
             } else {
                 string = "";
             }
-            string += month;
+            string += std::to_string(month);
             if (date < 10) {
                 string += " ";
             }
-            string += date;
+            string += std::to_string(date);
             _info = Info::CurTemp;
             break;
         }
@@ -131,7 +131,7 @@ Etherclock::showInfoSequence()
             if (temp > 0 && temp < 100) {
                 string += " ";
             }
-            string += temp;
+            string += std::to_string(temp);
             _info = Info::LowTemp;
             break;
         }
@@ -141,7 +141,7 @@ Etherclock::showInfoSequence()
             if (temp > 0 && temp < 100) {
                 string += " ";
             }
-            string += temp;
+            string += std::to_string(temp);
             _info = Info::HighTemp;
             break;
         }
@@ -151,7 +151,7 @@ Etherclock::showInfoSequence()
             if (temp > 0 && temp < 100) {
                 string += " ";
             }
-            string += temp;
+            string += std::to_string(temp);
             _info = Info::Done;
             break;
         }
