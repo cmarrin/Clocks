@@ -134,9 +134,10 @@ private:
     {
 	    std::string string = "EEEE";
 	    uint8_t dps = 0;
-		uint32_t t = _clock->currentTime();
-		struct tm* timeinfo = localtime(reinterpret_cast<time_t*>(&t));
+		uint64_t t = _clock->currentTime();
+		struct tm* timeinfo = gmtime(reinterpret_cast<time_t*>(&t));
 		uint8_t hour = timeinfo->tm_hour;
+  
 		if (hour == 0) {
 			hour = 12;
 		} else if (hour >= 12) {
@@ -186,8 +187,8 @@ private:
 		switch(_info) {
             case Info::Done: break;
 			case Info::Date: {
-				uint32_t t = _clock->currentTime();
-				struct tm* timeinfo = localtime(reinterpret_cast<time_t*>(&t));
+				time_t t = _clock->currentTime();
+				struct tm* timeinfo = gmtime(&t);
 				uint8_t month = timeinfo->tm_mon + 1;
 				uint8_t date = timeinfo->tm_mday;
 
