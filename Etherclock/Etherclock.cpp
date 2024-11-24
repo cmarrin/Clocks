@@ -15,31 +15,31 @@ Etherclock::showString(mil::Message m)
     std::string s;
     switch(m) {
         case mil::Message::NetConfig:
-            s = F("CNFG");
+            s = "CNFG";
             break;
         case mil::Message::Startup:
-            s = F("EC-4");
+            s = "EC-4";
             break;
         case mil::Message::Connecting:
-            s = F("Conn");
+            s = "Conn";
             break;
         case mil::Message::NetFail:
-            s = F("NtFL");
+            s = "NtFL";
             break;
         case mil::Message::UpdateFail:
-            s = F("UPFL");
+            s = "UPFL";
             break;
         case mil::Message::AskRestart:
-            s = F("Str?");
+            s = "Str?";
             break;
         case mil::Message::AskResetNetwork:
-            s = F("rSt?");
+            s = "rSt?";
             break;
         case mil::Message::VerifyResetNetwork:
-            s = F("Sur?");
+            s = "Sur?";
             break;
         default:
-            s = F("Err ");
+            s = "Err ";
             break;
     }
 
@@ -166,7 +166,7 @@ Etherclock::showChars(const std::string& string, uint8_t dps, bool colon)
 {
     if (string.length() != 4) {
         showChars("Err1", 0, false);
-        cout << "***** Invalid string display: '" << string << "'\n";
+        cout << F("***** Invalid string display: '") << string.c_str() << "'\n";
         return;
     }
 

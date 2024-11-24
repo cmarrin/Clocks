@@ -23,6 +23,10 @@
 #include "Application.h"
 #include "Clock.h"
 
+#ifdef ARDUINO
+#include "DSP7S04B.h"
+#endif
+
 static constexpr const char* ConfigPortalName = "MT Etherclock";
 
 static constexpr const char* ZipCode = "93405";
