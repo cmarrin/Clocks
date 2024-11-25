@@ -18,7 +18,7 @@ Etherclock::showString(mil::Message m)
             s = "CNFG";
             break;
         case mil::Message::Startup:
-            s = "EC-4";
+            s = "EC-5";
             break;
         case mil::Message::Connecting:
             s = "Conn";
@@ -52,7 +52,7 @@ Etherclock::showMain(bool force)
 {
     std::string string = "EEEE";
     uint8_t dps = 0;
-    uint64_t t = _clock->currentTime();
+    uint32_t t = _clock->currentTime();
     struct tm* timeinfo = gmtime(reinterpret_cast<time_t*>(&t));
     uint8_t hour = timeinfo->tm_hour;
 

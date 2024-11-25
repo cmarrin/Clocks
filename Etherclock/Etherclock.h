@@ -79,7 +79,7 @@ private:
 	void showInfoSequence();
 	void showChars(const std::string& string, uint8_t dps, bool colon);
 
-    DSP7S04B _clockDisplay;
+    mil::DSP7S04B _clockDisplay;
 
 	Info _info = Info::Done;
 	Ticker _showInfoTimer;

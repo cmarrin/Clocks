@@ -27,10 +27,10 @@ static constexpr bool showBoxes = false;
 
 static float now()
 {
-    static uint64_t startTime = 0;
+    static uint32_t startTime = 0;
     
     std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
-    uint64_t t = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count();
+    uint32_t t = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count();
     if (startTime == 0) {
         startTime = t;
     }

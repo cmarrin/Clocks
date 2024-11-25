@@ -9,15 +9,12 @@
 /* Begin PBXBuildFile section */
 		491958C72808709A0012F306 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 491958C62808709A0012F306 /* main.cpp */; };
 		497E4DE12CEECB090079D258 /* tigr.c in Sources */ = {isa = PBXBuildFile; fileRef = 497E4DE02CEECB090079D258 /* tigr.c */; };
-		497E4DE22CEECB090079D258 /* tigr.c in Sources */ = {isa = PBXBuildFile; fileRef = 497E4DE02CEECB090079D258 /* tigr.c */; };
 		497E4DE62CEECBF60079D258 /* WordClock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 497E4DE52CEECBF60079D258 /* WordClock.cpp */; };
 		497E4DF72CF01E930079D258 /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 497E4DF62CF01E930079D258 /* Application.cpp */; };
 		497E4DF82CF01E930079D258 /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 497E4DF62CF01E930079D258 /* Application.cpp */; };
 		497E4E012CF16C5B0079D258 /* JsonStreamingParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 497E4E002CF16C5B0079D258 /* JsonStreamingParser.cpp */; };
 		497E4E022CF16C5B0079D258 /* JsonStreamingParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 497E4E002CF16C5B0079D258 /* JsonStreamingParser.cpp */; };
 		499554A127FDD84600D04E66 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 499554A027FDD84600D04E66 /* main.cpp */; };
-		499554BD27FE59D900D04E66 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 499554BC27FE59D900D04E66 /* Cocoa.framework */; };
-		499554BF27FE59EC00D04E66 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 499554BE27FE59EC00D04E66 /* OpenGL.framework */; };
 		499554CA27FF355500D04E66 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 499554C927FF355500D04E66 /* main.cpp */; };
 		499554CE27FF355F00D04E66 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 499554BC27FE59D900D04E66 /* Cocoa.framework */; };
 		499554CF27FF356600D04E66 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 499554BE27FE59EC00D04E66 /* OpenGL.framework */; };
@@ -33,6 +30,8 @@
 		49EB4B5C2CF254510083A081 /* TimeWeatherServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4995549027FD048500D04E66 /* TimeWeatherServer.cpp */; };
 		49EB4B5E2CF259A50083A081 /* libcurl.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 49EB4B5D2CF259A50083A081 /* libcurl.tbd */; };
 		49EB4B642CF389300083A081 /* Etherclock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49EB4B632CF389300083A081 /* Etherclock.cpp */; };
+		49EB4B722CF3EB530083A081 /* OfficeClock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49EB4B712CF3EB530083A081 /* OfficeClock.cpp */; };
+		49EB4B732CF3FB370083A081 /* libcurl.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 49EB4B5D2CF259A50083A081 /* libcurl.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -115,6 +114,8 @@
 		49EB4B5D2CF259A50083A081 /* libcurl.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcurl.tbd; path = usr/lib/libcurl.tbd; sourceTree = SDKROOT; };
 		49EB4B622CF389300083A081 /* Etherclock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Etherclock.h; path = ../Etherclock/Etherclock.h; sourceTree = SOURCE_ROOT; };
 		49EB4B632CF389300083A081 /* Etherclock.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Etherclock.cpp; path = ../Etherclock/Etherclock.cpp; sourceTree = SOURCE_ROOT; };
+		49EB4B702CF3EB530083A081 /* OfficeClock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OfficeClock.h; path = ../OfficeClock/OfficeClock.h; sourceTree = SOURCE_ROOT; };
+		49EB4B712CF3EB530083A081 /* OfficeClock.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OfficeClock.cpp; path = ../OfficeClock/OfficeClock.cpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,6 +123,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				49EB4B732CF3FB370083A081 /* libcurl.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -130,8 +132,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				49EB4B5E2CF259A50083A081 /* libcurl.tbd in Frameworks */,
-				499554BF27FE59EC00D04E66 /* OpenGL.framework in Frameworks */,
-				499554BD27FE59D900D04E66 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -166,6 +166,8 @@
 		491958C52808709A0012F306 /* OfficeClock */ = {
 			isa = PBXGroup;
 			children = (
+				49EB4B712CF3EB530083A081 /* OfficeClock.cpp */,
+				49EB4B702CF3EB530083A081 /* OfficeClock.h */,
 				491958CE2808904E0012F306 /* mac */,
 				491958CC280876D50012F306 /* esp */,
 			);
@@ -372,6 +374,7 @@
 				TargetAttributes = {
 					491958C32808709A0012F306 = {
 						CreatedOnToolsVersion = 13.3.1;
+						LastSwiftMigration = 1610;
 					};
 					4995547C27FCFD5400D04E66 = {
 						CreatedOnToolsVersion = 13.3;
@@ -410,10 +413,10 @@
 				491958C72808709A0012F306 /* main.cpp in Sources */,
 				49EB4B562CF232E40083A081 /* Clock.cpp in Sources */,
 				497E4E022CF16C5B0079D258 /* JsonStreamingParser.cpp in Sources */,
-				497E4DE22CEECB090079D258 /* tigr.c in Sources */,
 				49EB4B5C2CF254510083A081 /* TimeWeatherServer.cpp in Sources */,
 				49EB4B582CF252860083A081 /* BrightnessManager.cpp in Sources */,
 				49EB4B5A2CF2528F0083A081 /* ButtonManager.cpp in Sources */,
+				49EB4B722CF3EB530083A081 /* OfficeClock.cpp in Sources */,
 				497E4DF82CF01E930079D258 /* Application.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -449,20 +452,25 @@
 		491958C92808709A0012F306 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEAD_CODE_STRIPPING = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
 			};
 			name = Debug;
 		};
 		491958CA2808709A0012F306 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEAD_CODE_STRIPPING = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 6.0;
 			};
 			name = Release;
 		};
