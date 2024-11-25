@@ -52,9 +52,10 @@ Etherclock::showMain(bool force)
 {
     std::string string = "EEEE";
     uint8_t dps = 0;
-    uint32_t t = _clock->currentTime();
-    struct tm* timeinfo = gmtime(reinterpret_cast<time_t*>(&t));
-    uint8_t hour = timeinfo->tm_hour;
+    time_t t = _clock->currentTime();
+	struct tm timeinfo;
+    gmtime_r(&t, &timeinfo);
+    uint8_t hour = timeinfo.tm_hour;
 
     if (hour == 0) {
         hour = 12;
@@ -71,7 +72,7 @@ Etherclock::showMain(bool force)
     }
     string += std::to_string(hour);
 
-    uint8_t minute = timeinfo->tm_min;
+    uint8_t minute = timeinfo.tm_min;
     if (minute < 10) {
         string += "0";
     }
@@ -108,9 +109,10 @@ Etherclock::showInfoSequence()
         case Info::Done: break;
         case Info::Date: {
             time_t t = _clock->currentTime();
-            struct tm* timeinfo = gmtime(&t);
-            uint8_t month = timeinfo->tm_mon + 1;
-            uint8_t date = timeinfo->tm_mday;
+            struct tm timeinfo;
+            gmtime_r(&t, &timeinfo);
+            uint8_t month = timeinfo.tm_mon + 1;
+            uint8_t date = timeinfo.tm_mday;
 
             if (month < 10) {
                 string = " ";
