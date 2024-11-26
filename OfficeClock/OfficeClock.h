@@ -81,6 +81,7 @@
 #endif
 
 static constexpr const char* ConfigPortalName = "MT Etherclock";
+static constexpr const char* Hostname = "officeclock";
 
 static constexpr const char* ZipCode = "93405";
 
@@ -108,7 +109,7 @@ class OfficeClock : public mil::Application
 {
 public:
 	OfficeClock()
-		: mil::Application(LED_BUILTIN, ConfigPortalName)
+		: mil::Application(LED_BUILTIN, Hostname, ConfigPortalName)
 		, _clockDisplay([this]() { startShowDoneTimer(DoneTimeDuration); })
     {
         mil::BrightnessChangeCB cb = [this](uint32_t b) { setBrightness(b); };

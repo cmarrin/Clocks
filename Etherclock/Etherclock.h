@@ -28,6 +28,7 @@
 #endif
 
 static constexpr const char* ConfigPortalName = "MT Etherclock";
+static constexpr const char* Hostname = "xxxetherclock";
 
 static constexpr const char* ZipCode = "93405";
 static constexpr uint8_t SelectButton = 0;
@@ -40,7 +41,7 @@ class Etherclock : public mil::Application
 {
 public:
 	Etherclock()
-		: mil::Application(LED_BUILTIN, ConfigPortalName)
+		: mil::Application(LED_BUILTIN, Hostname, ConfigPortalName)
     {
         mil::BrightnessChangeCB cb = [this](uint32_t b) { _clockDisplay.setBrightness(b); };
     
