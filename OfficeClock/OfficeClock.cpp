@@ -10,6 +10,18 @@
 #include "OfficeClock.h"
 
 void
+OfficeClock::handleButtonEvent(const mil::Button& button, mil::ButtonManager::Event event)
+{
+	if (button.id() == SelectButton) {
+		if (event == mil::ButtonManager::Event::Click) {
+			sendInput(mil::Input::Click);
+		} else if (event == mil::ButtonManager::Event::LongPress) {
+			sendInput(mil::Input::LongPress);
+		}
+	}
+}
+
+void
 OfficeClock::showMain(bool force)
 {
     time_t currentTime = _clock->currentTime();

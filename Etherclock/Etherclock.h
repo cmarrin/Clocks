@@ -28,11 +28,13 @@
 #endif
 
 static constexpr const char* ConfigPortalName = "MT Etherclock";
-static constexpr const char* Hostname = "xxxetherclock";
+static constexpr const char* Hostname = "etherclock";
 
 static constexpr const char* ZipCode = "93405";
+
 static constexpr uint8_t SelectButton = 0;
 static constexpr uint32_t LightSensor = 0;
+static constexpr uint32_t NumberOfBrightnessLevels = 250;
 static constexpr bool InvertAmbientLightLevel = false;
 static constexpr uint32_t MinLightSensorLevel = 20;
 static constexpr uint32_t MaxLightSensorLevel = 500;
@@ -42,25 +44,26 @@ class Etherclock : public mil::Application
 public:
 	Etherclock()
 		: mil::Application(LED_BUILTIN, Hostname, ConfigPortalName)
+		, _brightnessManager([this](uint32_t b) { setBrightness(b); }, LightSensor, 
+							 InvertAmbientLightLevel, MinLightSensorLevel, MaxLightSensorLevel, NumberOfBrightnessLevels)
+		, _buttonManager([this](const mil::Button& b, mil::ButtonManager::Event e) { handleButtonEvent(b, e); })
     {
-        mil::BrightnessChangeCB cb = [this](uint32_t b) { _clockDisplay.setBrightness(b); };
-    
-        _clock = std::unique_ptr<mil::Clock>(new mil::Clock(this, ZipCode,
-                                             LightSensor,
-                                             InvertAmbientLightLevel,
-                                             MinLightSensorLevel,
-                                             MaxLightSensorLevel,
-                                             SelectButton, cb));
+        _clock = std::unique_ptr<mil::Clock>(new mil::Clock(this, ZipCode));
     }
 	
 	virtual void setup() override
     {
 		delay(500);
-		_clock->setBrightness(50);
         Application::setup();
+
+        _brightnessManager.start();
+        _buttonManager.addButton(mil::Button(SelectButton, SelectButton, false, mil::Button::PinMode::Pullup));
+	
         if (_clock) {
             _clock->setup();
         }
+
+        setBrightness(50);
     }   
 
 	virtual void loop() override
@@ -74,7 +77,11 @@ public:
 private:
     enum class Info { Date, CurTemp, LowTemp, HighTemp, Done };
 
-	virtual void showString(mil::Message m) override;
+    void handleButtonEvent(const mil::Button& button, mil::ButtonManager::Event event);
+    
+    void setBrightness(uint8_t b) { _clockDisplay.setBrightness(b); }
+    
+    virtual void showString(mil::Message m) override;
 	virtual void showMain(bool force = false) override;
     virtual void showSecondary() override;
 	void showInfoSequence();
@@ -86,7 +93,9 @@ private:
 	Ticker _showInfoTimer;
     
     std::unique_ptr<mil::Clock> _clock;
-    
+	mil::BrightnessManager _brightnessManager;
+	mil::ButtonManager _buttonManager;
+
     uint8_t _lastHour = 0;
     uint8_t _lastMinute = 0;
     uint8_t _lastDps = 0;

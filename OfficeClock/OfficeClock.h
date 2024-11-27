@@ -90,6 +90,7 @@ static constexpr uint32_t StartupScrollRate = 50;
 static constexpr uint32_t DateScrollRate = 50;
 static constexpr uint8_t SelectButton = 5;
 static constexpr uint32_t LightSensor = 0;
+static constexpr uint32_t NumberOfBrightnessLevels = 31;
 static constexpr bool InvertAmbientLightLevel = true;
 static constexpr uint32_t MinLightSensorLevel = 60;
 static constexpr uint32_t MaxLightSensorLevel = 900;
@@ -111,25 +112,26 @@ public:
 	OfficeClock()
 		: mil::Application(LED_BUILTIN, Hostname, ConfigPortalName)
 		, _clockDisplay([this]() { startShowDoneTimer(DoneTimeDuration); })
+		, _brightnessManager([this](uint32_t b) { setBrightness(b); }, LightSensor, 
+							 InvertAmbientLightLevel, MinLightSensorLevel, MaxLightSensorLevel, NumberOfBrightnessLevels)
+		, _buttonManager([this](const mil::Button& b, mil::ButtonManager::Event e) { handleButtonEvent(b, e); })
     {
-        mil::BrightnessChangeCB cb = [this](uint32_t b) { setBrightness(b); };
-
-       _clock = std::unique_ptr<mil::Clock>(new mil::Clock(this, ZipCode,
-                                             LightSensor,
-                                             InvertAmbientLightLevel,
-                                             MinLightSensorLevel,
-                                             MaxLightSensorLevel,
-                                             SelectButton, cb));
+       _clock = std::unique_ptr<mil::Clock>(new mil::Clock(this, ZipCode));
 	}
 	
 	virtual void setup() override
 	{
 		delay(2000);
-		setBrightness(50);
         Application::setup();
+
+        _brightnessManager.start();
+        _buttonManager.addButton(mil::Button(SelectButton, SelectButton, false, mil::Button::PinMode::Pullup));
+	
         if (_clock) {
             _clock->setup();
         }
+
+		setBrightness(50);
 	}
 	
 	virtual void loop() override
@@ -145,10 +147,13 @@ private:
 	virtual void showSecondary() override;
 	virtual void showString(mil::Message m) override;
     
+    void handleButtonEvent(const mil::Button& button, mil::ButtonManager::Event event);
 	void setBrightness(uint32_t b);
 	
 	mil::Max7219Display _clockDisplay;
     std::unique_ptr<mil::Clock> _clock;
+	mil::BrightnessManager _brightnessManager;
+	mil::ButtonManager _buttonManager;
 
 	CPString _lastStringSent;
 };
