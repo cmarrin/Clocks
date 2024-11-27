@@ -22,6 +22,8 @@
 #include "mil.h"
 #include "Application.h"
 #include "Clock.h"
+#include "BrightnessManager.h"
+#include "ButtonManager.h"
 
 #ifdef ARDUINO
 #include "DSP7S04B.h"
