@@ -37,10 +37,10 @@ int main(int argc, const char * argv[])
         int c = getc();
         if (c == '1') {
             cout << " Got Click\n";
-            officeClock.sendInput(mil::Input::Click);
+            officeClock.sendInput(mil::Input::Click, true);
         } else if (c == '2') {
             cout << " Got Long Press\n";
-            officeClock.sendInput(mil::Input::LongPress);
+            officeClock.sendInput(mil::Input::LongPress, true);
         }
     }
     return 0;

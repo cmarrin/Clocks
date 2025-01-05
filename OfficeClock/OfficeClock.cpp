@@ -14,9 +14,9 @@ OfficeClock::handleButtonEvent(const mil::Button& button, mil::ButtonManager::Ev
 {
 	if (button.id() == SelectButton) {
 		if (event == mil::ButtonManager::Event::Click) {
-			sendInput(mil::Input::Click);
+			sendInput(mil::Input::Click, true);
 		} else if (event == mil::ButtonManager::Event::LongPress) {
-			sendInput(mil::Input::LongPress);
+			sendInput(mil::Input::LongPress, true);
 		}
 	}
 }
