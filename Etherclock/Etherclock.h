@@ -38,8 +38,8 @@ static constexpr uint8_t SelectButton = 0;
 static constexpr uint32_t LightSensor = 0;
 static constexpr uint32_t NumberOfBrightnessLevels = 250;
 static constexpr bool InvertAmbientLightLevel = false;
-static constexpr uint32_t MinLightSensorLevel = 20;
-static constexpr uint32_t MaxLightSensorLevel = 500;
+static constexpr uint32_t MinLightSensorLevel = 0;
+static constexpr uint32_t MaxLightSensorLevel = 300;
 
 class Etherclock : public mil::Application
 {
@@ -81,7 +81,10 @@ private:
 
     void handleButtonEvent(const mil::Button& button, mil::ButtonManager::Event event);
     
-    void setBrightness(uint8_t b) { _clockDisplay.setBrightness(b); }
+    void setBrightness(uint8_t b)
+    {
+        _clockDisplay.setBrightness(b);
+    }
     
     virtual void showString(mil::Message m) override;
 	virtual void showMain(bool force = false) override;
