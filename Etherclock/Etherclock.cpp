@@ -24,7 +24,7 @@ Etherclock::handleButtonEvent(const mil::Button& button, mil::ButtonManager::Eve
 void
 Etherclock::showString(mil::Message m)
 {
-    std::string s;
+    CPString s;
     switch(m) {
         case mil::Message::NetConfig:
             s = "CNFG";
@@ -62,7 +62,7 @@ Etherclock::showString(mil::Message m)
 void
 Etherclock::showMain(bool force)
 {
-    std::string string = "EEEE";
+    CPString string = "EEEE";
     uint8_t dps = 0;
     time_t t = _clock->currentTime();
 	struct tm timeinfo;
@@ -82,13 +82,13 @@ Etherclock::showMain(bool force)
     } else {
         string = "";
     }
-    string += std::to_string(hour);
+    string += ToString(hour);
 
     uint8_t minute = timeinfo.tm_min;
     if (minute < 10) {
         string += "0";
     }
-    string += std::to_string(minute);
+    string += ToString(minute);
 
     // If we are forced or the time has changed, show it
     if (force || _lastHour != hour || _lastMinute != minute || _lastDps != dps) {
@@ -115,7 +115,7 @@ Etherclock::showInfoSequence()
         return;
     }
     
-    std::string string = "EEEE";
+    CPString string = "EEEE";
 
     switch(_info) {
         case Info::Done: break;
@@ -131,11 +131,11 @@ Etherclock::showInfoSequence()
             } else {
                 string = "";
             }
-            string += std::to_string(month);
+            string += ToString(month);
             if (date < 10) {
                 string += " ";
             }
-            string += std::to_string(date);
+            string += ToString(date);
             _info = Info::CurTemp;
             break;
         }
@@ -145,7 +145,7 @@ Etherclock::showInfoSequence()
             if (temp > 0 && temp < 100) {
                 string += " ";
             }
-            string += std::to_string(temp);
+            string += ToString(temp);
             _info = Info::LowTemp;
             break;
         }
@@ -155,7 +155,7 @@ Etherclock::showInfoSequence()
             if (temp > 0 && temp < 100) {
                 string += " ";
             }
-            string += std::to_string(temp);
+            string += ToString(temp);
             _info = Info::HighTemp;
             break;
         }
@@ -165,7 +165,7 @@ Etherclock::showInfoSequence()
             if (temp > 0 && temp < 100) {
                 string += " ";
             }
-            string += std::to_string(temp);
+            string += ToString(temp);
             _info = Info::Done;
             break;
         }
@@ -176,7 +176,7 @@ Etherclock::showInfoSequence()
 }
 
 void
-Etherclock::showChars(const std::string& string, uint8_t dps, bool colon)
+Etherclock::showChars(const CPString& string, uint8_t dps, bool colon)
 {
     if (string.length() != 4) {
         showChars("Err1", 0, false);

@@ -41,12 +41,12 @@ OfficeClock::showMain(bool force)
 			hours -= 12;
 		}
 	}
-	str += std::to_string(hours).c_str();
+	str += ToString(hours).c_str();
 	str += ":";
 	if (timeinfo.tm_min < 10) {
 		str += "0";
 	}
-	str += std::to_string(timeinfo.tm_min).c_str();
+	str += ToString(timeinfo.tm_min).c_str();
 
 	if (str == _lastStringSent && !force) {
 		return;
@@ -61,12 +61,12 @@ OfficeClock::showSecondary()
 {
     CPString time = "\v";
     time += _clock->strftime("%a %b ", _clock->currentTime()).c_str();
-    std::string day = _clock->prettyDay(_clock->currentTime()).c_str();
+    CPString day = _clock->prettyDay(_clock->currentTime()).c_str();
     time += day.c_str();
     time = time + F("  ") + _clock->weatherConditions() +
-                  F("  Cur:") + std::to_string(_clock->currentTemp()).c_str() +
-                  F("`  Hi:") + std::to_string(_clock->highTemp()).c_str() +
-                  F("`  Lo:") + std::to_string(_clock->lowTemp()).c_str() + F("`");
+                  F("  Cur:") + ToString(_clock->currentTemp()).c_str() +
+                  F("`  Hi:") + ToString(_clock->highTemp()).c_str() +
+                  F("`  Lo:") + ToString(_clock->lowTemp()).c_str() + F("`");
     
     _clockDisplay.showString(time.c_str());
 }

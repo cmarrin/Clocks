@@ -87,7 +87,7 @@ private:
 	virtual void showMain(bool force = false) override;
     virtual void showSecondary() override;
 	void showInfoSequence();
-	void showChars(const std::string& string, uint8_t dps, bool colon);
+	void showChars(const CPString& string, uint8_t dps, bool colon);
 
     mil::DSP7S04B _clockDisplay;
 
