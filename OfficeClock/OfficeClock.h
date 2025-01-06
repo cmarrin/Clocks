@@ -94,7 +94,7 @@ static constexpr uint8_t SelectButton = 5;
 static constexpr uint32_t LightSensor = 0;
 static constexpr uint32_t NumberOfBrightnessLevels = 31;
 static constexpr bool InvertAmbientLightLevel = true;
-static constexpr uint32_t MinLightSensorLevel = 60;
+static constexpr uint32_t MinLightSensorLevel = 50;
 static constexpr uint32_t MaxLightSensorLevel = 900;
 
 // The Mac simulator calls the showDoneTimer immediately after displaying

@@ -113,12 +113,11 @@ OfficeClock::showString(mil::Message m)
 void
 OfficeClock::setBrightness(uint32_t b)
 {
-    // Brightness comes in as 0-255. We need it to be 0-31
-    b /= 8;
-    if (b <= 3) {
-        b = 0;
-    } else {
-        b -= 3;
+    // Brightness needs to be 0-31 but anything more than 15 is way too bright. Adjust
+    b /= 2;
+    
+    if (b > 31) {
+        b = 31;
     }
     _clockDisplay.setBrightness(b);
 }
