@@ -76,31 +76,31 @@
 		497E4DE02CEECB090079D258 /* tigr.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tigr.c; path = ../tigr/tigr.c; sourceTree = SOURCE_ROOT; };
 		497E4DE42CEECBF60079D258 /* WordClock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = WordClock.h; path = ../WordClock/WordClock.h; sourceTree = SOURCE_ROOT; };
 		497E4DE52CEECBF60079D258 /* WordClock.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = WordClock.cpp; path = ../WordClock/WordClock.cpp; sourceTree = SOURCE_ROOT; };
-		497E4DF62CF01E930079D258 /* Application.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Application.cpp; path = ../ESPLib/Application.cpp; sourceTree = SOURCE_ROOT; };
-		497E4DF92CF01EA50079D258 /* Application.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Application.h; path = ../ESPLib/Application.h; sourceTree = SOURCE_ROOT; };
-		497E4DFE2CF16C5B0079D258 /* JsonListener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JsonListener.h; path = ../ESPLib/JsonListener.h; sourceTree = SOURCE_ROOT; };
-		497E4DFF2CF16C5B0079D258 /* JsonStreamingParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JsonStreamingParser.h; path = ../ESPLib/JsonStreamingParser.h; sourceTree = SOURCE_ROOT; };
-		497E4E002CF16C5B0079D258 /* JsonStreamingParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = JsonStreamingParser.cpp; path = ../ESPLib/JsonStreamingParser.cpp; sourceTree = SOURCE_ROOT; };
+		497E4DF62CF01E930079D258 /* Application.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Application.cpp; path = ../../ESPlib/Application.cpp; sourceTree = SOURCE_ROOT; };
+		497E4DF92CF01EA50079D258 /* Application.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Application.h; path = ../../ESPlib/Application.h; sourceTree = SOURCE_ROOT; };
+		497E4DFE2CF16C5B0079D258 /* JsonListener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JsonListener.h; path = ../../ESPlib/JsonListener.h; sourceTree = SOURCE_ROOT; };
+		497E4DFF2CF16C5B0079D258 /* JsonStreamingParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JsonStreamingParser.h; path = ../../ESPlib/JsonStreamingParser.h; sourceTree = SOURCE_ROOT; };
+		497E4E002CF16C5B0079D258 /* JsonStreamingParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = JsonStreamingParser.cpp; path = ../../ESPlib/JsonStreamingParser.cpp; sourceTree = SOURCE_ROOT; };
 		4995547D27FCFD5400D04E66 /* EtherClock */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EtherClock; sourceTree = BUILT_PRODUCTS_DIR; };
-		4995548727FD048400D04E66 /* ButtonManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ButtonManager.cpp; path = ../ESPLib/ButtonManager.cpp; sourceTree = "<group>"; };
-		4995548827FD048400D04E66 /* DSP7S04B.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = DSP7S04B.cpp; path = ../ESPLib/DSP7S04B.cpp; sourceTree = "<group>"; };
-		4995548927FD048400D04E66 /* Font_Compact_5pt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Font_Compact_5pt.h; path = ../ESPLib/Font_Compact_5pt.h; sourceTree = "<group>"; };
-		4995548A27FD048400D04E66 /* MenuSystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MenuSystem.cpp; path = ../ESPLib/MenuSystem.cpp; sourceTree = "<group>"; };
-		4995548C27FD048400D04E66 /* Clock.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Clock.cpp; path = ../ESPLib/Clock.cpp; sourceTree = "<group>"; };
-		4995548D27FD048400D04E66 /* BrightnessManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BrightnessManager.cpp; path = ../ESPLib/BrightnessManager.cpp; sourceTree = "<group>"; };
-		4995548E27FD048400D04E66 /* mil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = mil.h; path = ../ESPLib/mil.h; sourceTree = "<group>"; };
-		4995548F27FD048500D04E66 /* Max7219Display.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Max7219Display.cpp; path = ../ESPLib/Max7219Display.cpp; sourceTree = "<group>"; };
-		4995549027FD048500D04E66 /* TimeWeatherServer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = TimeWeatherServer.cpp; path = ../ESPLib/TimeWeatherServer.cpp; sourceTree = "<group>"; };
-		4995549127FD048500D04E66 /* Font_8x8_8pt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Font_8x8_8pt.h; path = ../ESPLib/Font_8x8_8pt.h; sourceTree = "<group>"; };
-		4995549227FD049B00D04E66 /* Blinker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Blinker.h; path = ../ESPLib/Blinker.h; sourceTree = "<group>"; };
-		4995549327FD049B00D04E66 /* BrightnessManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BrightnessManager.h; path = ../ESPLib/BrightnessManager.h; sourceTree = "<group>"; };
-		4995549527FD049B00D04E66 /* DSP7S04B.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DSP7S04B.h; path = ../ESPLib/DSP7S04B.h; sourceTree = "<group>"; };
-		4995549627FD049B00D04E66 /* Max7219Display.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Max7219Display.h; path = ../ESPLib/Max7219Display.h; sourceTree = "<group>"; };
-		4995549727FD049B00D04E66 /* Clock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Clock.h; path = ../ESPLib/Clock.h; sourceTree = "<group>"; };
-		4995549827FD049B00D04E66 /* TimeWeatherServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TimeWeatherServer.h; path = ../ESPLib/TimeWeatherServer.h; sourceTree = "<group>"; };
-		4995549927FD049B00D04E66 /* ButtonManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ButtonManager.h; path = ../ESPLib/ButtonManager.h; sourceTree = "<group>"; };
-		4995549A27FD049B00D04E66 /* MenuSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MenuSystem.h; path = ../ESPLib/MenuSystem.h; sourceTree = "<group>"; };
-		4995549B27FD049B00D04E66 /* StateMachine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StateMachine.h; path = ../ESPLib/StateMachine.h; sourceTree = "<group>"; };
+		4995548727FD048400D04E66 /* ButtonManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ButtonManager.cpp; sourceTree = "<group>"; };
+		4995548827FD048400D04E66 /* DSP7S04B.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DSP7S04B.cpp; sourceTree = "<group>"; };
+		4995548927FD048400D04E66 /* Font_Compact_5pt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Font_Compact_5pt.h; sourceTree = "<group>"; };
+		4995548A27FD048400D04E66 /* MenuSystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MenuSystem.cpp; sourceTree = "<group>"; };
+		4995548C27FD048400D04E66 /* Clock.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Clock.cpp; sourceTree = "<group>"; };
+		4995548D27FD048400D04E66 /* BrightnessManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BrightnessManager.cpp; sourceTree = "<group>"; };
+		4995548E27FD048400D04E66 /* mil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mil.h; sourceTree = "<group>"; };
+		4995548F27FD048500D04E66 /* Max7219Display.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Max7219Display.cpp; sourceTree = "<group>"; };
+		4995549027FD048500D04E66 /* TimeWeatherServer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeWeatherServer.cpp; sourceTree = "<group>"; };
+		4995549127FD048500D04E66 /* Font_8x8_8pt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Font_8x8_8pt.h; sourceTree = "<group>"; };
+		4995549227FD049B00D04E66 /* Blinker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Blinker.h; sourceTree = "<group>"; };
+		4995549327FD049B00D04E66 /* BrightnessManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BrightnessManager.h; sourceTree = "<group>"; };
+		4995549527FD049B00D04E66 /* DSP7S04B.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DSP7S04B.h; sourceTree = "<group>"; };
+		4995549627FD049B00D04E66 /* Max7219Display.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Max7219Display.h; sourceTree = "<group>"; };
+		4995549727FD049B00D04E66 /* Clock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Clock.h; sourceTree = "<group>"; };
+		4995549827FD049B00D04E66 /* TimeWeatherServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimeWeatherServer.h; sourceTree = "<group>"; };
+		4995549927FD049B00D04E66 /* ButtonManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonManager.h; sourceTree = "<group>"; };
+		4995549A27FD049B00D04E66 /* MenuSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuSystem.h; sourceTree = "<group>"; };
+		4995549B27FD049B00D04E66 /* StateMachine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StateMachine.h; sourceTree = "<group>"; };
 		4995549D27FD07CB00D04E66 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
 		499554A027FDD84600D04E66 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		499554BC27FE59D900D04E66 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -281,6 +281,7 @@
 				4995548E27FD048400D04E66 /* mil.h */,
 			);
 			name = ESPLib;
+			path = ../../ESPlib;
 			sourceTree = "<group>";
 		};
 		4995549C27FD07CA00D04E66 /* Frameworks */ = {
@@ -370,7 +371,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastUpgradeCheck = 1610;
+				LastUpgradeCheck = 1630;
 				TargetAttributes = {
 					491958C32808709A0012F306 = {
 						CreatedOnToolsVersion = 13.3.1;
@@ -478,6 +479,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
@@ -539,6 +541,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
