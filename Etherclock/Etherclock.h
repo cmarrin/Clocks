@@ -32,8 +32,6 @@
 static constexpr const char* ConfigPortalName = "MT Etherclock";
 static constexpr const char* Hostname = "etherclock";
 
-static constexpr const char* ZipCode = "93405";
-
 static constexpr uint8_t SelectButton = 0;
 static constexpr uint32_t LightSensor = 0;
 static constexpr uint32_t NumberOfBrightnessLevels = 250;
@@ -50,7 +48,7 @@ public:
 							 InvertAmbientLightLevel, MinLightSensorLevel, MaxLightSensorLevel, NumberOfBrightnessLevels)
 		, _buttonManager([this](const mil::Button& b, mil::ButtonManager::Event e) { handleButtonEvent(b, e); })
     {
-        _clock = std::unique_ptr<mil::Clock>(new mil::Clock(this, ZipCode));
+        _clock = std::unique_ptr<mil::Clock>(new mil::Clock(this));
     }
 	
 	virtual void setup() override
