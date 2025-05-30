@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		491958C72808709A0012F306 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 491958C62808709A0012F306 /* main.cpp */; };
+		495618FF2DE76482002656CB /* Format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 495618FE2DE76482002656CB /* Format.cpp */; };
+		495619002DE76482002656CB /* Format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 495618FE2DE76482002656CB /* Format.cpp */; };
+		495619012DE76482002656CB /* Format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 495618FE2DE76482002656CB /* Format.cpp */; };
 		497E4DE12CEECB090079D258 /* tigr.c in Sources */ = {isa = PBXBuildFile; fileRef = 497E4DE02CEECB090079D258 /* tigr.c */; };
 		497E4DE62CEECBF60079D258 /* WordClock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 497E4DE52CEECBF60079D258 /* WordClock.cpp */; };
 		497E4DF72CF01E930079D258 /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 497E4DF62CF01E930079D258 /* Application.cpp */; };
@@ -72,6 +75,8 @@
 		491958CD280877530012F306 /* OfficeClock.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = OfficeClock.ino; path = ../OfficeClock/OfficeClock.ino; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		491958CF280890790012F306 /* WordClock.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = WordClock.ino; path = ../../WordClock/WordClock.ino; sourceTree = "<group>"; };
 		491958D2280890BA0012F306 /* Etherclock.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Etherclock.ino; path = ../Etherclock/Etherclock.ino; sourceTree = "<group>"; };
+		495618FD2DE76482002656CB /* Format.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Format.h; path = /Users/cmarrin/Projects/git/Format/Format.h; sourceTree = "<absolute>"; };
+		495618FE2DE76482002656CB /* Format.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Format.cpp; path = /Users/cmarrin/Projects/git/Format/Format.cpp; sourceTree = "<absolute>"; };
 		497E4DDF2CEECB090079D258 /* tigr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tigr.h; path = ../tigr/tigr.h; sourceTree = SOURCE_ROOT; };
 		497E4DE02CEECB090079D258 /* tigr.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tigr.c; path = ../tigr/tigr.c; sourceTree = SOURCE_ROOT; };
 		497E4DE42CEECBF60079D258 /* WordClock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = WordClock.h; path = ../WordClock/WordClock.h; sourceTree = SOURCE_ROOT; };
@@ -208,6 +213,16 @@
 			name = esp;
 			sourceTree = "<group>";
 		};
+		495618FC2DE7644F002656CB /* Format */ = {
+			isa = PBXGroup;
+			children = (
+				495618FD2DE76482002656CB /* Format.h */,
+				495618FE2DE76482002656CB /* Format.cpp */,
+			);
+			name = Format;
+			path = ../../Format;
+			sourceTree = "<group>";
+		};
 		497E4DDE2CEECAED0079D258 /* tigr */ = {
 			isa = PBXGroup;
 			children = (
@@ -221,6 +236,7 @@
 		4995545627FB42FC00D04E66 = {
 			isa = PBXGroup;
 			children = (
+				495618FC2DE7644F002656CB /* Format */,
 				497E4DDE2CEECAED0079D258 /* tigr */,
 				4995548627FD045B00D04E66 /* ESPLib */,
 				4995547827FCFC4500D04E66 /* Etherclock */,
@@ -413,6 +429,7 @@
 			files = (
 				491958C72808709A0012F306 /* main.cpp in Sources */,
 				49EB4B562CF232E40083A081 /* Clock.cpp in Sources */,
+				495618FF2DE76482002656CB /* Format.cpp in Sources */,
 				497E4E022CF16C5B0079D258 /* JsonStreamingParser.cpp in Sources */,
 				49EB4B5C2CF254510083A081 /* TimeWeatherServer.cpp in Sources */,
 				49EB4B582CF252860083A081 /* BrightnessManager.cpp in Sources */,
@@ -428,6 +445,7 @@
 			files = (
 				499554A127FDD84600D04E66 /* main.cpp in Sources */,
 				497E4E012CF16C5B0079D258 /* JsonStreamingParser.cpp in Sources */,
+				495619002DE76482002656CB /* Format.cpp in Sources */,
 				49EB4B572CF252860083A081 /* BrightnessManager.cpp in Sources */,
 				49EB4B642CF389300083A081 /* Etherclock.cpp in Sources */,
 				49EB4B592CF2528F0083A081 /* ButtonManager.cpp in Sources */,
@@ -441,6 +459,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				495619012DE76482002656CB /* Format.cpp in Sources */,
 				497E4DE62CEECBF60079D258 /* WordClock.cpp in Sources */,
 				497E4DE12CEECB090079D258 /* tigr.c in Sources */,
 				499554CA27FF355500D04E66 /* main.cpp in Sources */,
