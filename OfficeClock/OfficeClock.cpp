@@ -9,6 +9,8 @@
 
 #include "OfficeClock.h"
 
+#include "Format.h"
+
 void
 OfficeClock::handleButtonEvent(const mil::Button& button, mil::ButtonManager::Event event)
 {
@@ -47,7 +49,7 @@ OfficeClock::showMain(bool force)
 		str += "0";
 	}
 	str += ToString(timeinfo.tm_min).c_str();
-
+    
 	if (str == _lastStringSent && !force) {
 		return;
 	}
