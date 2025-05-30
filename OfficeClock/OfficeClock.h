@@ -130,8 +130,6 @@ public:
         if (_clock) {
             _clock->setup();
         }
-
-		setBrightness(50);
 	}
 	
 	virtual void loop() override
