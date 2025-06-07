@@ -108,54 +108,26 @@ static constexpr uint32_t DoneTimeDuration = 5000;
 
 class OfficeClock : public mil::Application
 {
-public:
-	OfficeClock()
-		: mil::Application(LED_BUILTIN, Hostname, ConfigPortalName)
-		, _clockDisplay([this]() { startShowDoneTimer(DoneTimeDuration); })
-		, _brightnessManager([this](uint32_t b) { setBrightness(b); }, LightSensor, 
-							 InvertAmbientLightLevel, MinLightSensorLevel, MaxLightSensorLevel, NumberOfBrightnessLevels)
-		, _buttonManager([this](const mil::Button& b, mil::ButtonManager::Event e) { handleButtonEvent(b, e); })
-    {
-       _clock = std::unique_ptr<mil::Clock>(new mil::Clock(this));
-	}
-	
-	virtual void setup() override
-	{
-		delay(2000);
-        Application::setup();
+  public:
+    OfficeClock();
 
-        addHTTPHandler("/command", std::bind(&OfficeClock::handleCommand, this));
+    virtual void setup() override;
+    virtual void loop() override;
 
-        _brightnessManager.start();
-        _buttonManager.addButton(mil::Button(SelectButton, SelectButton, false, mil::Button::PinMode::Pullup));
-	
-        if (_clock) {
-            _clock->setup();
-        }
-	}
-	
-	virtual void loop() override
-	{
-        Application::loop();
-        if (_clock) {
-            _clock->loop();
-        }
-	}
-	
-private:	
-	virtual void showMain(bool force) override;
-	virtual void showSecondary() override;
-	virtual void showString(mil::Message m) override;
+  private:	
+    virtual void showMain(bool force) override;
+    virtual void showSecondary() override;
+    virtual void showString(mil::Message m) override;
 
     void handleCommand();
 
     void handleButtonEvent(const mil::Button& button, mil::ButtonManager::Event event);
-	void setBrightness(uint32_t b);
-	
-	mil::Max7219Display _clockDisplay;
-    std::unique_ptr<mil::Clock> _clock;
-	mil::BrightnessManager _brightnessManager;
-	mil::ButtonManager _buttonManager;
+    void setBrightness(uint32_t b);
 
-	CPString _lastStringSent;
+    mil::Max7219Display _clockDisplay;
+    std::unique_ptr<mil::Clock> _clock;
+    mil::BrightnessManager _brightnessManager;
+    mil::ButtonManager _buttonManager;
+
+    CPString _lastStringSent;
 };
