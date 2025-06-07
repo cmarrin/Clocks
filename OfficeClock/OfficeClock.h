@@ -124,6 +124,8 @@ public:
 		delay(2000);
         Application::setup();
 
+        addHTTPHandler("/command", std::bind(&OfficeClock::handleCommand, this));
+
         _brightnessManager.start();
         _buttonManager.addButton(mil::Button(SelectButton, SelectButton, false, mil::Button::PinMode::Pullup));
 	
@@ -144,7 +146,9 @@ private:
 	virtual void showMain(bool force) override;
 	virtual void showSecondary() override;
 	virtual void showString(mil::Message m) override;
-    
+
+    void handleCommand();
+
     void handleButtonEvent(const mil::Button& button, mil::ButtonManager::Event event);
 	void setBrightness(uint32_t b);
 	

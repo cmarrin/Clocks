@@ -112,5 +112,10 @@ void OfficeClock::setBrightness(uint32_t b) {
 }
 
 void
+OfficeClock::handleCommand()
 {
+    CPString s = "cmd='";
+    s+= getHTTPArg("cmd");
+    s+= "'";
+    sendHTTPPage(s.c_str());
 }
