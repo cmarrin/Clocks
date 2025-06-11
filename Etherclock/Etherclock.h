@@ -30,7 +30,6 @@
 #endif
 
 static constexpr const char* ConfigPortalName = "MT Etherclock";
-static constexpr const char* Hostname = "etherclock";
 
 static constexpr uint8_t SelectButton = 0;
 static constexpr uint32_t LightSensor = 0;
@@ -43,7 +42,7 @@ class Etherclock : public mil::Application
 {
 public:
 	Etherclock()
-		: mil::Application(LED_BUILTIN, Hostname, ConfigPortalName)
+		: mil::Application(LED_BUILTIN, ConfigPortalName)
 		, _brightnessManager([this](uint32_t b) { setBrightness(b); }, LightSensor, 
 							 InvertAmbientLightLevel, MinLightSensorLevel, MaxLightSensorLevel, NumberOfBrightnessLevels)
 		, _buttonManager([this](const mil::Button& b, mil::ButtonManager::Event e) { handleButtonEvent(b, e); })
