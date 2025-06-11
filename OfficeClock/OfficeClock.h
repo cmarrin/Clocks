@@ -119,8 +119,6 @@ class OfficeClock : public mil::Application
     virtual void showSecondary() override;
     virtual void showString(mil::Message m) override;
 
-    void handleCommand();
-
     void handleButtonEvent(const mil::Button& button, mil::ButtonManager::Event event);
     void setBrightness(uint32_t b);
 

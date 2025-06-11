@@ -25,7 +25,6 @@ OfficeClock::setup()
     delay(2000);
     Application::setup();
 
-    addHTTPHandler("/command", std::bind(&OfficeClock::handleCommand, this));
 
     _brightnessManager.start();
     _buttonManager.addButton(mil::Button(SelectButton, SelectButton, false, mil::Button::PinMode::Pullup));
@@ -151,13 +150,4 @@ OfficeClock::setBrightness(uint32_t b) {
         b = 31;
     }
     _clockDisplay.setBrightness(b);
-}
-
-void
-OfficeClock::handleCommand()
-{
-    CPString s = "cmd='";
-    s+= getHTTPArg("cmd");
-    s+= "'";
-    sendHTTPPage(s.c_str());
 }
