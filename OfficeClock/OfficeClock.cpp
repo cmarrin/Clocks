@@ -16,7 +16,7 @@ OfficeClock::OfficeClock()
                          InvertAmbientLightLevel, MinLightSensorLevel, MaxLightSensorLevel, NumberOfBrightnessLevels)
     , _buttonManager([this](const mil::Button& b, mil::ButtonManager::Event e) { handleButtonEvent(b, e); })
 {
-   _clock = std::unique_ptr<mil::Clock>(new mil::Clock(this));
+    _clock = std::unique_ptr<mil::Clock>(new mil::Clock(this));
 }
 
 void
