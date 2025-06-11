@@ -12,7 +12,7 @@
 #include "Format.h"
 
 OfficeClock::OfficeClock()
-    : mil::Application(LED_BUILTIN, Hostname, ConfigPortalName)
+    : mil::Application(LED_BUILTIN, ConfigPortalName)
     , _clockDisplay([this]() { startShowDoneTimer(DoneTimeDuration); })
     , _brightnessManager([this](uint32_t b) { setBrightness(b); }, LightSensor, 
                          InvertAmbientLightLevel, MinLightSensorLevel, MaxLightSensorLevel, NumberOfBrightnessLevels)
