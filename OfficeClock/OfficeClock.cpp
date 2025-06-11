@@ -25,6 +25,7 @@ OfficeClock::setup()
     delay(2000);
     Application::setup();
 
+    setTitle("<center>MarrinTech Internet Connected Office Clock</center>");
 
     _brightnessManager.start();
     _buttonManager.addButton(mil::Button(SelectButton, SelectButton, false, mil::Button::PinMode::Pullup));
