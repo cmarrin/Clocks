@@ -9,8 +9,6 @@
 
 #include "OfficeClock.h"
 
-#include "Format.h"
-
 OfficeClock::OfficeClock()
     : mil::Application(LED_BUILTIN, ConfigPortalName)
     , _clockDisplay([this]() { startShowDoneTimer(DoneTimeDuration); })
