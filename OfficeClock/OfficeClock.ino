@@ -16,9 +16,8 @@
 // does not use MISO, so it only uses 3 pins. It also has an ambient light sensor
 // on AO, and 3 switches to change functions and settings.
 //
-// It uses the mil::LocalTimeServer to get the time and mil::WeatherServer for
-// current conditions, current, low and high temps
-
+// It uses the mil::TimeWeatherServer to get the time current weather conditions,
+// current, low and high temps
 
 // Wemos Pinout
 //
