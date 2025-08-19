@@ -62,7 +62,7 @@ OfficeClock::showMain(bool force)
     time_t currentTime = _clock->currentTime();
 
     bool pm = false;
-    CPString str;
+    String str;
 
     struct tm timeinfo;
     gmtime_r(&currentTime, &timeinfo);
@@ -94,11 +94,12 @@ OfficeClock::showMain(bool force)
 void
 OfficeClock::showSecondary()
 {
-    CPString time = "\v";
+    String time = "\v";
     time += _clock->strftime("%a %b ", _clock->currentTime()).c_str();
-    CPString day = _clock->prettyDay(_clock->currentTime()).c_str();
+    String day = _clock->prettyDay(_clock->currentTime()).c_str();
     time += day.c_str();
-    time = time + F("  ") + _clock->weatherConditions() + F("  Cur:") + ToString(_clock->currentTemp()).c_str() + F("`  Hi:") + ToString(_clock->highTemp()).c_str() + F("`  Lo:") + ToString(_clock->lowTemp()).c_str() + F("`");
+    time = time + F("  ");
+    //time = time + F("  ") + _clock->weatherConditions() + F("  Cur:") + ToString(_clock->currentTemp()).c_str() + F("`  Hi:") + ToString(_clock->highTemp()).c_str() + F("`  Lo:") + ToString(_clock->lowTemp()).c_str() + F("`");
 
     _clockDisplay.showString(time.c_str());
 }
@@ -106,7 +107,7 @@ OfficeClock::showSecondary()
 void
 OfficeClock::showString(mil::Message m)
 {
-    CPString s;
+    String s;
     switch (m) {
         case mil::Message::NetConfig:
             s = F("\vConfigure WiFi. Connect to the '");

@@ -62,5 +62,5 @@ class OfficeClock : public mil::Application
     mil::BrightnessManager _brightnessManager;
     mil::ButtonManager _buttonManager;
 
-    CPString _lastStringSent;
+    String _lastStringSent;
 };
