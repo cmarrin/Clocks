@@ -105,6 +105,11 @@
 		49B0FBCD2804AAC200F07F3E /* WordClock-Hoefler-800.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "WordClock-Hoefler-800.png"; path = "../../WordClock/WordClock-Hoefler-800.png"; sourceTree = "<group>"; };
 		49B0FBCE2804AAC200F07F3E /* WordClock-Hoefler-1600.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "WordClock-Hoefler-1600.png"; path = "../../WordClock/WordClock-Hoefler-1600.png"; sourceTree = "<group>"; };
 		49C076C32F5F02AA00AFB468 /* ESPlib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ESPlib.xcodeproj; path = ../ESPlib/mac/ESPlib.xcodeproj; sourceTree = SOURCE_ROOT; };
+		49C07EA72F5F2FD400AFB468 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		49C07EA82F5F2FD400AFB468 /* idf_component.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = idf_component.yml; sourceTree = "<group>"; };
+		49C07EA92F5F2FD400AFB468 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		49C087132F5F2FD400AFB468 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		49C087152F5F2FD400AFB468 /* sdkconfig */ = {isa = PBXFileReference; lastKnownFileType = text; path = sdkconfig; sourceTree = "<group>"; };
 		49EB4B5D2CF259A50083A081 /* libcurl.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcurl.tbd; path = usr/lib/libcurl.tbd; sourceTree = SDKROOT; };
 		49EB4B622CF389300083A081 /* Etherclock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Etherclock.h; path = ../Etherclock/Etherclock.h; sourceTree = SOURCE_ROOT; };
 		49EB4B632CF389300083A081 /* Etherclock.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Etherclock.cpp; path = ../Etherclock/Etherclock.cpp; sourceTree = SOURCE_ROOT; };
@@ -161,6 +166,7 @@
 		491958C52808709A0012F306 /* OfficeClock */ = {
 			isa = PBXGroup;
 			children = (
+				49C087162F5F2FD400AFB468 /* espidf */,
 				49EB4B712CF3EB530083A081 /* OfficeClock.cpp */,
 				49EB4B702CF3EB530083A081 /* OfficeClock.h */,
 				491958CE2808904E0012F306 /* mac */,
@@ -271,6 +277,27 @@
 			);
 			name = Products;
 			sourceTree = "<group>";
+		};
+		49C07EAA2F5F2FD400AFB468 /* main */ = {
+			isa = PBXGroup;
+			children = (
+				49C07EA72F5F2FD400AFB468 /* CMakeLists.txt */,
+				49C07EA82F5F2FD400AFB468 /* idf_component.yml */,
+				49C07EA92F5F2FD400AFB468 /* main.cpp */,
+			);
+			path = main;
+			sourceTree = "<group>";
+		};
+		49C087162F5F2FD400AFB468 /* espidf */ = {
+			isa = PBXGroup;
+			children = (
+				49C07EAA2F5F2FD400AFB468 /* main */,
+				49C087132F5F2FD400AFB468 /* CMakeLists.txt */,
+				49C087152F5F2FD400AFB468 /* sdkconfig */,
+			);
+			name = espidf;
+			path = ../OfficeClock/espidf;
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
