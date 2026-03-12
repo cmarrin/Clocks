@@ -12,13 +12,14 @@
 #include "IDFWiFiPortal.h"
 
 mil::IDFWiFiPortal portal;
-OfficeClock controller(&portal);
 
 static const char* TAG = "OfficeClock";
 
 extern "C" {
 void app_main(void)
 {
+    System::logI(TAG, "Starting OfficeClock...");
+    OfficeClock officeClock(&portal);
     officeClock.setup();
 
     while (true) {
