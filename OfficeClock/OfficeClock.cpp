@@ -9,9 +9,9 @@
 
 #include "OfficeClock.h"
 
-OfficeClock::OfficeClock()
-    : mil::Application(LED_BUILTIN, ConfigPortalName)
-    , _clockDisplay([this]() { startShowDoneTimer(DoneTimeDuration); })
+OfficeClock::OfficeClock(mil::WiFiPortal* portal, std::function<void(const uint8_t* buffer)> renderCB)
+    : mil::Application(portal, ConfigPortalName, true)
+    , _clockDisplay([this]() { startShowDoneTimer(DoneTimeDuration); }, renderCB)
     , _brightnessManager([this](uint32_t b) { setBrightness(b); }, LightSensor, 
                          InvertAmbientLightLevel, MinLightSensorLevel, MaxLightSensorLevel, NumberOfBrightnessLevels)
     , _buttonManager([this](const mil::Button& b, mil::ButtonManager::Event e) { handleButtonEvent(b, e); })
@@ -22,26 +22,20 @@ OfficeClock::OfficeClock()
 void
 OfficeClock::setup()
 {
-    delay(2000);
+    delay(500);
     Application::setup();
 
-    setTitle("<center>MarrinTech Internet Connected Office Clock</center>");
+    setTitle((std::string("<center>MarrinTech Internet Connected Office Clock v") + Version + "</center>").c_str());
+    printf("Internet Connected Office Clock v%s\n", Version);
 
     _brightnessManager.start();
-    _buttonManager.addButton(mil::Button(SelectButton, SelectButton, false, mil::Button::PinMode::Pullup));
-
-    if (_clock) {
-        _clock->setup();
-    }
+    _buttonManager.addButton(mil::Button(SelectButton, SelectButton, false, System::GPIOPinMode::InputWithPullup));
 }
 	
 void
 OfficeClock::loop()
 {
     Application::loop();
-    if (_clock) {
-        _clock->loop();
-    }
 }
 
 void
@@ -62,7 +56,7 @@ OfficeClock::showMain(bool force)
     time_t currentTime = _clock->currentTime();
 
     bool pm = false;
-    String str;
+    std::string str;
 
     struct tm timeinfo;
     gmtime_r(&currentTime, &timeinfo);
@@ -76,12 +70,12 @@ OfficeClock::showMain(bool force)
             hours -= 12;
         }
     }
-    str += ToString(hours).c_str();
+    str += std::to_string(hours).c_str();
     str += ":";
     if (timeinfo.tm_min < 10) {
         str += "0";
     }
-    str += ToString(timeinfo.tm_min).c_str();
+    str += std::to_string(timeinfo.tm_min).c_str();
 
     if (str == _lastStringSent && !force) {
         return;
@@ -94,12 +88,12 @@ OfficeClock::showMain(bool force)
 void
 OfficeClock::showSecondary()
 {
-    String time = "\v";
+    std::string time = "\v";
     time += _clock->strftime("%a %b ", _clock->currentTime()).c_str();
-    String day = _clock->prettyDay(_clock->currentTime()).c_str();
+    std::string day = _clock->prettyDay(_clock->currentTime()).c_str();
     time += day.c_str();
-    time = time + F("  ");
-    //time = time + F("  ") + _clock->weatherConditions() + F("  Cur:") + ToString(_clock->currentTemp()).c_str() + F("`  Hi:") + ToString(_clock->highTemp()).c_str() + F("`  Lo:") + ToString(_clock->lowTemp()).c_str() + F("`");
+    time = time + "  " + _clock->weatherConditions() + "  Cur:" + std::to_string(_clock->currentTemp()).c_str();
+    time = time + "`  Hi:" + std::to_string(_clock->highTemp()).c_str() + "`  Lo:" + std::to_string(_clock->lowTemp()).c_str() + "`";
 
     _clockDisplay.showString(time.c_str());
 }
@@ -107,36 +101,36 @@ OfficeClock::showSecondary()
 void
 OfficeClock::showString(mil::Message m)
 {
-    String s;
+    std::string s;
     switch (m) {
         case mil::Message::NetConfig:
-            s = F("\vConfigure WiFi. Connect to the '");
+            s = "\vConfigure WiFi. Connect to the '";
             s += ConfigPortalName;
-            s += F("' wifi network from your computer or mobile device, or press [select] to retry.");
+            s += "' wifi network from your computer or mobile device, or press [select] to retry.";
             break;
         case mil::Message::Startup:
-            s = F("\vOffice Clock v3.0");
+            s = std::string("\vOffice Clock v") + Version;
             break;
         case mil::Message::Connecting:
-            s = F("\aConnecting...");
+            s = "\aConnecting...";
             break;
         case mil::Message::NetFail:
-            s = F("\vNetwork failed, press [select] to retry.");
+            s = "\vNetwork failed, press [select] to retry.";
             break;
         case mil::Message::UpdateFail:
-            s = F("\vTime or weather update failed, press [select] to retry.");
+            s = "\vTime or weather update failed, press [select] to retry.";
             break;
         case mil::Message::AskRestart:
-            s = F("\vRestart? (long press for yes)");
+            s = "\vRestart? (long press for yes)";
             break;
         case mil::Message::AskResetNetwork:
-            s = F("\vReset network? (long press for yes)");
+            s = "\vReset network? (long press for yes)";
             break;
         case mil::Message::VerifyResetNetwork:
-            s = F("\vAre you sure? (long press for yes)");
+            s = "\vAre you sure? (long press for yes)";
             break;
         default:
-            s = F("\vUnknown string error");
+            s = "\vUnknown string error";
             break;
     }
 

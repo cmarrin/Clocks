@@ -9,39 +9,65 @@
 
 #include "OfficeClock.h"
 
-#include <sys/ioctl.h>
+#include "MacWiFiPortal.h"
+#include "tigr.h"
 
-static int getc()
-{
-    int bytes = 0;
-    if (ioctl(0, FIONREAD, &bytes) == -1) {
-        return -1;
-    }
-    if (bytes == 0) {
-        return 0;
-    }
-    return getchar();
-}
+mil::MacWiFiPortal portal;
+
+static const char* TAG = "OfficeClock";
+static constexpr int LEDBorder = 1;
+static constexpr int LEDRadius = 5;
+static constexpr int Offset = 10;
+static constexpr int Spacing = ((LEDBorder + LEDRadius) * 2);
+static constexpr int WindowWidth = Spacing * 32 + (Offset * 2);
+static constexpr int WindowHeight = Spacing * 8 + (Offset * 2);
 
 int main(int argc, const char * argv[])
 {
-    system("stty raw");
+    System::logI(TAG, "Opening tigr window");
 
-    OfficeClock officeClock;
+    Tigr* screen = tigrWindow(WindowWidth, WindowHeight, "Hello", TIGR_AUTO);
+    
+    OfficeClock officeClock(&portal, [screen](const uint8_t* buffer)
+    {
+        tigrClear(screen, tigrRGBA(0x0, 0x00, 0x00, 0xff));
+        
+        // Make a vertical grid
+        for (int i = 0; i <= 32; i++) {
+            uint8_t color = ((i % 8) == 0) ? 0x50 : 0x30;
+            tigrLine(screen, Offset + (i * Spacing), Spacing, Offset + (i * Spacing), WindowHeight - Spacing + 1, tigrRGBA(color, color, color, 0xff));
+        }
+        
+        // Make a horizontal grid
+        for (int i = 0; i <= 8; i++) {
+            tigrLine(screen, Offset, Offset + (i * Spacing), WindowWidth - Spacing + 1, Offset + (i * Spacing), tigrRGBA(0x30, 0x30, 0x30, 0xff));
+        }
+        
+        int x = 0;
+        int y = 0;
+        for (int i = 0; i < 32; ++i) {
+            uint8_t c = buffer[i];
+            for (int j = 0; j < 8; ++j) {
+                if (c & 0x80) {
+                    tigrFillCircle(screen, x + Offset + LEDRadius, y + Offset + LEDRadius, LEDRadius, tigrRGBA(0xff, 0x00, 0x00, 0xff));
+                }
+                c <<= 1;
+                x += Spacing;
+            }
+            if ((i % 4) == 3) {
+                x = 0;
+                y += Spacing;
+            }
+        }
+    });
     
     officeClock.setup();
     
-    while (true) {
+    while (!tigrClosed(screen) && !tigrKeyDown(screen, TK_ESCAPE)) {
         officeClock.loop();
-
-        int c = getc();
-        if (c == '1') {
-            cout << " Got Click\n";
-            officeClock.sendInput(mil::Input::Click, true);
-        } else if (c == '2') {
-            cout << " Got Long Press\n";
-            officeClock.sendInput(mil::Input::LongPress, true);
-        }
+        tigrUpdate(screen);
     }
+
+    tigrFree(screen);
     return 0;
 }

@@ -20,6 +20,10 @@
 		49EB4B642CF389300083A081 /* Etherclock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49EB4B632CF389300083A081 /* Etherclock.cpp */; };
 		49EB4B722CF3EB530083A081 /* OfficeClock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49EB4B712CF3EB530083A081 /* OfficeClock.cpp */; };
 		49EB4B732CF3FB370083A081 /* libcurl.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 49EB4B5D2CF259A50083A081 /* libcurl.tbd */; };
+		49F81A252F620994006B36FE /* tigr.c in Sources */ = {isa = PBXBuildFile; fileRef = 49F81A242F620994006B36FE /* tigr.c */; };
+		49F81A282F620ABE006B36FE /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 499554BC27FE59D900D04E66 /* Cocoa.framework */; };
+		49F81A292F620AD2006B36FE /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 499554BE27FE59EC00D04E66 /* OpenGL.framework */; };
+		49F81A2A2F620B71006B36FE /* tigr.c in Sources */ = {isa = PBXBuildFile; fileRef = 49F81A242F620994006B36FE /* tigr.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -115,6 +119,8 @@
 		49EB4B632CF389300083A081 /* Etherclock.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Etherclock.cpp; path = ../Etherclock/Etherclock.cpp; sourceTree = SOURCE_ROOT; };
 		49EB4B702CF3EB530083A081 /* OfficeClock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OfficeClock.h; path = ../OfficeClock/OfficeClock.h; sourceTree = SOURCE_ROOT; };
 		49EB4B712CF3EB530083A081 /* OfficeClock.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OfficeClock.cpp; path = ../OfficeClock/OfficeClock.cpp; sourceTree = SOURCE_ROOT; };
+		49F81A242F620994006B36FE /* tigr.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tigr.c; path = ../tigr/tigr.c; sourceTree = SOURCE_ROOT; };
+		49F81A272F6209DB006B36FE /* tigr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tigr.h; path = ../tigr/tigr.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,6 +128,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				49F81A292F620AD2006B36FE /* OpenGL.framework in Frameworks */,
+				49F81A282F620ABE006B36FE /* Cocoa.framework in Frameworks */,
 				49C076DB2F5F030400AFB468 /* libESPlib.a in Frameworks */,
 				49EB4B732CF3FB370083A081 /* libcurl.tbd in Frameworks */,
 			);
@@ -213,6 +221,7 @@
 			isa = PBXGroup;
 			children = (
 				49C076C32F5F02AA00AFB468 /* ESPlib.xcodeproj */,
+				49F81A262F6209A2006B36FE /* tigr */,
 				4995547827FCFC4500D04E66 /* Etherclock */,
 				499554C827FF355500D04E66 /* WordClock */,
 				491958C52808709A0012F306 /* OfficeClock */,
@@ -298,6 +307,16 @@
 			name = espidf;
 			path = ../OfficeClock/espidf;
 			sourceTree = SOURCE_ROOT;
+		};
+		49F81A262F6209A2006B36FE /* tigr */ = {
+			isa = PBXGroup;
+			children = (
+				49F81A272F6209DB006B36FE /* tigr.h */,
+				49F81A242F620994006B36FE /* tigr.c */,
+			);
+			name = tigr;
+			path = ../tigr;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -432,6 +451,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				491958C72808709A0012F306 /* main.cpp in Sources */,
+				49F81A252F620994006B36FE /* tigr.c in Sources */,
 				49EB4B722CF3EB530083A081 /* OfficeClock.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -450,6 +470,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				497E4DE62CEECBF60079D258 /* WordClock.cpp in Sources */,
+				49F81A2A2F620B71006B36FE /* tigr.c in Sources */,
 				499554CA27FF355500D04E66 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -476,6 +497,7 @@
 					"$(PROJECT_DIR)/../ESPlib",
 					"$(PROJECT_DIR)/../ESPlib/lua/lua-5.4.8/src",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 6.0;
@@ -493,6 +515,7 @@
 					"$(PROJECT_DIR)/../ESPlib",
 					"$(PROJECT_DIR)/../ESPlib/lua/lua-5.4.8/src",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 6.0;
 			};

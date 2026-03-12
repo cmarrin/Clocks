@@ -12,13 +12,11 @@
 #include "Clock.h"
 #include "BrightnessManager.h"
 #include "ButtonManager.h"
-
-#ifdef ARDUINO
 #include "Max7219Display.h"
-#endif
 
-static constexpr const char* ConfigPortalName = "MT Etherclock";
+static constexpr const char* ConfigPortalName = "MT Office Clock";
 static constexpr const char* Hostname = "officeclock";
+static constexpr const char* Version = "4.0";
 
 // Display related
 static constexpr uint32_t StartupScrollRate = 50;
@@ -29,22 +27,12 @@ static constexpr uint32_t NumberOfBrightnessLevels = 31;
 static constexpr bool InvertAmbientLightLevel = true;
 static constexpr uint32_t MinLightSensorLevel = 50;
 static constexpr uint32_t MaxLightSensorLevel = 900;
-
-// The Mac simulator calls the showDoneTimer immediately after displaying
-// a scrolling message so a 100ms duration causes it to show the message
-// a lot. On the hardware it doesn't call it until after the scroll is
-// finished. This causes the scroll to repeat right away so 100ms is
-// appropriate. Use the most reasonable value for each.
-#ifdef ARDUINO
 static constexpr uint32_t DoneTimeDuration = 100;
-#else
-static constexpr uint32_t DoneTimeDuration = 5000;
-#endif
 
 class OfficeClock : public mil::Application
 {
   public:
-    OfficeClock();
+    OfficeClock(mil::WiFiPortal*, std::function<void(const uint8_t* buffer)> = nullptr);
 
     virtual void setup() override;
     virtual void loop() override;
@@ -62,5 +50,5 @@ class OfficeClock : public mil::Application
     mil::BrightnessManager _brightnessManager;
     mil::ButtonManager _buttonManager;
 
-    String _lastStringSent;
+    std::string _lastStringSent;
 };
