@@ -55,7 +55,6 @@ OfficeClock::showMain(bool force)
 {
     time_t currentTime = _clock->currentTime();
 
-    bool pm = false;
     std::string str;
 
     struct tm timeinfo;
@@ -65,7 +64,6 @@ OfficeClock::showMain(bool force)
     if (hours == 0) {
         hours = 12;
     } else if (hours >= 12) {
-        pm = true;
         if (hours > 12) {
             hours -= 12;
         }
