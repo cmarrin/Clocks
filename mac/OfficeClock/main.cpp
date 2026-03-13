@@ -18,9 +18,14 @@ static const char* TAG = "OfficeClock";
 static constexpr int LEDBorder = 1;
 static constexpr int LEDRadius = 5;
 static constexpr int Offset = 10;
+static constexpr int MessageHeight = 20;
 static constexpr int Spacing = ((LEDBorder + LEDRadius) * 2);
-static constexpr int WindowWidth = Spacing * 32 + (Offset * 2);
-static constexpr int WindowHeight = Spacing * 8 + (Offset * 2);
+static constexpr int MatrixWidth = Spacing * 32 + (Offset * 2);
+static constexpr int MatrixHeight = Spacing * 8 + (Offset * 2);
+static constexpr int WindowWidth = MatrixWidth;
+static constexpr int WindowHeight = MatrixHeight + MessageHeight;
+static constexpr int MessageX = 100;
+static constexpr int MessageY = WindowHeight - 20;
 
 int main(int argc, const char * argv[])
 {
@@ -31,16 +36,19 @@ int main(int argc, const char * argv[])
     OfficeClock officeClock(&portal, [screen](const uint8_t* buffer)
     {
         tigrClear(screen, tigrRGBA(0x0, 0x00, 0x00, 0xff));
-        
+
+        // Show the button text
+        tigrPrint(screen, tfont, MessageX, MessageY, tigrRGB(0xff, 0xff, 0xff), "Press [TAB] for select");
+
         // Make a vertical grid
         for (int i = 0; i <= 32; i++) {
             uint8_t color = ((i % 8) == 0) ? 0x50 : 0x30;
-            tigrLine(screen, Offset + (i * Spacing), Spacing, Offset + (i * Spacing), WindowHeight - Spacing + 1, tigrRGBA(color, color, color, 0xff));
+            tigrLine(screen, Offset + (i * Spacing), Spacing, Offset + (i * Spacing), MatrixHeight - Spacing + 1, tigrRGBA(color, color, color, 0xff));
         }
         
         // Make a horizontal grid
         for (int i = 0; i <= 8; i++) {
-            tigrLine(screen, Offset, Offset + (i * Spacing), WindowWidth - Spacing + 1, Offset + (i * Spacing), tigrRGBA(0x30, 0x30, 0x30, 0xff));
+            tigrLine(screen, Offset, Offset + (i * Spacing), MatrixWidth - Spacing + 1, Offset + (i * Spacing), tigrRGBA(0x30, 0x30, 0x30, 0xff));
         }
         
         int x = 0;
@@ -64,8 +72,15 @@ int main(int argc, const char * argv[])
     officeClock.setup();
     
     while (!tigrClosed(screen) && !tigrKeyDown(screen, TK_ESCAPE)) {
+        if (tigrKeyDown(screen, TK_TAB) || tigrKeyHeld(screen, TK_TAB)) {
+            System::setButtonDown(true);
+        } else {
+            System::setButtonDown(false);
+        }
+                
         officeClock.loop();
         tigrUpdate(screen);
+        delay(10);
     }
 
     tigrFree(screen);
