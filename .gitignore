@@ -9,3 +9,4 @@ dependencies.lock
 OfficeClock/espidf/.devcontainer/devcontainer.json
 OfficeClock/espidf/.devcontainer/Dockerfile
 OfficeClock/espidf/.vscode
+sdkconfig
