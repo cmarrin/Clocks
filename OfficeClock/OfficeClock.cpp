@@ -16,7 +16,6 @@ OfficeClock::OfficeClock(mil::WiFiPortal* portal, std::function<void(const uint8
                          InvertAmbientLightLevel, MinLightSensorLevel, MaxLightSensorLevel, NumberOfBrightnessLevels)
     , _buttonManager([this](const mil::Button& b, mil::ButtonManager::Event e) { handleButtonEvent(b, e); })
 {
-    _clock = std::unique_ptr<mil::Clock>(new mil::Clock(this));
 }
 
 void
@@ -53,7 +52,7 @@ OfficeClock::handleButtonEvent(const mil::Button& button, mil::ButtonManager::Ev
 void
 OfficeClock::showMain(bool force)
 {
-    time_t currentTime = _clock->currentTime();
+    time_t currentTime = clock()->currentTime();
 
     std::string str;
 
@@ -87,11 +86,11 @@ void
 OfficeClock::showSecondary()
 {
     std::string time = "\v";
-    time += _clock->strftime("%a %b ", _clock->currentTime()).c_str();
-    std::string day = _clock->prettyDay(_clock->currentTime()).c_str();
+    time += clock()->strftime("%a %b ", clock()->currentTime()).c_str();
+    std::string day = clock()->prettyDay(clock()->currentTime()).c_str();
     time += day.c_str();
-    time = time + "  " + _clock->weatherConditions() + "  Cur:" + std::to_string(_clock->currentTemp()).c_str();
-    time = time + "`  Hi:" + std::to_string(_clock->highTemp()).c_str() + "`  Lo:" + std::to_string(_clock->lowTemp()).c_str() + "`";
+    time = time + "  " + clock()->weatherConditions() + "  Cur:" + std::to_string(clock()->currentTemp()).c_str();
+    time = time + "`  Hi:" + std::to_string(clock()->highTemp()).c_str() + "`  Lo:" + std::to_string(clock()->lowTemp()).c_str() + "`";
 
     _clockDisplay.showString(time.c_str());
 }

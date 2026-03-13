@@ -9,7 +9,6 @@
 
 #include "mil.h"
 #include "Application.h"
-#include "Clock.h"
 #include "BrightnessManager.h"
 #include "ButtonManager.h"
 #include "Max7219Display.h"
@@ -46,7 +45,6 @@ class OfficeClock : public mil::Application
     void setBrightness(uint32_t b);
 
     mil::Max7219Display _clockDisplay;
-    std::unique_ptr<mil::Clock> _clock;
     mil::BrightnessManager _brightnessManager;
     mil::ButtonManager _buttonManager;
 
