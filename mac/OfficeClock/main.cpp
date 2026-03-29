@@ -73,9 +73,9 @@ int main(int argc, const char * argv[])
     
     while (!tigrClosed(screen) && !tigrKeyDown(screen, TK_ESCAPE)) {
         if (tigrKeyDown(screen, TK_TAB) || tigrKeyHeld(screen, TK_TAB)) {
-            System::setButtonDown(true);
-        } else {
             System::setButtonDown(false);
+        } else {
+            System::setButtonDown(true);
         }
                 
         officeClock.loop();
