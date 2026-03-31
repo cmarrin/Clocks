@@ -19,7 +19,7 @@ extern "C" {
 void app_main(void)
 {
     System::logI(TAG, "Starting OfficeClock...");
-    OfficeClock officeClock(&portal);
+    OfficeClock officeClock(&portal, false);
     officeClock.setup();
 
     while (true) {
