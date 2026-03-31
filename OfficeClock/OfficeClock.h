@@ -15,7 +15,7 @@
 
 static constexpr const char* ConfigPortalName = "MT Office Clock";
 static constexpr const char* Hostname = "officeclock";
-static constexpr const char* Version = "4.0";
+static constexpr const char* Version = "4.1";
 
 // Display related
 // Range for the light sensor on the ESP23C6 was measured at 3200 in 
