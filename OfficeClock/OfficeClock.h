@@ -37,7 +37,7 @@ static constexpr uint32_t DoneTimeDuration = 100;
 class OfficeClock : public mil::Application
 {
   public:
-    OfficeClock(mil::WiFiPortal*, std::function<void(const uint8_t* buffer)> = nullptr);
+    OfficeClock(mil::WiFiPortal*, bool buttonActiveHigh, std::function<void(const uint8_t* buffer)> = nullptr);
 
     virtual void setup() override;
     virtual void loop() override;
@@ -53,6 +53,7 @@ class OfficeClock : public mil::Application
     mil::Max7219Display _clockDisplay;
     mil::BrightnessManager _brightnessManager;
     mil::ButtonManager _buttonManager;
+    bool _buttonActiveHigh = false;
 
     std::string _lastStringSent;
 };

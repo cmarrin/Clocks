@@ -33,7 +33,7 @@ int main(int argc, const char * argv[])
 
     Tigr* screen = tigrWindow(WindowWidth, WindowHeight, "Hello", TIGR_AUTO);
     
-    OfficeClock officeClock(&portal, [screen](const uint8_t* buffer)
+    OfficeClock officeClock(&portal, true, [screen](const uint8_t* buffer)
     {
         tigrClear(screen, tigrRGBA(0x0, 0x00, 0x00, 0xff));
 
@@ -73,9 +73,9 @@ int main(int argc, const char * argv[])
     
     while (!tigrClosed(screen) && !tigrKeyDown(screen, TK_ESCAPE)) {
         if (tigrKeyDown(screen, TK_TAB) || tigrKeyHeld(screen, TK_TAB)) {
-            System::setButtonDown(false);
-        } else {
             System::setButtonDown(true);
+        } else {
+            System::setButtonDown(false);
         }
                 
         officeClock.loop();

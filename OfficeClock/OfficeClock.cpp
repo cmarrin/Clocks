@@ -9,12 +9,13 @@
 
 #include "OfficeClock.h"
 
-OfficeClock::OfficeClock(mil::WiFiPortal* portal, std::function<void(const uint8_t* buffer)> renderCB)
+OfficeClock::OfficeClock(mil::WiFiPortal* portal, bool buttonActiveHigh, std::function<void(const uint8_t* buffer)> renderCB)
     : mil::Application(portal, ConfigPortalName, true)
     , _clockDisplay([this]() { startShowDoneTimer(DoneTimeDuration); }, renderCB)
     , _brightnessManager([this](uint32_t b) { setBrightness(b); }, LightSensor, 
                          InvertAmbientLightLevel, MinLightSensorLevel, MaxLightSensorLevel, NumberOfBrightnessLevels)
     , _buttonManager([this](const mil::Button& b, mil::ButtonManager::Event e) { handleButtonEvent(b, e); })
+    , _buttonActiveHigh(buttonActiveHigh)
 {
 }
 
@@ -28,7 +29,7 @@ OfficeClock::setup()
     printf("Internet Connected Office Clock v%s\n", Version);
 
     _brightnessManager.start();
-    _buttonManager.addButton(mil::Button(SelectButton, SelectButton, false, System::GPIOPinMode::InputWithPullup));
+    _buttonManager.addButton(mil::Button(SelectButton, SelectButton, _buttonActiveHigh, System::GPIOPinMode::InputWithPullup));
 }
 	
 void
