@@ -29,60 +29,66 @@ static constexpr int MessageY = WindowHeight - 20;
 
 int main(int argc, const char * argv[])
 {
-    System::logI(TAG, "Opening tigr window");
+    while (true) {
+        System::logI(TAG, "Opening tigr window");
 
-    Tigr* screen = tigrWindow(WindowWidth, WindowHeight, "Hello", TIGR_AUTO);
-    
-    OfficeClock officeClock(&portal, true, [screen](const uint8_t* buffer)
-    {
-        tigrClear(screen, tigrRGBA(0x0, 0x00, 0x00, 0xff));
-
-        // Show the button text
-        tigrPrint(screen, tfont, MessageX, MessageY, tigrRGB(0xff, 0xff, 0xff), "Press [TAB] for select");
-
-        // Make a vertical grid
-        for (int i = 0; i <= 32; i++) {
-            uint8_t color = ((i % 8) == 0) ? 0x50 : 0x30;
-            tigrLine(screen, Offset + (i * Spacing), Spacing, Offset + (i * Spacing), MatrixHeight - Spacing + 1, tigrRGBA(color, color, color, 0xff));
-        }
+        Tigr* screen = tigrWindow(WindowWidth, WindowHeight, "Hello", TIGR_AUTO);
         
-        // Make a horizontal grid
-        for (int i = 0; i <= 8; i++) {
-            tigrLine(screen, Offset, Offset + (i * Spacing), MatrixWidth - Spacing + 1, Offset + (i * Spacing), tigrRGBA(0x30, 0x30, 0x30, 0xff));
-        }
-        
-        int x = 0;
-        int y = 0;
-        for (int i = 0; i < 32; ++i) {
-            uint8_t c = buffer[i];
-            for (int j = 0; j < 8; ++j) {
-                if (c & 0x80) {
-                    tigrFillCircle(screen, x + Offset + LEDRadius, y + Offset + LEDRadius, LEDRadius, tigrRGBA(0xff, 0x00, 0x00, 0xff));
+        OfficeClock officeClock(&portal, true, [screen](const uint8_t* buffer)
+        {
+            tigrClear(screen, tigrRGBA(0x0, 0x00, 0x00, 0xff));
+
+            // Show the button text
+            tigrPrint(screen, tfont, MessageX, MessageY, tigrRGB(0xff, 0xff, 0xff), "Press [TAB] for select");
+
+            // Make a vertical grid
+            for (int i = 0; i <= 32; i++) {
+                uint8_t color = ((i % 8) == 0) ? 0x50 : 0x30;
+                tigrLine(screen, Offset + (i * Spacing), Spacing, Offset + (i * Spacing), MatrixHeight - Spacing + 1, tigrRGBA(color, color, color, 0xff));
+            }
+            
+            // Make a horizontal grid
+            for (int i = 0; i <= 8; i++) {
+                tigrLine(screen, Offset, Offset + (i * Spacing), MatrixWidth - Spacing + 1, Offset + (i * Spacing), tigrRGBA(0x30, 0x30, 0x30, 0xff));
+            }
+            
+            int x = 0;
+            int y = 0;
+            for (int i = 0; i < 32; ++i) {
+                uint8_t c = buffer[i];
+                for (int j = 0; j < 8; ++j) {
+                    if (c & 0x80) {
+                        tigrFillCircle(screen, x + Offset + LEDRadius, y + Offset + LEDRadius, LEDRadius, tigrRGBA(0xff, 0x00, 0x00, 0xff));
+                    }
+                    c <<= 1;
+                    x += Spacing;
                 }
-                c <<= 1;
-                x += Spacing;
+                if ((i % 4) == 3) {
+                    x = 0;
+                    y += Spacing;
+                }
             }
-            if ((i % 4) == 3) {
-                x = 0;
-                y += Spacing;
+        });
+        
+        officeClock.setup();
+        
+        while (!tigrClosed(screen) && !tigrKeyDown(screen, TK_ESCAPE)) {
+            if (tigrKeyDown(screen, TK_TAB) || tigrKeyHeld(screen, TK_TAB)) {
+                System::setButtonDown(true);
+            } else {
+                System::setButtonDown(false);
             }
+            
+            if (System::isRestarting()) {
+                break;
+            }
+            
+            officeClock.loop();
+            tigrUpdate(screen);
+            delay(10);
         }
-    });
-    
-    officeClock.setup();
-    
-    while (!tigrClosed(screen) && !tigrKeyDown(screen, TK_ESCAPE)) {
-        if (tigrKeyDown(screen, TK_TAB) || tigrKeyHeld(screen, TK_TAB)) {
-            System::setButtonDown(true);
-        } else {
-            System::setButtonDown(false);
-        }
-                
-        officeClock.loop();
-        tigrUpdate(screen);
-        delay(10);
-    }
 
-    tigrFree(screen);
+        tigrFree(screen);
+    }
     return 0;
 }
