@@ -26,7 +26,7 @@ static constexpr const char* Version = "4.1";
 
 static constexpr uint32_t StartupScrollRate = 50;
 static constexpr uint32_t DateScrollRate = 50;
-static constexpr uint8_t SelectButton = 14;
+static constexpr uint8_t SelectButton = 18;
 static constexpr uint32_t LightSensor = 0;
 static constexpr uint32_t NumberOfBrightnessLevels = 31;
 static constexpr bool InvertAmbientLightLevel = true;

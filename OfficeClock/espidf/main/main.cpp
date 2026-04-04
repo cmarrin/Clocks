@@ -27,7 +27,7 @@
 //      MOSI            D7   (R3)               4    (L7)
 //      CLK             D5   (R5)               3    (L6)
 //      CS              D8   (R2)               7    (L10)
-//      Button          D1   (L6)               14   (R8)
+//      Button          D1   (L6)               18   (R8)
 
 #include "OfficeClock.h"
 
