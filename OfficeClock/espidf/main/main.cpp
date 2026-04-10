@@ -40,7 +40,7 @@ static const char* TAG = "OfficeClock";
 extern "C" {
 void app_main(void)
 {
-    System::logI(TAG, "Starting OfficeClock...");
+    mil::System::logI(TAG, "Starting OfficeClock...");
     OfficeClock officeClock(&portal, false);
     officeClock.setup();
 

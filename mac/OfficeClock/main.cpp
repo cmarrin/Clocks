@@ -30,11 +30,11 @@ static constexpr int MessageY = WindowHeight - 20;
 int main(int argc, const char * argv[])
 {
     while (true) {
-        System::logI(TAG, "Opening tigr window");
+        mil::System::logI(TAG, "Opening tigr window");
 
         Tigr* screen = tigrWindow(WindowWidth, WindowHeight, "Hello", TIGR_AUTO);
         
-        OfficeClock officeClock(&portal, true, [screen](const uint8_t* buffer)
+        OfficeClock officeClock(&portal, true, [screen](const mil::Graphics* gfx)
         {
             tigrClear(screen, tigrRGBA(0x0, 0x00, 0x00, 0xff));
 
@@ -54,6 +54,8 @@ int main(int argc, const char * argv[])
             
             int x = 0;
             int y = 0;
+            const uint32_t* buffer = reinterpret_cast<const uint32_t*>(gfx->getBuffer());
+
             for (int i = 0; i < 32; ++i) {
                 uint8_t c = buffer[i];
                 for (int j = 0; j < 8; ++j) {
@@ -74,18 +76,18 @@ int main(int argc, const char * argv[])
         
         while (!tigrClosed(screen) && !tigrKeyDown(screen, TK_ESCAPE)) {
             if (tigrKeyDown(screen, TK_TAB) || tigrKeyHeld(screen, TK_TAB)) {
-                System::setButtonDown(true);
+                mil::System::setButtonDown(true);
             } else {
-                System::setButtonDown(false);
+                mil::System::setButtonDown(false);
             }
             
-            if (System::isRestarting()) {
+            if (mil::System::isRestarting()) {
                 break;
             }
             
             officeClock.loop();
             tigrUpdate(screen);
-            delay(10);
+            mil::System::delay(10);
         }
 
         tigrFree(screen);
