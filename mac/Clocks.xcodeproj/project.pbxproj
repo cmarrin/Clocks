@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		491958C72808709A0012F306 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 491958C62808709A0012F306 /* main.cpp */; };
+		497554F12F8B15A5004BED08 /* tigr.c in Sources */ = {isa = PBXBuildFile; fileRef = 49F81A242F620994006B36FE /* tigr.c */; };
+		497554F22F8B15C1004BED08 /* libESPlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49C076D62F5F02AA00AFB468 /* libESPlib.a */; };
+		497554F32F8B15E2004BED08 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 499554BE27FE59EC00D04E66 /* OpenGL.framework */; };
+		497554F42F8B15EA004BED08 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 499554BC27FE59D900D04E66 /* Cocoa.framework */; };
 		497E4DE62CEECBF60079D258 /* WordClock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 497E4DE52CEECBF60079D258 /* WordClock.cpp */; };
 		499554A127FDD84600D04E66 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 499554A027FDD84600D04E66 /* main.cpp */; };
 		499554CA27FF355500D04E66 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 499554C927FF355500D04E66 /* main.cpp */; };
@@ -27,6 +31,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		49500DDE2F8C370D00A106B8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 49C076C32F5F02AA00AFB468 /* ESPlib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 49E65B002E9C36F800D3C6C5;
+			remoteInfo = ESPlib;
+		};
 		49C076D32F5F02AA00AFB468 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 49C076C32F5F02AA00AFB468 /* ESPlib.xcodeproj */;
@@ -94,6 +105,18 @@
 		491958C62808709A0012F306 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		491958CD280877530012F306 /* OfficeClock.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = OfficeClock.ino; path = ../OfficeClock/OfficeClock.ino; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		491958CF280890790012F306 /* WordClock.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = WordClock.ino; path = ../../WordClock/WordClock.ino; sourceTree = "<group>"; };
+		49754B4C2F89CCD4004BED08 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		49754B4D2F89CCD4004BED08 /* idf_component.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = idf_component.yml; sourceTree = "<group>"; };
+		49754B4E2F89CCD4004BED08 /* Kconfig.projbuild */ = {isa = PBXFileReference; lastKnownFileType = text; path = Kconfig.projbuild; sourceTree = "<group>"; };
+		49754B4F2F89CCD4004BED08 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		497554E42F89CCD4004BED08 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		497554E62F89CCD4004BED08 /* esp_idf_project_configuration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = esp_idf_project_configuration.json; sourceTree = "<group>"; };
+		497554E72F89CCD4004BED08 /* partitions-4mb.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = "partitions-4mb.csv"; sourceTree = "<group>"; };
+		497554E82F89CCD4004BED08 /* partitions-16mb.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = "partitions-16mb.csv"; sourceTree = "<group>"; };
+		497554E92F89CCD4004BED08 /* sdkconfig */ = {isa = PBXFileReference; lastKnownFileType = text; path = sdkconfig; sourceTree = "<group>"; };
+		497554EA2F89CCD4004BED08 /* sdkconfig.4mb */ = {isa = PBXFileReference; lastKnownFileType = text; path = sdkconfig.4mb; sourceTree = "<group>"; };
+		497554EB2F89CCD4004BED08 /* sdkconfig.16mb */ = {isa = PBXFileReference; lastKnownFileType = text; path = sdkconfig.16mb; sourceTree = "<group>"; };
+		497554EC2F89CCD4004BED08 /* sdkconfig.defaults */ = {isa = PBXFileReference; lastKnownFileType = text; path = sdkconfig.defaults; sourceTree = "<group>"; };
 		497E4DE42CEECBF60079D258 /* WordClock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = WordClock.h; path = ../WordClock/WordClock.h; sourceTree = SOURCE_ROOT; };
 		497E4DE52CEECBF60079D258 /* WordClock.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = WordClock.cpp; path = ../WordClock/WordClock.cpp; sourceTree = SOURCE_ROOT; };
 		4995547D27FCFD5400D04E66 /* EtherClock */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EtherClock; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -138,6 +161,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				497554F42F8B15EA004BED08 /* Cocoa.framework in Frameworks */,
+				497554F32F8B15E2004BED08 /* OpenGL.framework in Frameworks */,
+				497554F22F8B15C1004BED08 /* libESPlib.a in Frameworks */,
 				49EB4B5E2CF259A50083A081 /* libcurl.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -208,12 +234,33 @@
 			path = EtherClock;
 			sourceTree = "<group>";
 		};
-		491958D12808909B0012F306 /* esp */ = {
+		49754B502F89CCD4004BED08 /* main */ = {
 			isa = PBXGroup;
 			children = (
+				49754B4C2F89CCD4004BED08 /* CMakeLists.txt */,
+				49754B4D2F89CCD4004BED08 /* idf_component.yml */,
+				49754B4E2F89CCD4004BED08 /* Kconfig.projbuild */,
+				49754B4F2F89CCD4004BED08 /* main.cpp */,
 			);
-			name = esp;
+			path = main;
 			sourceTree = "<group>";
+		};
+		497554EE2F89CCD4004BED08 /* espidf */ = {
+			isa = PBXGroup;
+			children = (
+				49754B502F89CCD4004BED08 /* main */,
+				497554E42F89CCD4004BED08 /* CMakeLists.txt */,
+				497554E62F89CCD4004BED08 /* esp_idf_project_configuration.json */,
+				497554E72F89CCD4004BED08 /* partitions-4mb.csv */,
+				497554E82F89CCD4004BED08 /* partitions-16mb.csv */,
+				497554E92F89CCD4004BED08 /* sdkconfig */,
+				497554EA2F89CCD4004BED08 /* sdkconfig.4mb */,
+				497554EB2F89CCD4004BED08 /* sdkconfig.16mb */,
+				497554EC2F89CCD4004BED08 /* sdkconfig.defaults */,
+			);
+			name = espidf;
+			path = ../Etherclock/espidf;
+			sourceTree = SOURCE_ROOT;
 		};
 		4995545627FB42FC00D04E66 = {
 			isa = PBXGroup;
@@ -241,9 +288,9 @@
 		4995547827FCFC4500D04E66 /* Etherclock */ = {
 			isa = PBXGroup;
 			children = (
+				497554EE2F89CCD4004BED08 /* espidf */,
 				49EB4B622CF389300083A081 /* Etherclock.h */,
 				49EB4B632CF389300083A081 /* Etherclock.cpp */,
-				491958D12808909B0012F306 /* esp */,
 				491958D0280890930012F306 /* mac */,
 			);
 			name = Etherclock;
@@ -348,6 +395,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				49500DDF2F8C370D00A106B8 /* PBXTargetDependency */,
 			);
 			name = EtherClock;
 			productName = EtherClock;
@@ -459,6 +507,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				499554A127FDD84600D04E66 /* main.cpp in Sources */,
+				497554F12F8B15A5004BED08 /* tigr.c in Sources */,
 				49EB4B642CF389300083A081 /* Etherclock.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -476,6 +525,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		49500DDF2F8C370D00A106B8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ESPlib;
+			targetProxy = 49500DDE2F8C370D00A106B8 /* PBXContainerItemProxy */;
+		};
 		49C076DA2F5F02FA00AFB468 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ESPlib;
@@ -572,6 +626,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/../ESPlib",
+					"$(PROJECT_DIR)/../ESPlib/lua/lua-5.4.8/src",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 12.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -630,6 +688,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/../ESPlib",
+					"$(PROJECT_DIR)/../ESPlib/lua/lua-5.4.8/src",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 12.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -655,6 +717,7 @@
 					"$(inherited)",
 					"$(USER_LIBRARY_DIR)/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 6.0;
@@ -677,6 +740,7 @@
 					"$(inherited)",
 					"$(USER_LIBRARY_DIR)/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 6.0;
 			};
