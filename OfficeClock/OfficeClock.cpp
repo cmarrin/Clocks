@@ -9,6 +9,8 @@
 
 #include "OfficeClock.h"
 
+static const char* TAG = "OfficeClock";
+
 OfficeClock::OfficeClock(mil::WiFiPortal* portal, bool buttonActiveHigh, mil::RenderCB renderCB)
     : mil::Application(portal, ConfigPortalName, true)
     , _clockDisplay([this]() { startShowDoneTimer(DoneTimeDuration); }, renderCB)
@@ -26,7 +28,7 @@ OfficeClock::setup()
     Application::setup();
 
     setTitle((std::string("<center>MarrinTech Internet Connected Office Clock v") + Version + "</center>").c_str());
-    printf("Internet Connected Office Clock v%s\n", Version);
+    mil::System::logI(TAG, "Internet Connected Office Clock v%s\n", Version);
 
     _brightnessManager.start();
     _buttonManager.addButton(mil::Button(SelectButton, SelectButton, _buttonActiveHigh, mil::System::GPIOPinMode::InputWithPullup));
