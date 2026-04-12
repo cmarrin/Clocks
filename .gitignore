@@ -10,3 +10,5 @@ OfficeClock/espidf/.devcontainer/devcontainer.json
 OfficeClock/espidf/.devcontainer/Dockerfile
 OfficeClock/espidf/.vscode
 sdkconfig
+Etherclock/espidf/.devcontainer
+Etherclock/espidf/.vscode
