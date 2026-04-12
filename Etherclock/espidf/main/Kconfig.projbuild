@@ -1,0 +1,54 @@
+menu "Blink LED Configuration"
+
+    choice BLINK_LED
+        prompt "Blink LED type"
+        default BLINK_LED_GPIO
+        help
+            Select the LED type. A normal level controlled LED or an 
+            addressable LED strip. The default selection is based on 
+            the Espressif DevKit boards. You can change the default 
+            selection according to your board.
+
+        config BLINK_LED_GPIO
+            bool "GPIO"
+        config BLINK_LED_STRIP
+            bool "LED strip"
+    endchoice
+
+    choice BLINK_LED_STRIP_BACKEND
+        depends on BLINK_LED_STRIP
+        prompt "LED strip backend peripheral"
+        default BLINK_LED_STRIP_BACKEND_RMT
+        help
+            Select the backend peripheral to drive the LED strip.
+
+        config BLINK_LED_STRIP_BACKEND_RMT
+            bool "RMT"
+        config BLINK_LED_STRIP_BACKEND_SPI
+            bool "SPI"
+    endchoice
+
+    choice BLINK_LED_SENSE
+        depends on BLINK_LED_GPIO
+        prompt "Is LED GPIP pin active high or low?"
+        default BLINK_LED_GPIO_ACTIVE_LOW
+        help
+            Select whether the LED is on when the GPIO pin is high or low
+
+        config BLINK_LED_GPIO_ACTIVE_LOW
+            bool "Active Low"
+        config BLINK_LED_GPIO_ACTIVE_HIGH
+            bool "Active High"
+    endchoice
+
+    config BLINK_LED_GPIO_NUMBER
+        int "Blink GPIO number"
+        range 0 64
+        default 8
+        help
+            GPIO number (IOxx) to blink on and off the LED. Some
+            GPIOs are used for other purposes (flash connections, etc.) 
+            and cannot be used to blink. Many boards have an onboard
+            LED you can use if you know its GPIO number.
+
+endmenu

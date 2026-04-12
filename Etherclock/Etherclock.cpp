@@ -9,6 +9,38 @@
 
 #include "Etherclock.h"
 
+static const char* TAG = "Etherclock";
+
+Etherclock::Etherclock(mil::WiFiPortal* portal, bool buttonActiveHigh, mil::RenderCB renderCB)
+    : mil::Application(portal, ConfigPortalName, true)
+    , _clockDisplay(renderCB)
+    , _brightnessManager([this](uint32_t b) { setBrightness(b); }, LightSensor, 
+                         InvertAmbientLightLevel, MinLightSensorLevel, MaxLightSensorLevel, NumberOfBrightnessLevels)
+    , _buttonManager([this](const mil::Button& b, mil::ButtonManager::Event e) { handleButtonEvent(b, e); })
+    , _buttonActiveHigh(buttonActiveHigh)
+{
+}
+
+void
+Etherclock::setup()
+{
+    mil::System::delay(500);
+    Application::setup();
+
+    setTitle((std::string("<center>MarrinTech Internet Connected Office Clock v") + Version + "</center>").c_str());
+    mil::System::logI(TAG, "Internet Connected Office Clock v%s\n", Version);
+
+    _brightnessManager.start();
+    _buttonManager.addButton(mil::Button(SelectButton, SelectButton, _buttonActiveHigh, mil::System::GPIOPinMode::InputWithPullup));
+    setBrightness(50);
+}   
+
+void
+Etherclock::loop()
+{
+    Application::loop();
+}   
+
 void
 Etherclock::handleButtonEvent(const mil::Button& button, mil::ButtonManager::Event event)
 {
@@ -24,13 +56,13 @@ Etherclock::handleButtonEvent(const mil::Button& button, mil::ButtonManager::Eve
 void
 Etherclock::showString(mil::Message m)
 {
-    CPString s;
+    std::string s;
     switch(m) {
         case mil::Message::NetConfig:
             s = "CNFG";
             break;
         case mil::Message::Startup:
-            s = "EC-5";
+            s = "EC-" + std::string(1, Version[0]);
             break;
         case mil::Message::Connecting:
             s = "Conn";
@@ -55,16 +87,16 @@ Etherclock::showString(mil::Message m)
             break;
     }
 
-    showChars(s, 0, false);
+    showChars(s.c_str(), 0, false);
     startShowDoneTimer(2000);
 }
 
 void
 Etherclock::showMain(bool force)
 {
-    CPString string = "EEEE";
+    std::string string = "EEEE";
     uint8_t dps = 0;
-    time_t t = _clock->currentTime();
+    time_t t = clock() ? clock()->currentTime() : 0;
 	struct tm timeinfo;
     gmtime_r(&t, &timeinfo);
     uint8_t hour = timeinfo.tm_hour;
@@ -82,17 +114,17 @@ Etherclock::showMain(bool force)
     } else {
         string = "";
     }
-    string += ToString(hour);
+    string += std::to_string(hour);
 
     uint8_t minute = timeinfo.tm_min;
     if (minute < 10) {
         string += "0";
     }
-    string += ToString(minute);
+    string += std::to_string(minute);
 
     // If we are forced or the time has changed, show it
     if (force || _lastHour != hour || _lastMinute != minute || _lastDps != dps) {
-        showChars(string, dps, true);
+        showChars(string.c_str(), dps, true);
     }
     
     _lastHour = hour;
@@ -115,12 +147,12 @@ Etherclock::showInfoSequence()
         return;
     }
     
-    CPString string = "EEEE";
+    std::string string = "EEEE";
 
     switch(_info) {
         case Info::Done: break;
         case Info::Date: {
-            time_t t = _clock->currentTime();
+            time_t t = clock() ? clock()->currentTime() : 0;
             struct tm timeinfo;
             gmtime_r(&t, &timeinfo);
             uint8_t month = timeinfo.tm_mon + 1;
@@ -131,64 +163,65 @@ Etherclock::showInfoSequence()
             } else {
                 string = "";
             }
-            string += ToString(month);
+            string += std::to_string(month);
             if (date < 10) {
                 string += " ";
             }
-            string += ToString(date);
+            string += std::to_string(date);
             _info = Info::CurTemp;
             break;
         }
         case Info::CurTemp: {
-            uint32_t temp = _clock->currentTemp();
+            uint32_t temp = clock() ? clock()->currentTemp() : 0;
             string = "C";
             if (temp > 0 && temp < 100) {
                 string += " ";
             }
-            string += ToString(temp);
+            string += std::to_string(temp);
             _info = Info::LowTemp;
             break;
         }
         case Info::LowTemp: {
-            uint32_t temp = _clock->lowTemp();
+            uint32_t temp = clock() ? clock()->lowTemp() : 0;
             string = "L";
             if (temp > 0 && temp < 100) {
                 string += " ";
             }
-            string += ToString(temp);
+            string += std::to_string(temp);
             _info = Info::HighTemp;
             break;
         }
         case Info::HighTemp: {
-            uint32_t temp = _clock->highTemp();
+            uint32_t temp = clock() ? clock()->highTemp() : 0;
             string = "h";
             if (temp > 0 && temp < 100) {
                 string += " ";
             }
-            string += ToString(temp);
+            string += std::to_string(temp);
             _info = Info::Done;
             break;
         }
     }
     
-    showChars(string, 0, false);
+    showChars(string.c_str(), 0, false);
     _showInfoTimer.once_ms(2000, [this]() { showInfoSequence(); });
 }
 
 void
-Etherclock::showChars(const CPString& string, uint8_t dps, bool colon)
+Etherclock::showChars(const char* string, uint8_t dps, bool colon)
 {
-    if (string.length() != 4) {
+    if (strlen(string) != 4) {
         showChars("Err1", 0, false);
-        cout << F("***** Invalid string display: '") << string.c_str() << "'\n";
+        mil::System::logE("invalid string display: '%s'", string);
         return;
     }
 
     _clockDisplay.clearDisplay();
+    _clockDisplay.print(string);
     _clockDisplay.setColon(colon);
-    _clockDisplay.print(const_cast<char*>(string.c_str()));
 
     if (dps) {
         _clockDisplay.setDot(3, true);
     }
+    _clockDisplay.refresh();
 }

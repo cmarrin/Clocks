@@ -1,0 +1,83 @@
+{
+  "esp32c3-4mb": {
+    "build": {
+      "compileArgs": [],
+      "ninjaArgs": [],
+      "buildDirectoryPath": "",
+      "sdkconfigDefaults": [
+        "sdkconfig.defaults",
+        "sdkconfig.4mb"
+      ],
+      "sdkconfigFilePath": ""
+    },
+    "env": {},
+    "idfTarget": "esp32c3",
+    "flashBaudRate": "",
+    "monitorBaudRate": "",
+    "openOCD": {
+      "debugLevel": -1,
+      "configs": [],
+      "args": []
+    },
+    "tasks": {
+      "preBuild": "",
+      "preFlash": "",
+      "postBuild": "",
+      "postFlash": ""
+    }
+  },
+  "esp32c6-16mb": {
+    "build": {
+      "compileArgs": [],
+      "ninjaArgs": [],
+      "buildDirectoryPath": "",
+      "sdkconfigDefaults": [
+        "sdkconfig.defaults",
+        "sdkconfig.16mb"
+      ],
+      "sdkconfigFilePath": ""
+    },
+    "env": {},
+    "idfTarget": "esp32c6",
+    "flashBaudRate": "",
+    "monitorBaudRate": "",
+    "openOCD": {
+      "debugLevel": -1,
+      "configs": [],
+      "args": []
+    },
+    "tasks": {
+      "preBuild": "",
+      "preFlash": "",
+      "postBuild": "",
+      "postFlash": ""
+    }
+  },
+  "esp32c6-4mb": {
+    "build": {
+      "compileArgs": [],
+      "ninjaArgs": [],
+      "buildDirectoryPath": "",
+      "sdkconfigDefaults": [
+        "sdkconfig.defaults",
+        "sdkconfig.4mb"
+      ],
+      "sdkconfigFilePath": ""
+    },
+    "env": {},
+    "idfTarget": "esp32c6",
+    "flashBaudRate": "",
+    "monitorBaudRate": "",
+    "openOCD": {
+      "debugLevel": -1,
+      "configs": [],
+      "args": []
+    },
+    "tasks": {
+      "preBuild": "",
+      "preFlash": "",
+      "postBuild": "",
+      "postFlash": ""
+    }
+  }
+}
