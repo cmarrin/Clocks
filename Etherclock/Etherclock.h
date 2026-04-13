@@ -55,7 +55,7 @@ public:
 	virtual void loop() override;
 
 private:
-    enum class Info { Date, CurTemp, LowTemp, HighTemp, Done };
+    enum class Info { Day, Date, CurTemp, LowTemp, HighTemp, Done };
 
     void handleButtonEvent(const mil::Button& button, mil::ButtonManager::Event event);
     

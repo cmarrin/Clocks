@@ -135,7 +135,7 @@ Etherclock::showMain(bool force)
 void
 Etherclock::showSecondary()
 {
-    _info = Info::Date;
+    _info = Info::Day;
     showInfoSequence();
     startShowDoneTimer(SecondaryTimePerInfo * int(Info::Done));
 }
@@ -151,6 +151,20 @@ Etherclock::showInfoSequence()
 
     switch(_info) {
         case Info::Done: break;
+        case Info::Day: {
+            string = clock()->strftime("%a", clock() ? clock()->currentTime() : 0);
+            
+            // 'M' and 'W' are the problematic character. Represent
+            // 'M' with 'R7' and 'W' with 'LJ'
+//            if (string[0] == 'M' || string[0] == 'm') {
+//                string = "R7" + std::string(&(string.data()[1]), 2);
+//            } else if (string[0] == 'W' || string[0] == 'w') {
+//                string = "LJ" + std::string(&(string.data()[1]), 2);
+//            }
+            string += " ";
+            _info = Info::Date;
+            break;
+        }
         case Info::Date: {
             time_t t = clock() ? clock()->currentTime() : 0;
             struct tm timeinfo;
