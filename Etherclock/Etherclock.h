@@ -44,6 +44,8 @@ static constexpr bool InvertAmbientLightLevel = false;
 static constexpr uint32_t MinLightSensorLevel = 0;
 static constexpr uint32_t MaxLightSensorLevel = 300;
 
+static constexpr uint32_t SecondaryTimePerInfo = 2000; // In ms
+
 class Etherclock : public mil::Application
 {
 public:

@@ -137,7 +137,7 @@ Etherclock::showSecondary()
 {
     _info = Info::Date;
     showInfoSequence();
-    startShowDoneTimer(8000);
+    startShowDoneTimer(SecondaryTimePerInfo * int(Info::Done));
 }
 
 void
@@ -204,7 +204,7 @@ Etherclock::showInfoSequence()
     }
     
     showChars(string.c_str(), 0, false);
-    _showInfoTimer.once_ms(2000, [this]() { showInfoSequence(); });
+    _showInfoTimer.once_ms(SecondaryTimePerInfo, [this]() { showInfoSequence(); });
 }
 
 void
