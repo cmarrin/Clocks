@@ -28,36 +28,62 @@ mil::MacWiFiPortal portal;
 
 static const char* TAG = "Etherclock";
 static constexpr int DPRadius = 5;
-static constexpr int Offset = 10;
+static constexpr int Offset = 15;
+static constexpr int SegSpacing = 4;
 static constexpr int MessageHeight = 20;
-static constexpr int HorizSegmentWidth = 20;
-static constexpr int HorizSegmentHeight = 3;
-static constexpr int VertSegmentWidth = HorizSegmentHeight;
-static constexpr int VertSegmentHeight = HorizSegmentWidth;
-static constexpr int DPPosX = HorizSegmentWidth;
-static constexpr int DPPosY = VertSegmentHeight * 2;
-static constexpr int GPosX = 0;
-static constexpr int GPosY = VertSegmentHeight;
-static constexpr int FPosX = 0;
-static constexpr int FPosY = 0;
-static constexpr int EPosX = 0;
-static constexpr int EPosY = VertSegmentHeight;
-static constexpr int DPosX = 0;
-static constexpr int DPosY = VertSegmentHeight * 2;
-static constexpr int CPosX = HorizSegmentWidth;
-static constexpr int CPosY = VertSegmentHeight * 2;
-static constexpr int BPosX = HorizSegmentWidth;
-static constexpr int BPosY = 0;
-static constexpr int APosX = 0;
-static constexpr int APosY = 0;
+static constexpr int SegmentWidth = 30;
+static constexpr int SegmentHeight = 5;
 
-static constexpr int Spacing = HorizSegmentWidth + Offset * 2;
-static constexpr int MatrixWidth = Spacing * 4 + (Offset * 2);
-static constexpr int MatrixHeight = Offset * 2 + VertSegmentHeight * 2;
+// Segments have 3 X Positions:
+//
+//      1 - Seg E, F left edge
+//      2 - Seg A, D, G left edge
+//      3 - Seg B, C left edge
+static constexpr int X1Pos = 0;
+static constexpr int X2Pos = X1Pos + SegSpacing;
+static constexpr int X3Pos = X2Pos + SegmentWidth;
+
+// Segments have 5 Y Positions:
+//
+//      1 - Seg A top edge
+//      2 - Seg B, F top edge
+//      3 - Seg G top edge
+//      4 - Seg C, E top edge
+//      5 - Seg D top edge
+static constexpr int Y1Pos = 0;
+static constexpr int Y2Pos = Y1Pos + SegSpacing;
+static constexpr int Y3Pos = Y2Pos + SegmentWidth;
+static constexpr int Y4Pos = Y3Pos + SegSpacing;
+static constexpr int Y5Pos = Y4Pos + SegmentWidth;
+
+static constexpr int APosX = X2Pos;
+static constexpr int APosY = Y1Pos;
+static constexpr int BPosX = X3Pos;
+static constexpr int BPosY = Y2Pos;
+static constexpr int CPosX = X3Pos;
+static constexpr int CPosY = Y4Pos;
+static constexpr int DPosX = X2Pos;
+static constexpr int DPosY = Y5Pos;
+static constexpr int EPosX = X1Pos;
+static constexpr int EPosY = Y4Pos;
+static constexpr int FPosX = X1Pos;
+static constexpr int FPosY = Y2Pos;
+static constexpr int GPosX = X2Pos;
+static constexpr int GPosY = Y3Pos;
+
+static constexpr int Spacing = SegmentWidth + Offset * 2;
+static constexpr int MatrixWidth = Spacing * 4 + Offset * 2 + DPRadius * 2;
+static constexpr int MatrixHeight = Offset * 2 + SegmentHeight * 3 + SegmentWidth * 2;
 static constexpr int WindowWidth = MatrixWidth;
 static constexpr int WindowHeight = MatrixHeight + MessageHeight;
-static constexpr int MessageX = 20;
+static constexpr int MessageX = 70;
 static constexpr int MessageY = WindowHeight - 20;
+
+static constexpr int DPPosX = BPosX + SegSpacing * 2 + DPRadius;
+static constexpr int DPPosY = DPosY + SegSpacing;
+static constexpr int ColonPosX = Spacing * 2 + DPRadius;
+static constexpr int Colon1PosY = Offset + SegmentHeight + SegmentWidth / 2;
+static constexpr int Colon2PosY = Colon1PosY + SegmentWidth;
 
 int main(int argc, const char * argv[])
 {
@@ -73,7 +99,7 @@ int main(int argc, const char * argv[])
             // Show the button text
             tigrPrint(screen, tfont, MessageX, MessageY, tigrRGB(0xff, 0xff, 0xff), "Press [TAB] for select");
 
-            const uint32_t* buffer = reinterpret_cast<const uint32_t*>(gfx->getBuffer());
+            const uint8_t* buffer = reinterpret_cast<const uint8_t*>(gfx->getBuffer());
             TPixel color = tigrRGBA(0xff, 0x00, 0x00, 0xff);
 
             for (int i = 0; i < 4; ++i) {
@@ -82,38 +108,45 @@ int main(int argc, const char * argv[])
                 // the lsb indicates whether or not the colon is on
                 uint8_t a = buffer[i * 2];
                 uint8_t b = buffer[i * 2 + 1];
+                
+                int startX = Offset + Spacing * i;
 
+                if (i == 3 && b & 0x01) {
+                    // Colon
+                    tigrFillCircle(screen, ColonPosX, Colon1PosY, DPRadius, color);
+                    tigrFillCircle(screen, ColonPosX, Colon2PosY, DPRadius, color);
+                }
                 if (a & 0x80) {
                     // DP
-                    tigrFillCircle(screen, Spacing * i + DPPosX, DPPosY, DPRadius, color);
+                    tigrFillCircle(screen, startX + DPPosX, Offset + DPPosY, DPRadius, color);
                 }
                 if (a & 0x40) {
                     // g
-                    tigrFill(screen, Spacing * i + GPosX, GPosY, HorizSegmentWidth, HorizSegmentHeight, color);
+                    tigrFill(screen, startX + GPosX, Offset + GPosY, SegmentWidth, SegmentHeight, color);
                 }
                 if (a & 0x20) {
                     // f
-                    tigrFill(screen, Spacing * i + FPosX, FPosY, VertSegmentWidth, VertSegmentHeight, color);
+                    tigrFill(screen, startX + FPosX, Offset + FPosY, SegmentHeight, SegmentWidth, color);
                 }
                 if (a & 0x10) {
                     // e
-                    tigrFill(screen, Spacing * i + EPosX, EPosY, VertSegmentWidth, VertSegmentHeight, color);
+                    tigrFill(screen, startX + EPosX, Offset + EPosY, SegmentHeight, SegmentWidth, color);
                 }
                 if (a & 0x08) {
                     // d
-                    tigrFill(screen, Spacing * i + DPosX, DPosY, HorizSegmentWidth, HorizSegmentHeight, color);
+                    tigrFill(screen, startX + DPosX, Offset + DPosY, SegmentWidth, SegmentHeight, color);
                 }
                 if (a & 0x04) {
                     // c
-                    tigrFill(screen, Spacing * i + CPosX, CPosY, VertSegmentWidth, VertSegmentHeight, color);
+                    tigrFill(screen, startX + CPosX, Offset + CPosY, SegmentHeight, SegmentWidth, color);
                 }
                 if (a & 0x02) {
                     // b
-                    tigrFill(screen, Spacing * i + BPosX, BPosY, VertSegmentWidth, VertSegmentHeight, color);
+                    tigrFill(screen, startX + BPosX, Offset + BPosY, SegmentHeight, SegmentWidth, color);
                 }
                 if (a & 0x01) {
                     // a
-                    tigrFill(screen, Spacing * i + APosX, APosY, HorizSegmentWidth, HorizSegmentHeight, color);
+                    tigrFill(screen, startX + APosX, Offset + APosY, SegmentWidth, SegmentHeight, color);
                 }
             }
         });
