@@ -199,7 +199,7 @@
 		491958C52808709A0012F306 /* OfficeClock */ = {
 			isa = PBXGroup;
 			children = (
-				49C087162F5F2FD400AFB468 /* espidf */,
+				49C087162F5F2FD400AFB468 /* OfficeClock-espidf */,
 				49EB4B712CF3EB530083A081 /* OfficeClock.cpp */,
 				49EB4B702CF3EB530083A081 /* OfficeClock.h */,
 				491958CE2808904E0012F306 /* mac */,
@@ -245,7 +245,7 @@
 			path = main;
 			sourceTree = "<group>";
 		};
-		497554EE2F89CCD4004BED08 /* espidf */ = {
+		497554EE2F89CCD4004BED08 /* Etherclock-espidf */ = {
 			isa = PBXGroup;
 			children = (
 				49754B502F89CCD4004BED08 /* main */,
@@ -258,8 +258,8 @@
 				497554EB2F89CCD4004BED08 /* sdkconfig.16mb */,
 				497554EC2F89CCD4004BED08 /* sdkconfig.defaults */,
 			);
-			name = espidf;
-			path = ../Etherclock/espidf;
+			name = "Etherclock-espidf";
+			path = "../Etherclock/Etherclock-espidf";
 			sourceTree = SOURCE_ROOT;
 		};
 		4995545627FB42FC00D04E66 = {
@@ -288,7 +288,7 @@
 		4995547827FCFC4500D04E66 /* Etherclock */ = {
 			isa = PBXGroup;
 			children = (
-				497554EE2F89CCD4004BED08 /* espidf */,
+				497554EE2F89CCD4004BED08 /* Etherclock-espidf */,
 				49EB4B622CF389300083A081 /* Etherclock.h */,
 				49EB4B632CF389300083A081 /* Etherclock.cpp */,
 				491958D0280890930012F306 /* mac */,
@@ -342,15 +342,15 @@
 			path = main;
 			sourceTree = "<group>";
 		};
-		49C087162F5F2FD400AFB468 /* espidf */ = {
+		49C087162F5F2FD400AFB468 /* OfficeClock-espidf */ = {
 			isa = PBXGroup;
 			children = (
 				49D3664D2F64C58D0047CAC6 /* sdkconfig.defaults */,
 				49C07EAA2F5F2FD400AFB468 /* main */,
 				49C087132F5F2FD400AFB468 /* CMakeLists.txt */,
 			);
-			name = espidf;
-			path = ../OfficeClock/espidf;
+			name = "OfficeClock-espidf";
+			path = "../OfficeClock/OfficeClock-espidf";
 			sourceTree = SOURCE_ROOT;
 		};
 		49F81A262F6209A2006B36FE /* tigr */ = {
