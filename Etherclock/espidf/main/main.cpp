@@ -14,17 +14,17 @@
 // as Office Clock:
 //      Function    Super Mini id (pin #)       Connected to
 //
-//      5v              5v       (R1)           USB Conn VBUS
-//      3.3v            3.3v     (R3)           DSP7S04B Vcc
-//                                              Light Sensor Vcc
-//      Gnd             Gnd      (R2)           USB Conn Gnd
-//                                              DSP7S04B Gnd
-//                                              Switch
-//                                              Light Sensor Gnd
-//      A1              GPIO1    (L4)           Light Sensor Out
-//      SDA             GPIO4    (L7)           DSP7S04B SDA
-//      SCL             GPIO3    (L6)           DSP7S04B SCL
-//      Button          GPIO14   (R8)           Switch
+//*      5v              5v       (R1)           USB Conn VBUS
+//*      3.3v            3.3v     (R3)           DSP7S04B Vcc
+//*                                              Light Sensor Vcc
+//*      Gnd             Gnd      (R2)           USB Conn Gnd
+//*                                              DSP7S04B Gnd
+//*                                              Switch
+//*                                              Light Sensor Gnd
+//*      A1              GPIO1    (L4)           Light Sensor Out
+//*      SDA             GPIO4    (L7)           DSP7S04B SDA
+//*      SCL             GPIO3    (L6)           DSP7S04B SCL
+//*      Button          GPIO14   (R8)           Switch
 
 #include "Etherclock.h"
 
