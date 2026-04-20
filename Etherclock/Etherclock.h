@@ -38,7 +38,7 @@ static constexpr const char* Version = "5.0";
 // values are based on that.
 
 static constexpr uint8_t SelectButton = 14;
-static constexpr uint32_t LightSensor = 0;
+static constexpr uint32_t LightSensor = 1;
 static constexpr uint32_t NumberOfBrightnessLevels = 250;
 static constexpr bool InvertAmbientLightLevel = false;
 static constexpr uint32_t MinLightSensorLevel = 0;
@@ -62,7 +62,6 @@ private:
     void setBrightness(uint8_t b)
     {
         // FIXME: Set a low light level until light sensor is hooked up
-        b = 10;
         _clockDisplay.setBrightness(b);
     }
     
