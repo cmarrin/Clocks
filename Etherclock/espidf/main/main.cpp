@@ -12,16 +12,19 @@
 // Etherclock was designed for the ESP8266. I'm rebuilding it using the same
 // DSP7S04B display, light sensor and button. I'll use the same pin connections
 // as Office Clock:
-//      Function    Super Mini id (pin #)
+//      Function    Super Mini id (pin #)       Connected to
 //
-//      5v              5v       (R1)
-//      3.3v            3.3v     (R3)
-//      Gnd             Gnd      (R2)
-//      A0              GPIO1    (L4)
-//      MOSI            GPIO4    (L7)
-//      CLK             GPIO3    (L6)
-//      CS              GPIO7    (L10)
-//      Button          GPIO14   (R8)
+//      5v              5v       (R1)           USB Conn VBUS
+//      3.3v            3.3v     (R3)           DSP7S04B Vcc
+//                                              Light Sensor Vcc
+//      Gnd             Gnd      (R2)           USB Conn Gnd
+//                                              DSP7S04B Gnd
+//                                              Switch
+//                                              Light Sensor Gnd
+//      A1              GPIO1    (L4)           Light Sensor Out
+//      SDA             GPIO4    (L7)           DSP7S04B SDA
+//      SCL             GPIO3    (L6)           DSP7S04B SCL
+//      Button          GPIO14   (R8)           Switch
 
 #include "Etherclock.h"
 
