@@ -54,7 +54,7 @@ int main(int argc, const char * argv[])
             
             int x = 0;
             int y = 0;
-            const uint32_t* buffer = reinterpret_cast<const uint32_t*>(gfx->getBuffer());
+            const uint8_t* buffer = reinterpret_cast<const uint8_t*>(gfx->getBuffer());
 
             for (int i = 0; i < 32; ++i) {
                 uint8_t c = buffer[i];
