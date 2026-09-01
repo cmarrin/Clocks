@@ -10,7 +10,7 @@
 #include "WordClock.h"
 #include "tigr.h"
 
-static constexpr const char* ImageName = "WordClock-Hoefler-800.png";
+static constexpr const char* ImageName = "WordClock-Pesta-800.png";
 static constexpr int originX = 0;
 static constexpr int originY = 5;
 static constexpr int sizeX = 50;

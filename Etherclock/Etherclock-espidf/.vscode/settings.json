@@ -3,7 +3,7 @@
   "idf.openOcdConfigs": [
     "board/esp32c6-ftdi.cfg"
   ],
-  "idf.port": "/dev/tty.usbmodem83101",
+  "idf.port": "/dev/tty.usbmodem8334201",
   "idf.currentSetup": "/Users/cmarrin/esp/v5.5.2/esp-idf",
   "idf.customExtraVars": {
     "IDF_TARGET": "esp32c6"
