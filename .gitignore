@@ -12,3 +12,8 @@ OfficeClock/espidf/.vscode
 sdkconfig
 Etherclock/espidf/.devcontainer
 Etherclock/espidf/.vscode
+#auto_saved_files#
+_autosave-Max7219Clock.kicad_sch
+fp-info-cache
+~Max7219Clock.kicad_sch.lck
+OfficeClock/Hardware/Max7219Clock/Max7219Clock-backups
