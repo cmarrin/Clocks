@@ -20,7 +20,10 @@ static constexpr int LEDRadius = 5;
 static constexpr int Offset = 10;
 static constexpr int MessageHeight = 20;
 static constexpr int Spacing = ((LEDBorder + LEDRadius) * 2);
-static constexpr int MatrixWidth = Spacing * 32 + (Offset * 2);
+
+static constexpr int LEDWidth = 24;
+
+static constexpr int MatrixWidth = Spacing * LEDWidth + (Offset * 2);
 static constexpr int MatrixHeight = Spacing * 8 + (Offset * 2);
 static constexpr int WindowWidth = MatrixWidth;
 static constexpr int WindowHeight = MatrixHeight + MessageHeight;
@@ -42,7 +45,7 @@ int main(int argc, const char * argv[])
             tigrPrint(screen, tfont, MessageX, MessageY, tigrRGB(0xff, 0xff, 0xff), "Press [TAB] for select");
 
             // Make a vertical grid
-            for (int i = 0; i <= 32; i++) {
+            for (int i = 0; i <= LEDWidth; i++) {
                 uint8_t color = ((i % 8) == 0) ? 0x50 : 0x30;
                 tigrLine(screen, Offset + (i * Spacing), Spacing, Offset + (i * Spacing), MatrixHeight - Spacing + 1, tigrRGBA(color, color, color, 0xff));
             }
@@ -56,7 +59,7 @@ int main(int argc, const char * argv[])
             int y = 0;
             const uint8_t* buffer = reinterpret_cast<const uint8_t*>(gfx->getBuffer());
 
-            for (int i = 0; i < 32; ++i) {
+            for (int i = 0; i < LEDWidth; ++i) {
                 uint8_t c = buffer[i];
                 for (int j = 0; j < 8; ++j) {
                     if (c & 0x80) {
