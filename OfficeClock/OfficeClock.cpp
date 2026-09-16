@@ -13,7 +13,7 @@ static const char* TAG = "OfficeClock";
 
 OfficeClock::OfficeClock(mil::WiFiPortal* portal, bool buttonActiveHigh, mil::RenderCB renderCB)
     : mil::Application(portal, ConfigPortalName, true)
-    , _clockDisplay([this]() { startShowDoneTimer(DoneTimeDuration); }, renderCB)
+    , _clockDisplay([this]() { startShowDoneTimer(DoneTimeDuration); }, false, renderCB)
     , _brightnessManager([this](uint32_t b) { setBrightness(b); }, LightSensor, 
                          InvertAmbientLightLevel, MinLightSensorLevel, MaxLightSensorLevel, NumberOfBrightnessLevels)
     , _buttonManager([this](const mil::Button& b, mil::ButtonManager::Event e) { handleButtonEvent(b, e); })
@@ -25,6 +25,10 @@ void
 OfficeClock::setup()
 {
     mil::System::delay(500);
+    
+    // Setup the display
+    _clockDisplay.begin();
+    
     Application::setup();
 
     setTitle((std::string("<center>MarrinTech Internet Connected Office Clock v") + Version + "</center>").c_str());
@@ -138,12 +142,7 @@ OfficeClock::showString(mil::Message m)
 }
 
 void
-OfficeClock::setBrightness(uint32_t b) {
-    // Brightness needs to be 0-31 but anything more than 15 is way too bright. Adjust
-    b /= 2;
-
-    if (b > 31) {
-        b = 31;
-    }
+OfficeClock::setBrightness(uint32_t b)
+{
     _clockDisplay.setBrightness(b);
 }

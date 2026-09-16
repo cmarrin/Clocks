@@ -28,10 +28,10 @@ static constexpr uint32_t StartupScrollRate = 50;
 static constexpr uint32_t DateScrollRate = 50;
 static constexpr uint8_t SelectButton = 14;
 static constexpr uint32_t LightSensor = 1;
-static constexpr uint32_t NumberOfBrightnessLevels = 31;
-static constexpr bool InvertAmbientLightLevel = true;
-static constexpr uint32_t MinLightSensorLevel = 200; // based on a 10 bit (scaled) value
-static constexpr uint32_t MaxLightSensorLevel = 950; // based on a 10 bit (scaled) value
+static constexpr uint32_t NumberOfBrightnessLevels = 250;
+static constexpr bool InvertAmbientLightLevel = false;
+static constexpr uint32_t MinLightSensorLevel = 0; // raw light sensor value
+static constexpr uint32_t MaxLightSensorLevel = 3400; // raw light sensor value
 static constexpr uint32_t DoneTimeDuration = 100;
 
 class OfficeClock : public mil::Application
@@ -48,6 +48,8 @@ class OfficeClock : public mil::Application
     virtual void showString(mil::Message m) override;
 
     void handleButtonEvent(const mil::Button& button, mil::ButtonManager::Event event);
+    
+    // Brightness from 0-255
     void setBrightness(uint32_t b);
 
     mil::Max7219Display _clockDisplay;
