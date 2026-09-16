@@ -1,0 +1,31 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "esp32c3-4mb",
+      "cacheVariables": {
+        "IDF_TARGET": "esp32c3",
+        "SDKCONFIG_DEFAULTS": "sdkconfig.defaults;sdkconfig.4mb"
+      }
+    },
+    {
+      "name": "esp32c6-16mb",
+      "cacheVariables": {
+        "IDF_TARGET": "esp32c6",
+        "SDKCONFIG_DEFAULTS": "sdkconfig.defaults;sdkconfig.16mb"
+      }
+    },
+    {
+      "name": "esp32c6-4mb",
+      "cacheVariables": {
+        "IDF_TARGET": "esp32c6",
+        "SDKCONFIG_DEFAULTS": "sdkconfig.defaults;sdkconfig.4mb"
+      }
+    }
+  ]
+}
