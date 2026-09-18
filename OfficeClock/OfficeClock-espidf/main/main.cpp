@@ -16,20 +16,20 @@
 // 3.3v, ground and a sense line connected to the ADC on the ESP32-C6.
 //
 // Here are the connections:
-//      (for the ESP32-C6 pin # is starting at the top on the left (L) or 
-//       right (R) with the board oriented with the USB connector at the 
-//       top looking from the ESP chip side)
+//      for the ESP32-C6 pin # is starting at the top right with the board 
+//      oriented with the USB connector at the top looking from the ESP chip
+//      side. Numbering goes counter-clockwise so pin 20 is top left
 //
 //      Function    Super Mini id (pin #)
 //
-//      5v              5v   (R1)   - LED Matrix VCC
-//      3.3v            3.3v (R3)   - Light Sensor VCC
-//      Gnd             Gnd  (R2)   - LED Matrix GND, Light Sensor GND, Button GND
-//      A0              1    (L4)   - Light Sensor SENSE
-//      MOSI            4    (L7)   - LED Matrix DIN
-//      CLK             3    (L6)   - LED Matrix CLK
-//      CS              7    (L10)  - LEDMatrix CS
-//      Button          14   (R8)   - Button
+//      5v              5v   (20)   - LED Matrix VCC
+//      3.3v            3.3v (18)   - Light Sensor VCC
+//      Gnd             Gnd  (19)   - LED Matrix GND, Light Sensor GND, Button GND
+//      A0              1    ( 4)   - Light Sensor SENSE
+//      MOSI            4    ( 7)   - LED Matrix DIN
+//      CLK             3    ( 6)   - LED Matrix CLK
+//      CS              7    (10)   - LEDMatrix CS
+//      Button          14   (13)   - Button
 
 #include "OfficeClock.h"
 
